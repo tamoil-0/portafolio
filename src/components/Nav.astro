@@ -22,13 +22,18 @@ const links = [
       </ul>
     </nav>
     <div class="nav-actions">
+      <button class="search-btn" type="button" data-open-palette aria-label="Buscar (Ctrl + K)" aria-keyshortcuts="Control+K Meta+K">
+        <Icon name="search" size={16} />
+        <span class="search-label">Buscar</span>
+        <kbd class="search-kbd" aria-hidden="true"><span data-kbd-mod>Ctrl</span> K</kbd>
+      </button>
       <button class="icon-btn" type="button" aria-label="Cambiar tema claro u oscuro" data-theme-toggle>
         <span class="i-sun"><Icon name="sun" /></span>
         <span class="i-moon"><Icon name="moon" /></span>
       </button>
-      <a class="btn btn-primary nav-cta" href={whatsappUrl()} target="_blank" rel="noopener">
+      <button class="btn nav-cta" type="button" data-open-contact aria-haspopup="dialog">
         <Icon name="whatsapp" size={16} /> Hablemos
-      </a>
+      </button>
       <button class="icon-btn menu-btn" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu-movil" data-menu-btn>
         <Icon name="menu" />
       </button>
@@ -38,6 +43,9 @@ const links = [
     <ul>
       {links.map((l, i) => <li style={`--i:${i}`}><a href={l.href} data-sheet-link>{l.label} <Icon name="arrowRight" size={18} /></a></li>)}
     </ul>
+    <button class="sheet-search" type="button" data-open-palette data-sheet-search>
+      <Icon name="search" size={18} /> Buscar en el portafolio
+    </button>
     <a class="btn btn-wa" href={whatsappUrl()} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> Escríbeme por WhatsApp</a>
   </div>
 </header>
@@ -60,7 +68,7 @@ const links = [
   .brand-mark {
     display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; padding: 2px;
     background: var(--grad); color: #fff; font-size: 0.8rem; overflow: hidden;
-    transition: transform 500ms var(--ease-spring);
+    transition: transform 500ms var(--ease);
   }
   .brand-mark img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 20%; border: 2px solid var(--bg); }
   .brand:hover .brand-mark { transform: rotate(-8deg) scale(1.06); }
@@ -76,14 +84,37 @@ const links = [
     content: ''; position: absolute; left: 50%; bottom: 5px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--accent);
   }
   .nav-actions { display: flex; align-items: center; gap: var(--s-2); }
-  .nav-cta { min-height: 42px; padding: 0 18px; }
+  .nav-cta {
+    min-height: 42px; padding: 0 18px; background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow-sm);
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .nav-cta:hover { background: color-mix(in srgb, var(--accent) 88%, #fff); color: var(--on-accent); transform: none; }
+  .nav-cta:hover :global(svg:last-child) { transform: none; }
   .icon-btn {
     display: grid; place-items: center; width: 42px; height: 42px; border-radius: 999px;
     border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer;
-    transition: border-color var(--dur) var(--ease), transform 500ms var(--ease-spring);
+    transition: border-color var(--dur) var(--ease), transform 500ms var(--ease);
   }
   .icon-btn:hover { border-color: var(--accent); }
-  [data-theme-toggle]:hover { transform: rotate(25deg); }
+  [data-theme-toggle]:hover { transform: rotate(20deg); }
+  .search-btn {
+    display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 8px 0 14px; border-radius: 999px;
+    font: inherit; font-size: var(--step--1); font-weight: 500; color: var(--muted); cursor: pointer;
+    border: 1px solid var(--line); background: var(--surface);
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .search-btn:hover { color: var(--text); border-color: var(--line-strong); }
+  .search-label { margin-right: 6px; }
+  .search-kbd {
+    font-family: var(--font-mono); font-size: 11px; line-height: 1.5; padding: 1px 6px; border-radius: 6px; color: var(--muted);
+    border: 1px solid var(--line-strong); border-bottom-width: 2px; background: var(--surface-2); white-space: nowrap;
+  }
+  .sheet-search {
+    display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border-radius: var(--radius-sm);
+    font: inherit; font-size: var(--step--1); font-weight: 500; color: var(--muted); text-align: left; cursor: pointer;
+    border: 1px solid var(--line); background: var(--surface);
+  }
+  .sheet-search:hover { color: var(--text); border-color: var(--line-strong); }
   .menu-btn { display: none; }
   .i-moon { display: none; }
   :global(:root[data-theme='dark']) .i-sun { display: none; }
@@ -110,23 +141,49 @@ const links = [
   @keyframes sheet-in { from { opacity: 0; transform: translateY(-10px) scale(0.98); } }
   @keyframes sheet-item { from { opacity: 0; transform: translateX(-12px); } }
 
+  /* Entre escritorio y móvil, o con la barra compacta, el buscador se reduce a icono + atajo */
+  @media (max-width: 1080px) { .search-label { display: none; } .search-btn { padding-left: 12px; } }
+  .nav.is-scrolled .search-label { display: none; }
+  .nav.is-scrolled .search-btn { padding-left: 12px; }
   @media (max-width: 860px) {
     .nav-main, .nav-cta { display: none; }
     .menu-btn { display: grid; }
+    .search-btn { width: 42px; padding: 0; justify-content: center; }
+    .search-kbd { display: none; }
   }
+
+  /* Cambio de tema: revelado circular desde el botón */
+  :global(:root.theme-vt::view-transition-old(root)),
+  :global(:root.theme-vt::view-transition-new(root)) { animation: none; mix-blend-mode: normal; }
+  :global(:root.theme-vt::view-transition-old(root)) { z-index: 1; }
+  :global(:root.theme-vt::view-transition-new(root)) { z-index: 2; }
   @media (max-width: 400px) { .brand-name { font-size: 0.95rem; } }
 </style>
 
 <script>
   const root = document.documentElement;
   const nav = document.querySelector<HTMLElement>('[data-nav]');
-  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+  type VTDoc = Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void>; finished: Promise<void> } };
+  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  toggle?.addEventListener('click', () => {
     const current = root.dataset.theme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     const next = current === 'dark' ? 'light' : 'dark';
     const swap = () => { root.dataset.theme = next; };
-    // Transición suave del tema donde el navegador lo soporta
-    (document as Document & { startViewTransition?: (cb: () => void) => void }).startViewTransition?.(swap) ?? swap();
     try { localStorage.setItem('theme', next); } catch {}
+    const doc = document as VTDoc;
+    if (!doc.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return swap();
+    // Revelado circular desde el centro del botón
+    const r = toggle.getBoundingClientRect();
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    root.classList.add('theme-vt');
+    const vt = doc.startViewTransition(swap);
+    vt.ready.then(() => {
+      root.animate(
+        { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(150% at ${x}px ${y}px)`] },
+        { duration: 450, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', pseudoElement: '::view-transition-new(root)' },
+      );
+    }).catch(() => {});
+    vt.finished.finally(() => root.classList.remove('theme-vt'));
   });
   const onScroll = () => nav?.classList.toggle('is-scrolled', scrollY > 12);
   addEventListener('scroll', onScroll, { passive: true });
@@ -142,7 +199,7 @@ const links = [
     btn.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
   };
   btn?.addEventListener('click', () => setMenu(sheet?.hidden ?? true));
-  sheet?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  sheet?.querySelectorAll('a, [data-sheet-search]').forEach((a) => a.addEventListener('click', () => setMenu(false)));
   addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
 
   // Sección activa en el menú

@@ -2,19 +2,56 @@
   "name": "Jhon Marco Aracayo Mamani",
   "shortName": "Jhon Aracayo",
   "role": "Technology Lead · Desarrollador full-stack",
-  "tagline": "Ingeniero de Sistemas egresado de la UNA Puno. Desarrollo apps móviles que funcionan sin internet, plataformas web y sistemas a medida, y lidero equipos que llevan productos digitales a producción.",
+  "tagline": "Egresado de Ingeniería de Sistemas de la UNA Puno (2026). Desde el sexto semestre desarrollo software que usan personas, empresas e instituciones, y lidero equipos que llevan productos digitales a producción.",
+  "since": 2024,
   "location": "Puno, Perú",
   "email": "jaracayo7@gmail.com",
   "whatsapp": "51931582435",
-  "photo": { "src": "img/jhon.webp", "alt": "Jhon Marco Aracayo Mamani", "width": 320, "height": 400 },
+  "photo": {
+    "src": "img/jhon.webp",
+    "alt": "Jhon Marco Aracayo Mamani",
+    "width": 320,
+    "height": 400
+  },
   "availability": null,
   "links": {
     "github": "https://github.com/tamoil-0",
     "linkedin": "https://www.linkedin.com/in/jhonmarcoaracayomamani"
   },
   "bio": [
-    "Soy egresado de Ingeniería de Sistemas de la Universidad Nacional del Altiplano (Puno). Tengo experiencia en desarrollo de software, liderazgo tecnológico y digitalización de procesos operativos: apps móviles, plataformas web, servicios backend e infraestructura.",
-    "Me interesa especialmente la gestión de información, la integración de sistemas y las operaciones en lugares con conectividad limitada. Trabajo con tecnologías web y móviles actuales, y uso inteligencia artificial cuando aporta a un problema concreto."
+    "Creo en la tecnología como una herramienta para convertir ideas en soluciones reales. No me basta con que el software funcione: quiero entender qué problema resuelve, a quién ayuda y cómo puede generar un cambio que se sostenga en el tiempo.",
+    "Soy egresado de Ingeniería de Sistemas de la Universidad Nacional del Altiplano, desarrollador full-stack y líder tecnológico. Terminé la carrera en 2026, pero no empecé ahí: desde el sexto semestre construyo software que usan personas, empresas e instituciones, desde apps para digitalizar inspecciones en campo hasta plataformas en producción y equipos que acompaño para que sus ideas se vuelvan realidad.",
+    "Me mueve construir lo que antes no existía, mejorar lo que parecía no tener solución y abrir oportunidades donde todavía hay mucho por hacer. Por eso me involucro tanto en el código como en las decisiones detrás de cada proyecto: una buena solución también depende de entender a las personas, trabajar en equipo y tener claro hacia dónde vamos.",
+    "Quiero seguir creciendo como profesional y líder tecnológico en proyectos de mayor alcance, creando productos con propósito y aportando al ecosistema tecnológico y emprendedor de mi región. Y demostrar que el lugar de donde vienes no limita la magnitud de lo que puedes construir."
+  ],
+  "quote": "Al final, no se trata solo de la tecnología que desarrollamos, sino de lo que somos capaces de hacer con ella.",
+  "journey": [
+    {
+      "year": "2021",
+      "title": "Empiezo Ingeniería de Sistemas",
+      "detail": "Ingreso a la Universidad Nacional del Altiplano, en Puno."
+    },
+    {
+      "year": "2023",
+      "title": "Primeras apps",
+      "detail": "Taller de Desarrollo de Aplicaciones Móviles en Android (CIP CD-Puno)."
+    },
+    {
+      "year": "2024",
+      "title": "Sexto semestre: mi software entra en uso real",
+      "detail": "En ECOING desarrollo las apps con las que se inspeccionan líneas eléctricas en campo. Ese año también soy ponente del taller de Python y C++.",
+      "highlight": true
+    },
+    {
+      "year": "2025",
+      "title": "Instituciones y primeros premios",
+      "detail": "Sistema de capacitaciones para el Poder Judicial de Puno, NASA Space Apps Challenge y primer lugar en el Concurso de Proyectos EPIS 2025-II."
+    },
+    {
+      "year": "2026",
+      "title": "Liderazgo y egreso",
+      "detail": "CTO de Semillero de Emprendedores Perú, Technology Lead en ROWAN y Friding, y desarrollo móvil en Allprocar. Egreso de la carrera en agosto."
+    }
   ],
   "interests": [
     "Digitalización de operaciones de campo y captura de datos sin conexión",
@@ -77,8 +114,16 @@
     ]
   },
   "achievements": [
-    { "title": "Primer lugar, Concurso de Proyectos Estudiantiles EPIS 2025-II", "detail": "DermaApp: análisis preliminar de imágenes dermatológicas con redes neuronales convolucionales. UNA Puno, nov 2025.", "project": "dermapp" },
-    { "title": "NASA International Space Apps Challenge 2025", "detail": "AgroPredict AI: análisis de información agrícola con imágenes satelitales, IoT y machine learning.", "project": "agropredict-ai" }
+    {
+      "title": "Primer lugar, Concurso de Proyectos Estudiantiles EPIS 2025-II",
+      "detail": "DermaApp: análisis preliminar de imágenes dermatológicas con redes neuronales convolucionales. UNA Puno, nov 2025.",
+      "project": "dermapp"
+    },
+    {
+      "title": "NASA International Space Apps Challenge 2025",
+      "detail": "AgroPredict AI: análisis de información agrícola con imágenes satelitales, IoT y machine learning.",
+      "project": "agropredict-ai"
+    }
   ],
   "training": [
     "Ponente: Taller de Programación en Python y C++ — CIP CD-Puno / EPIS UNAP, 2024",
@@ -87,17 +132,87 @@
     "Taller de Desarrollo de Aplicaciones Móviles en Android — CIP CD-Puno, 2023"
   ],
   "languages": [
-    { "name": "Español", "level": "Nativo" },
-    { "name": "Inglés", "level": "Básico–intermedio" },
-    { "name": "Aymara", "level": "Básico–intermedio" },
-    { "name": "Portugués", "level": "Básico" }
+    {
+      "name": "Español",
+      "level": "Nativo"
+    },
+    {
+      "name": "Inglés",
+      "level": "Básico–intermedio"
+    },
+    {
+      "name": "Aymara",
+      "level": "Básico–intermedio"
+    },
+    {
+      "name": "Portugués",
+      "level": "Básico"
+    }
   ],
   "skills": [
-    { "group": "Lenguajes", "items": ["Dart", "TypeScript", "JavaScript", "Python", "PHP", "SQL", "HTML y CSS"] },
-    { "group": "Frontend y móvil", "items": ["Flutter", "React", "Next.js", "Tailwind CSS", "Apps offline-first"] },
-    { "group": "Backend e integración", "items": ["APIs REST", "Laravel", "Node.js", "FastAPI", "Autenticación", "Arquitectura cliente-servidor"] },
-    { "group": "IA y datos", "items": ["TensorFlow", "Deep learning", "Visión por computadora", "Machine learning", "Pandas", "NumPy"] },
-    { "group": "Bases de datos", "items": ["MySQL", "MariaDB", "PostgreSQL", "SQLite"] },
-    { "group": "Infraestructura y gestión", "items": ["Linux", "Docker y Docker Compose", "Git y GitHub", "Redes y NAS", "Metodologías ágiles", "Documentación técnica"] }
+    {
+      "group": "Lenguajes",
+      "items": [
+        "Dart",
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "PHP",
+        "SQL",
+        "HTML y CSS"
+      ]
+    },
+    {
+      "group": "Frontend y móvil",
+      "items": [
+        "Flutter",
+        "React",
+        "Next.js",
+        "Tailwind CSS",
+        "Apps offline-first"
+      ]
+    },
+    {
+      "group": "Backend e integración",
+      "items": [
+        "APIs REST",
+        "Laravel",
+        "Node.js",
+        "FastAPI",
+        "Autenticación",
+        "Arquitectura cliente-servidor"
+      ]
+    },
+    {
+      "group": "IA y datos",
+      "items": [
+        "TensorFlow",
+        "Deep learning",
+        "Visión por computadora",
+        "Machine learning",
+        "Pandas",
+        "NumPy"
+      ]
+    },
+    {
+      "group": "Bases de datos",
+      "items": [
+        "MySQL",
+        "MariaDB",
+        "PostgreSQL",
+        "SQLite"
+      ]
+    },
+    {
+      "group": "Infraestructura y gestión",
+      "items": [
+        "Linux",
+        "Docker y Docker Compose",
+        "Git y GitHub",
+        "Redes y NAS",
+        "Metodologías ágiles",
+        "Documentación técnica"
+      ]
+    }
   ]
 }

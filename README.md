@@ -54,7 +54,13 @@ Todo está en variables CSS al inicio de `src/styles/global.css`:
 - `--bg`, `--surface`, `--text`, `--muted` y `--line` son los neutros.
 - Las fuentes son Bricolage Grotesque (títulos), Inter (texto) y JetBrains Mono (etiquetas), servidas desde el propio sitio con `@fontsource`.
 
-El número de WhatsApp (botón flotante y botones de contacto) está en `whatsapp` dentro de `data/profile.json`.
+El número de WhatsApp (botón flotante y botones de contacto) está en `whatsapp` dentro de `data/profile.json`. Ahí también están la biografía (`bio`), la frase final (`quote`) y la línea de tiempo "Mi camino" (`journey`).
+
+## Interacciones
+
+- **Formulario de contacto:** cualquier elemento con `data-open-contact` lo abre (arma el mensaje y lo envía por WhatsApp o correo).
+- **Buscador rápido:** `Ctrl + K` (o `⌘ K`) o cualquier elemento con `data-open-palette`.
+- **Avisos:** `dispatchEvent(new CustomEvent('app:toast', { detail: { message: 'Texto', icon: 'check' } }))`.
 
 Si cambias colores, regenera la imagen para redes sociales con `node scripts/brand-assets.mjs`.
 

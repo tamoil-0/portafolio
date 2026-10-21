@@ -2,37 +2,71 @@
 import Icon from './Icon.astro';
 import { whatsappUrl } from '../lib/site';
 ---
-<a class="wa-fab" href={whatsappUrl()} target="_blank" rel="noopener" aria-label="Escríbeme por WhatsApp">
+<a class="wa-fab" href={whatsappUrl()} target="_blank" rel="noopener" aria-label="Escríbeme por WhatsApp" data-wa-fab>
   <span class="wa-ring" aria-hidden="true"></span>
-  <span class="wa-icon"><Icon name="whatsapp" size={28} /></span>
+  <span class="wa-icon"><Icon name="whatsapp" size={26} /></span>
   <span class="wa-label">¿Hablamos?</span>
 </a>
 
 <style>
   .wa-fab {
     position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 70;
-    display: inline-flex; align-items: center; height: 60px; padding: 0; border-radius: 999px;
-    background: var(--wa); color: #fff; text-decoration: none; font-weight: 700; font-size: 0.95rem;
-    box-shadow: 0 12px 30px -8px rgb(37 211 102 / 0.65), 0 2px 6px rgb(0 0 0 / 0.15);
-    animation: wa-in 700ms var(--ease-spring) 900ms both;
-    transition: transform var(--dur) var(--ease-spring), box-shadow var(--dur) var(--ease);
+    display: inline-flex; align-items: center; height: 52px; padding: 0; border-radius: 999px;
+    background: var(--wa); color: #052e16; text-decoration: none; font-weight: 700; font-size: 0.92rem;
+    box-shadow: 0 10px 26px -10px rgb(37 211 102 / 0.6), 0 2px 6px rgb(0 0 0 / 0.12);
+    /* Oculto hasta pasar la portada; lo muestra el script con .is-shown */
+    opacity: 0; transform: translateY(16px) scale(0.92); pointer-events: none; visibility: hidden;
+    transition: opacity 320ms var(--ease), transform 420ms var(--ease), visibility 0s linear 420ms, box-shadow var(--dur) var(--ease);
   }
-  .wa-fab:hover { color: #fff; transform: translateY(-3px) scale(1.03); box-shadow: 0 18px 40px -10px rgb(37 211 102 / 0.8); }
-  .wa-icon { display: grid; place-items: center; width: 60px; height: 60px; }
+  .wa-fab.is-shown, :global(.no-js) .wa-fab {
+    opacity: 1; transform: none; pointer-events: auto; visibility: visible;
+    transition: opacity 320ms var(--ease), transform 420ms var(--ease), visibility 0s, box-shadow var(--dur) var(--ease);
+  }
+  .wa-fab:hover { color: #052e16; box-shadow: 0 14px 32px -10px rgb(37 211 102 / 0.75), 0 2px 6px rgb(0 0 0 / 0.12); }
+  .wa-icon { display: grid; place-items: center; width: 52px; height: 52px; }
   .wa-label {
     max-width: 0; overflow: hidden; white-space: nowrap; opacity: 0;
     transition: max-width 400ms var(--ease), opacity 300ms var(--ease), padding 400ms var(--ease);
   }
-  .wa-fab:hover .wa-label, .wa-fab:focus-visible .wa-label { max-width: 140px; opacity: 1; padding-right: 22px; }
-  .wa-ring {
-    position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-    box-shadow: 0 0 0 0 rgb(37 211 102 / 0.55); animation: wa-pulse 2.4s var(--ease) 2s infinite;
-  }
-  @keyframes wa-pulse { 70%, 100% { box-shadow: 0 0 0 18px rgb(37 211 102 / 0); } }
-  @keyframes wa-in { from { opacity: 0; transform: translateY(30px) scale(0.6); } }
-  @media (max-width: 520px) {
-    .wa-fab { height: 54px; }
-    .wa-icon { width: 54px; height: 54px; }
-  }
+  .wa-fab:hover .wa-label, .wa-fab:focus-visible .wa-label { max-width: 140px; opacity: 1; padding-right: 20px; }
+  .wa-ring { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: 0 0 0 0 rgb(37 211 102 / 0.5); }
+  /* Solo dos pulsos tras la primera aparición; luego, quieto */
+  .wa-fab.has-pulsed-start .wa-ring { animation: wa-pulse 2.4s var(--ease) 600ms 2; }
+  @keyframes wa-pulse { 70%, 100% { box-shadow: 0 0 0 16px rgb(37 211 102 / 0); } }
+  @media (prefers-reduced-motion: reduce) { .wa-ring { animation: none !important; } }
   @media print { .wa-fab { display: none; } }
 </style>
+
+<script>
+  const fab = document.querySelector<HTMLElement>('[data-wa-fab]');
+  if (fab) {
+    const hero = document.querySelector<HTMLElement>('#main > section:first-child');
+    let pastHero = false;
+    const zones = new Set<Element>();
+    const update = () => {
+      const show = pastHero && zones.size === 0;
+      fab.classList.toggle('is-shown', show);
+      fab.toggleAttribute('inert', !show);
+      if (show && !fab.classList.contains('has-pulsed-start')) fab.classList.add('has-pulsed-start');
+    };
+
+    if (hero) {
+      new IntersectionObserver(([e]) => {
+        pastHero = !e.isIntersecting && e.boundingClientRect.top < 0;
+        update();
+      }).observe(hero);
+    } else {
+      const onScroll = () => { const p = scrollY > innerHeight * 0.7; if (p !== pastHero) { pastHero = p; update(); } };
+      addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+
+    // Se oculta cuando ya se ve el bloque de contacto o el pie de página
+    const zoneIo = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? zones.add(e.target) : zones.delete(e.target)));
+      update();
+    });
+    document.querySelectorAll('#contacto, footer').forEach((z) => zoneIo.observe(z));
+    update();
+  }
+</script>

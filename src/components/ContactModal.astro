@@ -1,0 +1,390 @@
+---
+/**
+ * Formulario de contacto en un <dialog>.
+ * Se abre con cualquier elemento [data-open-contact] (delegación en document; el valor opcional preselecciona el motivo,
+ * p. ej. data-open-contact="Proyecto") o con window.dispatchEvent(new CustomEvent('app:contact', { detail: { motivo: 'Proyecto' } })).
+ */
+import Icon from './Icon.astro';
+import { profile, url, whatsappUrl } from '../lib/site';
+const firstName = profile.shortName.split(' ')[0];
+const motivos = ['Oferta de trabajo', 'Proyecto', 'Colaboración', 'Otro'];
+---
+<dialog
+  class="cm"
+  data-contact-modal
+  aria-labelledby="cm-title"
+  aria-describedby="cm-sub"
+  data-wa={whatsappUrl('')}
+  data-email={profile.email}
+  data-first={firstName}
+>
+  <div class="cm-grip" data-grip>
+    <span class="cm-handle" aria-hidden="true"></span>
+    <header class="cm-head">
+      <span class="cm-avatar" aria-hidden="true">
+        {profile.photo ? <img src={url(profile.photo.src)} alt="" width="52" height="52" /> : firstName[0]}
+      </span>
+      <div class="cm-who">
+        <h2 id="cm-title">{profile.shortName}</h2>
+        <p id="cm-sub">Cuéntame qué tienes en mente</p>
+      </div>
+      <button class="cm-x" type="button" aria-label="Cerrar formulario de contacto" data-close>
+        <Icon name="close" size={18} />
+      </button>
+    </header>
+  </div>
+
+  <form class="cm-form" data-contact-form novalidate>
+    <label class="cm-field">
+      <span class="cm-label">Tu nombre <span class="cm-opt">opcional</span></span>
+      <input class="cm-input" name="nombre" type="text" autocomplete="name" maxlength="80" placeholder="¿Cómo te llamas?" />
+    </label>
+
+    <fieldset class="cm-field cm-motivos">
+      <legend class="cm-label">Motivo</legend>
+      <div class="cm-chips">
+        {motivos.map((m) => (
+          <label class="cm-chip">
+            <input type="radio" name="motivo" value={m} />
+            <span><Icon name="check" size={14} />{m}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <label class="cm-field">
+      <span class="cm-label">Mensaje</span>
+      <textarea class="cm-input cm-text" name="mensaje" rows="4" maxlength="1500" placeholder={`Hola ${firstName}, me gustaría…`}></textarea>
+    </label>
+
+    <p class="cm-hint" data-hint aria-live="polite">Elige un motivo o escribe un mensaje para continuar.</p>
+
+    <div class="cm-actions">
+      <a class="btn btn-wa cm-send" role="link" aria-disabled="true" target="_blank" rel="noopener" data-send-wa>
+        <Icon name="whatsapp" size={18} /> Enviar por WhatsApp
+      </a>
+      <a class="btn btn-secondary cm-send" role="link" aria-disabled="true" data-send-mail>
+        <Icon name="mail" size={18} /> Enviar por correo
+      </a>
+    </div>
+  </form>
+
+  <footer class="cm-quick">
+    <button class="cm-copy" type="button" data-copy-email aria-label={`Copiar correo ${profile.email}`}>
+      <Icon name="copy" size={15} />
+      <span class="mono">{profile.email}</span>
+    </button>
+    <div class="cm-social">
+      <a href={profile.links.linkedin} target="_blank" rel="me noopener" aria-label="LinkedIn"><Icon name="linkedin" size={16} /></a>
+      <a href={profile.links.github} target="_blank" rel="me noopener" aria-label="GitHub"><Icon name="github" size={16} /></a>
+    </div>
+  </footer>
+</dialog>
+
+<style>
+  .cm {
+    width: min(480px, calc(100vw - 32px)); max-width: none; max-height: min(760px, calc(100dvh - 40px));
+    margin: auto; padding: 0; overflow: auto; overscroll-behavior: contain;
+    color: var(--text); border: 1px solid var(--line); border-radius: 16px;
+    background: var(--surface);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), var(--shadow-lg);
+    scrollbar-width: thin;
+  }
+  .cm[open] { animation: cm-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .cm.is-closing { animation: cm-out 140ms cubic-bezier(0.4, 0, 1, 1) both; }
+  .cm::backdrop {
+    background: rgb(10 10 16 / 0.35);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    animation: cm-fade 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .cm.is-closing::backdrop { animation: cm-fade 140ms cubic-bezier(0.4, 0, 1, 1) reverse both; }
+  :global(:root[data-theme='dark']) .cm::backdrop { background: rgb(10 10 16 / 0.6); }
+  @media (prefers-color-scheme: dark) { :global(:root:not([data-theme='light'])) .cm::backdrop { background: rgb(10 10 16 / 0.6); } }
+
+  @keyframes cm-in { from { opacity: 0; transform: translateY(6px) scale(0.97); } }
+  @keyframes cm-out { to { opacity: 0; transform: translateY(4px) scale(0.98); } }
+  @keyframes cm-fade { from { opacity: 0; } }
+
+  .cm-grip { position: relative; }
+  .cm-handle { display: none; }
+  .cm-head { display: flex; align-items: center; gap: 14px; padding: 22px 22px 6px 24px; }
+  .cm-avatar {
+    flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; padding: 2px;
+    background: var(--grad); color: #fff; font-family: var(--font-display); font-weight: 700;
+  }
+  .cm-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 20%; border: 2px solid var(--surface); }
+  .cm-who { min-width: 0; flex: 1; }
+  .cm-who h2 { font-size: 1.2rem; letter-spacing: -0.02em; line-height: 1.2; }
+  .cm-who p { color: var(--muted); font-size: var(--step--1); margin-top: 2px; }
+  .cm-x {
+    flex: none; align-self: flex-start; display: grid; place-items: center; width: 36px; height: 36px; margin: -4px -4px 0 0;
+    border-radius: 999px; border: 1px solid transparent; background: transparent; color: var(--muted); cursor: pointer;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .cm-x:hover { background: var(--surface-2); color: var(--text); border-color: var(--line); }
+
+  .cm-form { display: grid; gap: 18px; padding: 18px 24px 22px; }
+  .cm-field { display: grid; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
+  .cm-label { padding: 0; font-size: 0.8rem; font-weight: 600; color: var(--text); letter-spacing: 0.005em; }
+  .cm-opt { margin-left: 6px; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 500; color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; }
+  .cm-input {
+    width: 100%; min-width: 0; padding: 11px 14px; font: inherit; font-size: 0.95rem; line-height: 1.5; color: var(--text);
+    background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .cm-input::placeholder { color: var(--faint); }
+  .cm-input:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--line-strong)); }
+  .cm-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent); }
+  .cm-text { resize: vertical; min-height: 104px; max-height: 280px; }
+
+  .cm-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .cm-chip { position: relative; display: flex; cursor: pointer; }
+  .cm-chip input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .cm-chip span {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0; width: 100%; min-height: 36px; padding: 0 12px; border-radius: 999px;
+    font-size: 0.84rem; font-weight: 550; color: var(--muted); background: var(--surface); border: 1px solid var(--line-strong);
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease), border-color var(--dur) var(--ease), gap var(--dur) var(--ease), padding var(--dur) var(--ease);
+  }
+  .cm-chip span :global(svg) { width: 0; opacity: 0; transition: width var(--dur) var(--ease), opacity var(--dur) var(--ease); }
+  .cm-chip:hover span { color: var(--text); border-color: color-mix(in srgb, var(--accent) 40%, var(--line-strong)); }
+  .cm-chip input:checked + span { color: var(--accent); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 45%, transparent); gap: 6px; padding-left: 10px; }
+  .cm-chip input:checked + span :global(svg) { width: 14px; opacity: 1; }
+  .cm-chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .cm-hint { min-height: 1.4em; margin-top: -6px; font-size: 0.8rem; color: var(--faint); }
+  .cm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cm-send { min-height: 46px; padding: 0 16px; }
+  .cm-send, .cm-send:hover, .cm-send:active { transform: none; }
+  .cm-send:hover :global(svg:last-child) { transform: none; }
+  .cm-send[aria-disabled='true'] {
+    opacity: 0.42; pointer-events: none; box-shadow: none; filter: saturate(0.4);
+  }
+
+  .cm-quick {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 18px 16px 24px; border-top: 1px solid var(--line);
+    background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+  }
+  .cm-copy {
+    display: inline-flex; align-items: center; gap: 8px; min-width: 0; min-height: 36px; padding: 0 12px 0 10px; margin-left: -10px;
+    font: inherit; font-size: 0.8rem; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 999px; cursor: pointer;
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .cm-copy span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cm-copy :global(svg) { flex: none; }
+  .cm-copy:hover { color: var(--text); background: var(--surface); border-color: var(--line); }
+  .cm-social { display: flex; gap: 6px; flex: none; }
+  .cm-social a {
+    display: grid; place-items: center; width: 36px; height: 36px; border-radius: 999px; color: var(--muted);
+    border: 1px solid var(--line); background: var(--surface);
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+  }
+  .cm-social a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Móvil: hoja inferior */
+  @media (max-width: 640px) {
+    .cm {
+      width: 100%; max-height: calc(100dvh - 24px); margin: auto 0 0;
+      border-radius: 16px 16px 0 0; border-bottom: 0;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .cm[open] { animation: cm-sheet-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .cm.is-closing { animation: cm-sheet-out 180ms cubic-bezier(0.4, 0, 1, 1) both; }
+    .cm-grip { touch-action: none; cursor: grab; }
+    .cm-handle { display: block; width: 40px; height: 5px; margin: 10px auto 0; border-radius: 999px; background: var(--line-strong); }
+    .cm-head { padding: 12px 16px 4px 20px; }
+    .cm-x { margin-top: 0; }
+    .cm-form { padding: 14px 20px 18px; gap: 16px; }
+    .cm-actions { grid-template-columns: 1fr; }
+    .cm-chips { display: grid; grid-template-columns: 1fr 1fr; }
+    .cm-quick { padding: 12px 16px 14px 20px; }
+  }
+  @keyframes cm-sheet-in { from { transform: translateY(100%); } }
+  @keyframes cm-sheet-out { to { transform: translateY(100%); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cm[open], .cm.is-closing, .cm::backdrop, .cm.is-closing::backdrop { animation: none; }
+  }
+</style>
+
+<script>
+  const dlg = document.querySelector<HTMLDialogElement>('[data-contact-modal]');
+  const form = dlg?.querySelector<HTMLFormElement>('[data-contact-form]');
+
+  if (dlg && form) {
+    const html = document.documentElement;
+    const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const waBase = dlg.dataset.wa ?? '';
+    const email = dlg.dataset.email ?? '';
+    const first = dlg.dataset.first ?? '';
+    const waBtn = dlg.querySelector<HTMLAnchorElement>('[data-send-wa]')!;
+    const mailBtn = dlg.querySelector<HTMLAnchorElement>('[data-send-mail]')!;
+    const hint = dlg.querySelector<HTMLElement>('[data-hint]')!;
+    const nameEl = form.elements.namedItem('nombre') as HTMLInputElement;
+    const msgEl = form.elements.namedItem('mensaje') as HTMLTextAreaElement;
+    const radios = [...form.querySelectorAll<HTMLInputElement>('input[name="motivo"]')];
+    const toast = (message: string, icon?: string) => dispatchEvent(new CustomEvent('app:toast', { detail: { message, icon } }));
+
+    // ---------- Bloqueo de scroll ----------
+    const lock = () => {
+      const sw = innerWidth - html.clientWidth;
+      html.style.overflow = 'hidden';
+      if (sw > 0) document.body.style.paddingRight = `${sw}px`;
+    };
+    const unlock = () => {
+      if (document.querySelector('dialog[open]')) return;
+      html.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
+
+    // ---------- Mensaje ----------
+    const compose = () => {
+      const name = nameEl.value.trim();
+      const motivo = radios.find((r) => r.checked)?.value ?? '';
+      const msg = msgEl.value.trim();
+      let intro = `Hola ${first}${name ? `, soy ${name}` : ''}.`;
+      intro += motivo ? ` Te escribo desde tu portafolio por: ${motivo}.` : ' Te escribo desde tu portafolio.';
+      return { text: msg ? `${intro}\n\n${msg}` : intro, motivo, ok: Boolean(motivo || msg) };
+    };
+    const sync = () => {
+      const { text, motivo, ok } = compose();
+      [waBtn, mailBtn].forEach((b) => {
+        b.setAttribute('aria-disabled', String(!ok));
+        if (!ok) b.removeAttribute('href');
+      });
+      if (ok) {
+        waBtn.href = waBase + encodeURIComponent(text);
+        const subject = motivo ? `${motivo} · desde tu portafolio` : 'Contacto desde tu portafolio';
+        mailBtn.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+      }
+      hint.textContent = ok
+        ? 'Se abrirá WhatsApp o tu correo con el mensaje listo para enviar.'
+        : 'Elige un motivo o escribe un mensaje para continuar.';
+    };
+    form.addEventListener('input', sync);
+    form.addEventListener('change', sync);
+
+    // Un chip marcado se puede desmarcar con otro clic
+    radios.forEach((r) => {
+      let was = false;
+      r.addEventListener('pointerdown', () => { was = r.checked; });
+      r.addEventListener('click', () => { if (was) { r.checked = false; was = false; sync(); } });
+    });
+
+    // Enter en el nombre o Ctrl/Cmd+Enter en el mensaje envía por WhatsApp
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (waBtn.getAttribute('aria-disabled') !== 'true') waBtn.click();
+    });
+    msgEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); form.requestSubmit(); }
+    });
+    [waBtn, mailBtn].forEach((b) => b.addEventListener('click', (e) => {
+      if (b.getAttribute('aria-disabled') === 'true') { e.preventDefault(); return; }
+      toast(b === waBtn ? 'Abriendo WhatsApp…' : 'Abriendo tu correo…', b === waBtn ? 'whatsapp' : 'mail');
+    }));
+
+    // ---------- Copiar correo ----------
+    dlg.querySelector('[data-copy-email]')?.addEventListener('click', async () => {
+      let ok = false;
+      try { await navigator.clipboard.writeText(email); ok = true; } catch {
+        const ta = Object.assign(document.createElement('textarea'), { value: email });
+        ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+        dlg.append(ta);
+        ta.select();
+        try { ok = document.execCommand('copy'); } catch {}
+        ta.remove();
+      }
+      toast(ok ? '¡Correo copiado!' : `No se pudo copiar: ${email}`, ok ? 'check' : 'mail');
+    });
+
+    // ---------- Abrir / cerrar con animación ----------
+    let closing = false;
+    const open = (motivo?: string) => {
+      if (motivo) radios.forEach((r) => { r.checked = r.value.toLowerCase() === motivo.toLowerCase(); });
+      sync();
+      if (dlg.open) return;
+      closing = false;
+      dlg.classList.remove('is-closing');
+      dlg.style.transform = '';
+      lock();
+      dlg.showModal();
+      // En escritorio, foco directo al primer campo; en táctil evitamos abrir el teclado de golpe.
+      if (matchMedia('(pointer: fine)').matches) nameEl.focus();
+    };
+    const close = () => {
+      if (!dlg.open || closing) return;
+      if (reduce()) { dlg.close(); return; }
+      closing = true;
+      dlg.classList.add('is-closing');
+      const onEnd = (e: AnimationEvent) => { if (e.target === dlg && !e.pseudoElement) finish(); };
+      const finish = () => {
+        dlg.removeEventListener('animationend', onEnd);
+        if (!closing) return;
+        closing = false;
+        dlg.classList.remove('is-closing');
+        dlg.close();
+      };
+      dlg.addEventListener('animationend', onEnd);
+      setTimeout(finish, 320);
+    };
+    dlg.addEventListener('close', () => {
+      closing = false;
+      dlg.classList.remove('is-closing');
+      dlg.style.transform = '';
+      dlg.style.transition = '';
+      unlock();
+    });
+    dlg.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
+    dlg.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); close(); } });
+    dlg.querySelector('[data-close]')?.addEventListener('click', close);
+    // Clic en el fondo
+    dlg.addEventListener('click', (e) => {
+      if (e.target !== dlg) return;
+      const r = dlg.getBoundingClientRect();
+      const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      if (!inside) close();
+    });
+
+    // ---------- Arrastrar para cerrar (hoja inferior en móvil) ----------
+    const grip = dlg.querySelector<HTMLElement>('[data-grip]');
+    const sheetMq = matchMedia('(max-width: 640px)');
+    let startY = 0, dy = 0, dragging = false;
+    grip?.addEventListener('pointerdown', (e) => {
+      if (!sheetMq.matches || e.button !== 0 || (e.target as Element).closest('button, a, input')) return;
+      dragging = true; startY = e.clientY; dy = 0;
+      dlg.style.transition = 'none';
+      grip.setPointerCapture(e.pointerId);
+    });
+    grip?.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      dy = Math.max(0, e.clientY - startY);
+      dlg.style.transform = `translateY(${dy}px)`;
+    });
+    const endDrag = () => {
+      if (!dragging) return;
+      dragging = false;
+      dlg.style.transition = 'transform 240ms cubic-bezier(0.16, 1, 0.3, 1)';
+      if (dy > 90) {
+        dlg.style.transform = 'translateY(100%)';
+        setTimeout(() => dlg.close(), 220);
+      } else {
+        dlg.style.transform = '';
+      }
+    };
+    grip?.addEventListener('pointerup', endDrag);
+    grip?.addEventListener('pointercancel', endDrag);
+
+    // ---------- Disparadores ----------
+    document.addEventListener('click', (e) => {
+      const t = (e.target as Element | null)?.closest?.<HTMLElement>('[data-open-contact]');
+      if (!t) return;
+      e.preventDefault();
+      open(t.dataset.openContact || undefined);
+    });
+    addEventListener('app:contact', (e) => open((e as CustomEvent<{ motivo?: string } | null>).detail?.motivo));
+
+    sync();
+  }
+</script>

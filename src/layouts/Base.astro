@@ -6,6 +6,9 @@ import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFab from '../components/WhatsAppFab.astro';
+import ContactModal from '../components/ContactModal.astro';
+import CommandPalette from '../components/CommandPalette.astro';
+import Toaster from '../components/Toaster.astro';
 import { profile, url } from '../lib/site';
 
 interface Props {
@@ -58,6 +61,21 @@ const ogImage = new URL(image, Astro.site);
         if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
       } catch (e) {}
     </script>
+    <style is:global>
+      /* Grano sutil sobre toda la página */
+      body::after {
+        content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 100; opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 160px 160px;
+      }
+      :root[data-theme='dark'] body::after { opacity: 0.05; }
+      @media (prefers-color-scheme: dark) { :root:not([data-theme='light']) body::after { opacity: 0.05; } }
+      @media print { body::after { display: none; } }
+
+      /* Transiciones entre páginas */
+      ::view-transition-group(*) { animation-duration: 380ms; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+      ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 180ms; }
+    </style>
   </head>
   <body>
     <a class="skip-link" href="#main">Saltar al contenido</a>
@@ -68,6 +86,9 @@ const ogImage = new URL(image, Astro.site);
     </main>
     <Footer />
     <WhatsAppFab />
+    <ContactModal />
+    <CommandPalette />
+    <Toaster />
     <script>
       // Aparición al hacer scroll; los hijos de [data-stagger] entran escalonados.
       document.querySelectorAll<HTMLElement>('[data-stagger]').forEach((g) => {
