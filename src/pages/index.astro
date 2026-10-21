@@ -9,13 +9,8 @@ const featured = projects.filter((p) => p.featured);
 const countOf = (key: string) => projects.filter((p) => categoriesOf(p).includes(key as never)).length;
 const categories = CATEGORIES.filter((c) => countOf(c.key) > 0);
 
-const byYear = new Map<string, typeof projects>();
-[...projects]
-  .sort((a, b) => b.period.start.localeCompare(a.period.start))
-  .forEach((p) => {
-    const y = p.period.start.slice(0, 4);
-    byYear.set(y, [...(byYear.get(y) ?? []), p]);
-  });
+const bySlug = new Map(projects.map((p) => [p.slug, p]));
+const linkFor = (slug?: string) => (slug && bySlug.has(slug) ? projectUrl(bySlug.get(slug)!) : null);
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -24,10 +19,13 @@ const jsonLd = {
   alternateName: profile.shortName,
   jobTitle: profile.role,
   email: `mailto:${profile.email}`,
-  address: { '@type': 'PostalAddress', addressCountry: 'PE' },
+  image: profile.photo ? new URL(url(profile.photo.src), Astro.site).href : undefined,
+  address: { '@type': 'PostalAddress', addressLocality: 'Puno', addressCountry: 'PE' },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: profile.education.school },
   url: new URL(url(), Astro.site).href,
   sameAs: [profile.links.github, profile.links.linkedin],
   knowsAbout: profile.skills.flatMap((s) => s.items).slice(0, 20),
+  knowsLanguage: profile.languages.map((l) => l.name),
 };
 ---
 <Base description={`${profile.shortName}: ${profile.tagline}`} jsonLd={jsonLd}>
@@ -49,7 +47,7 @@ const jsonLd = {
       <div><dt>Proyectos</dt><dd>{projects.length}</dd></div>
       <div><dt>En equipo</dt><dd>{projects.filter((p) => (p.teamSize ?? 1) > 1).length}</dd></div>
       <div><dt>Con IA</dt><dd>{projects.filter((p) => p.ai).length}</dd></div>
-      <div><dt>Desde</dt><dd>{[...projects].sort((a, b) => a.period.start.localeCompare(b.period.start))[0]?.period.start.slice(0, 4)}</dd></div>
+      <div><dt>Experiencia desde</dt><dd>2024</dd></div>
     </dl>
   </section>
 
@@ -124,6 +122,17 @@ const jsonLd = {
       <header class="about-head">
         <p class="eyebrow">Sobre mí</p>
         <h2 id="sobre-title" class="h2 display">Software que se usa.</h2>
+        {profile.photo && (
+          <img
+            class="about-photo"
+            src={url(profile.photo.src)}
+            alt={profile.photo.alt}
+            width={profile.photo.width}
+            height={profile.photo.height}
+            loading="lazy"
+            decoding="async"
+          />
+        )}
       </header>
       <div class="about-body reveal">
         {profile.bio.map((b) => <p>{b}</p>)}
@@ -158,24 +167,57 @@ const jsonLd = {
     <div class="container">
       <header class="section-head">
         <p class="eyebrow">Trayectoria</p>
-        <h2 id="tray-title" class="h2 display">Línea de tiempo</h2>
-        <p class="lead">Proyectos por año, según el historial de commits.</p>
+        <h2 id="tray-title" class="h2 display">Experiencia y formación</h2>
       </header>
-      <ol class="timeline">
-        {[...byYear].map(([year, list]) => (
-          <li class="tl-year reveal">
-            <h3 class="tl-label display">{year}</h3>
-            <ul class="tl-items">
-              {list.map((p) => (
-                <li>
-                  <a href={projectUrl(p)}>{p.title}</a>
-                  <span class="muted"> · {p.context.split(':')[0].split(/[.,(]/)[0].trim()}</span>
+      <div class="tray">
+        <div>
+          <h3 class="tray-h">Experiencia</h3>
+          <ol class="timeline">
+            {profile.experience.map((e) => {
+              const href = linkFor(e.project);
+              return (
+                <li class="tl-item reveal">
+                  <p class="tl-period muted">{e.period} · {e.place}</p>
+                  <h4 class="tl-role">{e.role}</h4>
+                  <p class="tl-org">{href ? <a href={href}>{e.org}</a> : e.org}</p>
+                  <p class="tl-sum muted">{e.summary}</p>
                 </li>
-              ))}
+              );
+            })}
+          </ol>
+        </div>
+        <div class="tray-side">
+          <div class="tray-block reveal">
+            <h3 class="tray-h">Formación</h3>
+            <p class="tl-period muted">{profile.education.period} · {profile.education.place}</p>
+            <h4 class="tl-role">{profile.education.school}</h4>
+            <p class="tl-org">{profile.education.degree}</p>
+            <ul class="dash-list muted">{profile.education.highlights.map((h) => <li>{h}</li>)}</ul>
+          </div>
+          <div class="tray-block reveal">
+            <h3 class="tray-h">Reconocimientos</h3>
+            <ul class="awards">
+              {profile.achievements.map((a) => {
+                const href = linkFor(a.project);
+                return (
+                  <li>
+                    <strong>{href ? <a href={href}>{a.title}</a> : a.title}</strong>
+                    <span class="muted">{a.detail}</span>
+                  </li>
+                );
+              })}
             </ul>
-          </li>
-        ))}
-      </ol>
+          </div>
+          <div class="tray-block reveal">
+            <h3 class="tray-h">Formación complementaria</h3>
+            <ul class="dash-list muted">{profile.training.map((t) => <li>{t}</li>)}</ul>
+          </div>
+          <div class="tray-block reveal">
+            <h3 class="tray-h">Idiomas</h3>
+            <ul class="badges">{profile.languages.map((l) => <li class="badge">{l.name} · {l.level}</li>)}</ul>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -184,7 +226,7 @@ const jsonLd = {
     <div class="container">
       <p class="eyebrow">Contacto</p>
       <h2 id="contacto-title" class="contact-title display">¿Conversamos?</h2>
-      <p class="lead">Escríbeme por correo o LinkedIn. Respondo a propuestas de proyectos, prácticas y colaboraciones.</p>
+      <p class="lead">Escríbeme por correo o LinkedIn. Respondo a propuestas de trabajo, proyectos y colaboraciones.</p>
       <div class="contact-row">
         <a class="contact-mail" href={`mailto:${profile.email}`}>{profile.email}</a>
         <button type="button" class="btn btn-secondary" data-copy={profile.email}>
@@ -263,16 +305,36 @@ const jsonLd = {
   .skill-group { padding: var(--s-5); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); display: grid; gap: var(--s-4); align-content: start; }
   .skill-group h3 { font-size: var(--step-0); }
 
+  .about-photo {
+    width: 100%; max-width: 260px; aspect-ratio: 4 / 5; object-fit: cover; margin-top: var(--s-5);
+    border-radius: var(--radius); border: 1px solid var(--line); filter: grayscale(0.15);
+  }
+  .tray { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s-8); }
+  .tray-side { display: grid; gap: var(--s-6); align-content: start; }
+  .tray-block { display: grid; gap: var(--s-2); padding-bottom: var(--s-6); border-bottom: 1px solid var(--line); }
+  .tray-block:last-child { border-bottom: 0; }
+  .tray-h { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 500; margin-bottom: var(--s-3); }
   .timeline { list-style: none; display: grid; gap: var(--s-6); border-left: 1px solid var(--line); padding-left: var(--s-6); }
-  .tl-year { position: relative; display: grid; grid-template-columns: 120px 1fr; gap: var(--s-5); }
-  .tl-year::before {
-    content: ''; position: absolute; left: calc(-1 * var(--s-6) - 5px); top: 0.7em;
+  .tl-item { position: relative; display: grid; gap: 2px; }
+  .tl-item::before {
+    content: ''; position: absolute; left: calc(-1 * var(--s-6) - 5px); top: 0.45em;
     width: 9px; height: 9px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent);
   }
-  .tl-label { font-size: var(--step-2); line-height: 1.2; }
-  .tl-items { list-style: none; display: grid; gap: var(--s-2); padding-top: 0.4em; }
-  .tl-items a { font-weight: 500; text-decoration: none; }
-  .tl-items a:hover { text-decoration: underline; }
+  .tl-period { font-size: var(--step--1); }
+  .tl-role { font-size: var(--step-1); font-weight: 600; }
+  .tl-org { font-weight: 500; }
+  .tl-org a { text-decoration: none; color: var(--accent); }
+  .tl-org a:hover { text-decoration: underline; }
+  .tl-sum { font-size: var(--step--1); margin-top: var(--s-2); max-width: 60ch; }
+  .dash-list { list-style: none; display: grid; gap: var(--s-2); font-size: var(--step--1); margin-top: var(--s-2); }
+  .dash-list li { padding-left: var(--s-5); position: relative; }
+  .dash-list li::before { content: ''; position: absolute; left: 0; top: 0.8em; width: 10px; height: 1px; background: var(--accent); }
+  .awards { list-style: none; display: grid; gap: var(--s-4); }
+  .awards li { display: grid; gap: 2px; font-size: var(--step--1); }
+  .awards strong { font-size: var(--step-0); font-weight: 600; }
+  .awards a { text-decoration: none; }
+  .awards a:hover { color: var(--accent); }
+  @media (max-width: 900px) { .tray { grid-template-columns: minmax(0, 1fr); gap: var(--s-7); } }
 
   .contact { text-align: left; }
   .contact-title { font-size: var(--step-4); line-height: 1; margin: var(--s-4) 0; }
@@ -287,7 +349,6 @@ const jsonLd = {
   }
   @media (max-width: 560px) {
     .hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .tl-year { grid-template-columns: 1fr; gap: var(--s-2); }
     .search { max-width: none; }
   }
 </style>

@@ -113,7 +113,7 @@
     "slug": "friding",
     "title": "Friding",
     "shortDescription": "Red social peruana para crear y unirse a salidas grupales, con chat, foros, Momentos y notificaciones push.",
-    "longDescription": "Friding es una red social que conecta a personas que quieren organizar planes en su ciudad con quienes quieren sumarse. El organizador publica una salida y acepta o rechaza solicitudes, y los aceptados coordinan en un chat propio; además hay foros con votos, una galería de fotos y videos (Momentos) y Previas, grupos de hasta 4 personas formados por afinidad que tienen una semana para convertirse en plan. En un equipo de 3, me sumé en marzo de 2026 y lideré la reestructuración del backend en PHP, la PWA con notificaciones push, el cliente móvil en Flutter y el despliegue a producción. Está en línea en friding.com; la app en Flutter sigue en fase de prototipo.",
+    "longDescription": "Friding es una red social que conecta a personas que quieren organizar planes en su ciudad con quienes quieren sumarse. El organizador publica una salida y acepta o rechaza solicitudes, y los aceptados coordinan en un chat propio; además hay foros con votos, una galería de fotos y videos (Momentos) y Previas, grupos de hasta 4 personas formados por afinidad que tienen una semana para convertirse en plan. En un equipo de 3, me sumé en febrero de 2026 y lideré la reestructuración del backend en PHP, la PWA con notificaciones push, el cliente móvil en Flutter y el despliegue a producción. Está en línea en friding.com; la app en Flutter sigue en fase de prototipo.",
     "category": "Web",
     "tags": [
       "red social",
@@ -139,7 +139,7 @@
       "Hosting compartido (hPanel)",
       "Nixpacks / FrankenPHP (pruebas de despliegue)"
     ],
-    "role": "Desde marzo de 2026 fui el desarrollador full-stack con más commits del equipo. Reestructuré el backend a MVC (Controller, Service, DAO y Validator) con un módulo de seguridad propio (CSRF, rate limiting, sanitización, tokens y protección contra path traversal), e implementé la PWA con Web Push, los recordatorios por cron, la autenticación JSON para clientes nativos y el cliente móvil en Flutter. También desarrollé chat, foros, notificaciones, Momentos y Previas, y me encargué del SEO, los scripts SQL de migración, la auditoría de la base de producción y el flujo de despliegue seguro.",
+    "role": "Desde febrero de 2026 fui el desarrollador full-stack con más commits del equipo. Reestructuré el backend a MVC (Controller, Service, DAO y Validator) con un módulo de seguridad propio (CSRF, rate limiting, sanitización, tokens y protección contra path traversal), e implementé la PWA con Web Push, los recordatorios por cron, la autenticación JSON para clientes nativos y el cliente móvil en Flutter. También desarrollé chat, foros, notificaciones, Momentos y Previas, y me encargué del SEO, los scripts SQL de migración, la auditoría de la base de producción y el flujo de despliegue seguro.",
     "teamSize": 3,
     "period": {
       "start": "2025-10",
@@ -149,7 +149,7 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": "https://friding.com",
-    "context": "Proyecto en equipo: red social en producción, trabajada por sprints.",
+    "context": "Profesional: Full-Stack Developer y Technology Lead en Friding (desde feb 2026).",
     "problem": "Quienes quieren conocer gente y hacer planes en su ciudad no tienen un canal ordenado y seguro para proponer actividades, filtrar quién se suma y coordinarse sin exponer sus datos.",
     "solution": "Una plataforma web instalable (PWA) en la que cada salida tiene su sistema de solicitudes, su chat y su historial. La verificación por correo, las reglas de convivencia, la aceptación de términos y una capa de seguridad propia dan confianza, y las notificaciones internas, por correo y push mantienen activa a la comunidad.",
     "howItWorks": [
@@ -298,7 +298,7 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/Sep",
     "liveUrl": "https://sep-drab.vercel.app",
-    "context": "Comunitario: plataforma para Semillero de Emprendedores Perú, organización juvenil.",
+    "context": "Profesional: soy CTO de Semillero de Emprendedores Perú (SEP).",
     "problem": "La organización gestionaba la formación, las inscripciones, los pagos y los certificados de estudiantes, docentes, mentores e instituciones de varias regiones sin una plataforma centralizada ni verificable.",
     "solution": "Una plataforma con sitio público, autenticación y paneles por rol (estudiante, docente, institución, mentor o voluntario, speaker y admin). Los pagos se hacen por QR de Yape/Plin y un administrador los revisa; al aprobarse, se emite un certificado PDF que cualquiera puede verificar con su código.",
     "howItWorks": [
@@ -993,7 +993,7 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": "https://rowan-pagina.vercel.app",
-    "context": "Profesional: startup peruana Rowan (Tecnología Web y Producto Digital).",
+    "context": "Profesional: Technology Lead / Full-Stack Developer en ROWAN (desde mar 2026).",
     "problem": "Las startups en etapa temprana, sobre todo fuera de Lima, no saben en qué nivel de madurez están ni qué tipo de acompañamiento les conviene. Rowan necesitaba mostrar su propuesta y captar startups.",
     "solution": "Un sitio institucional con planes escalonados y un diagnóstico con IA. Con el nombre y la idea de la startup, el sistema genera preguntas a medida, evalúa las respuestas, recomienda un plan y guarda el resultado para darle seguimiento desde los portales.",
     "howItWorks": [
@@ -1145,7 +1145,7 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": null,
-    "context": "Profesional: startup de posventa automotriz (app móvil en equipo de 5).",
+    "context": "Profesional: Mobile Developer Intern en Allprocar (desde feb 2026).",
     "problem": "El dueño de un vehículo tiene la oferta de posventa (talleres, servicios, repuestos, asistencia) fragmentada y le cuesta diagnosticar qué necesita su auto o a quién acudir.",
     "solution": "Una app móvil que centraliza el perfil del conductor y sus vehículos, el catálogo de talleres, servicios y repuestos, el flujo de solicitud de servicio y un asistente conversacional que orienta sobre fallas comunes y sugiere talleres.",
     "howItWorks": [
@@ -1280,7 +1280,7 @@
   {
     "id": "dermapp",
     "slug": "dermapp",
-    "title": "DermApp: detección de enfermedades de la piel",
+    "title": "DermaApp: detección de enfermedades de la piel",
     "shortDescription": "Clasifica imágenes de lesiones de la piel con transfer learning y ejecuta el modelo en el navegador.",
     "longDescription": "DermApp es un proyecto de aprendizaje profundo hecho en un equipo de 4: un modelo de visión basado en MobileNetV2 clasifica imágenes de lesiones cutáneas (melanoma, eccema, psoriasis y otras) y se exporta a TensorFlow.js para que una app React lo ejecute en el navegador, sin enviar la foto a un servidor. Yo escribí el pipeline de entrenamiento y, por mi cuenta, un backend FastAPI que añade aprendizaje continuo: cuando un especialista valida una imagen, el modelo se reentrena solo en GitHub Actions y se vuelve a publicar. Es una herramienta de apoyo educativo, no de diagnóstico.",
     "category": "IA",
@@ -1290,7 +1290,8 @@
       "Transfer Learning",
       "Salud",
       "TensorFlow.js",
-      "Universidad"
+      "Universidad",
+      "Postulación"
     ],
     "stack": [
       "Python",
@@ -1313,7 +1314,7 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/dieguito55/aprendizaje_profundo",
     "liveUrl": null,
-    "context": "Académico: curso de aprendizaje profundo en una universidad de Puno (equipo de 4).",
+    "context": "Académico: curso de aprendizaje profundo, UNA Puno. Primer lugar en el Concurso de Proyectos EPIS 2025-II.",
     "problem": "Identificar a tiempo enfermedades de la piel requiere un especialista, y muchas personas no acceden a uno a tiempo. Una herramienta de orientación podría ayudar a reconocer cuándo una lesión merece consulta.",
     "solution": "Un modelo de visión entrenado con transfer learning que clasifica imágenes de lesiones en 10 categorías y se ejecuta en el propio navegador, sin enviar la imagen a un servidor. Es una herramienta de apoyo educativo, no de diagnóstico.",
     "howItWorks": [
@@ -1324,6 +1325,7 @@
       "El modelo se convierte a TensorFlow.js (model.json y shards) y la app web lo carga para inferir sobre una imagen subida o capturada con la webcam."
     ],
     "results": [
+      "Primer lugar en el Concurso de Proyectos Estudiantiles EPIS 2025-II de la Universidad Nacional del Altiplano.",
       "Modelo exportado a TensorFlow.js e integrado en la app web: subir una imagen o usar la webcam, ver probabilidades por clase, historial y fichas de cada enfermedad.",
       "Ciclo de reentrenamiento automático funcionando: el historial del backend registra modelos reentrenados por el pipeline."
     ],
@@ -1470,7 +1472,7 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/INSPECCIONLIGERA",
     "liveUrl": null,
-    "context": "Profesional: sistema para la empresa ECOING (inspección de líneas de transmisión).",
+    "context": "Profesional: Asistente de Desarrollo de Software en ECOING Contratistas Generales (ago 2024 – jul 2025).",
     "problem": "Las inspecciones de postes en zonas con poca cobertura se registraban en papel o planillas, con fotos dispersas, coordenadas inconsistentes y reportes armados a mano.",
     "solution": "Una app de campo que trabaja sin conexión, guarda formularios y fotos localmente, valida la evidencia requerida y sincroniza con un servidor central que consolida el padrón y genera reportes por línea.",
     "howItWorks": [

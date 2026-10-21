@@ -6,3 +6,5 @@ dist/
 .env.*
 PROMPT.md
 scripts/_raw/
+jhon_img.jpg
+*.pdf

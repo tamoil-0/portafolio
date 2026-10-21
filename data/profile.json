@@ -1,33 +1,102 @@
 {
   "name": "Jhon Marco Aracayo Mamani",
   "shortName": "Jhon Aracayo",
-  "role": "Estudiante de Ingeniería de Sistemas · Desarrollador full-stack",
-  "tagline": "Construyo software útil para casos reales: apps móviles que funcionan sin conexión, backends seguros, sitios web y soluciones con inteligencia artificial aplicada.",
-  "location": "Perú",
+  "role": "Technology Lead · Desarrollador full-stack",
+  "tagline": "Ingeniero de Sistemas egresado de la UNA Puno. Desarrollo apps móviles offline-first, plataformas web y backends, y lidero equipos que llevan productos digitales a producción.",
+  "location": "Puno, Perú",
   "email": "jaracayo7@gmail.com",
-  "photo": null,
+  "photo": { "src": "img/jhon.webp", "alt": "Jhon Marco Aracayo Mamani", "width": 260, "height": 325 },
   "availability": null,
   "links": {
     "github": "https://github.com/tamoil-0",
     "linkedin": "https://www.linkedin.com/in/jhonmarcoaracayomamani"
   },
   "bio": [
-    "Soy estudiante de Ingeniería de Sistemas en Perú. Me gusta llevar una idea hasta algo que la gente pueda usar: una app móvil para trabajo de campo, un backend con autenticación segura o un sitio web para una comunidad.",
-    "Trabajo con Flutter, Next.js, PHP/Laravel y Python, y uso inteligencia artificial cuando realmente aporta: clasificación de imágenes, sistemas de recomendación y análisis de datos. Muchos de mis proyectos los hice en equipo, en hackatones, programas comunitarios y startups."
+    "Soy egresado de Ingeniería de Sistemas de la Universidad Nacional del Altiplano (Puno). Tengo experiencia en desarrollo de software, liderazgo tecnológico y digitalización de procesos operativos: apps móviles, plataformas web, servicios backend e infraestructura.",
+    "Me interesa especialmente la gestión de información, la integración de sistemas y las operaciones en lugares con conectividad limitada. Trabajo con Flutter, React, Next.js, PHP, SQL, APIs REST, Linux y Docker, y uso inteligencia artificial cuando aporta a un problema concreto."
   ],
   "interests": [
-    "Captura y sincronización de datos georreferenciados",
+    "Digitalización de operaciones de campo y captura de datos sin conexión",
     "Integración de sistemas y APIs",
-    "Inteligencia artificial aplicada a agricultura, salud e infraestructura",
-    "Apps móviles offline-first"
+    "Inteligencia artificial aplicada a salud, agricultura e industria",
+    "Arquitectura y liderazgo técnico de productos digitales"
   ],
-  "lookingFor": "Estoy abierto a colaborar en proyectos de software y de IA aplicada, y a seguir aprendiendo en equipos que construyan tecnología útil.",
+  "lookingFor": "Busco aportar al sector minero e industrial con soluciones tecnológicas: optimización de procesos, automatización y mejora continua de los sistemas de información.",
+  "experience": [
+    {
+      "role": "Chief Technology Officer (CTO)",
+      "org": "Semillero de Emprendedores Perú (SEP)",
+      "period": "Actualidad",
+      "place": "Perú",
+      "summary": "Dirección tecnológica y evolución de la plataforma digital de la organización: planificación técnica y desarrollo de soluciones.",
+      "project": "sep-plataforma"
+    },
+    {
+      "role": "Technology Lead / Full-Stack Developer",
+      "org": "ROWAN",
+      "period": "mar 2026 – actualidad",
+      "place": "Remoto",
+      "summary": "Desarrollo de productos digitales combinando implementación full-stack y coordinación técnica; decisiones de arquitectura e integración de servicios.",
+      "project": "rowan"
+    },
+    {
+      "role": "Full-Stack Developer & Technology Lead",
+      "org": "Friding",
+      "period": "feb 2026 – actualidad",
+      "place": "Remoto",
+      "summary": "Desarrollo y mejora de la plataforma web, organización técnica del proyecto, integración de APIs y bases de datos, y mantenibilidad del código.",
+      "project": "friding"
+    },
+    {
+      "role": "Mobile Developer Intern",
+      "org": "Allprocar",
+      "period": "feb 2026 – actualidad",
+      "place": "Remoto",
+      "summary": "Desarrollo y mantenimiento de funcionalidades móviles en Flutter; colaboración con el equipo mediante Git, GitHub e integración de servicios.",
+      "project": "allprocar"
+    },
+    {
+      "role": "Asistente de Desarrollo de Software",
+      "org": "ECOING Contratistas Generales S.R.L.",
+      "period": "ago 2024 – jul 2025",
+      "place": "Perú",
+      "summary": "Apps móviles offline-first con Flutter y SQLite para inspecciones de campo, servicios backend con PHP, MariaDB y APIs REST, e infraestructura con Linux, Docker, redes y NAS.",
+      "project": "ecoing-inspeccion-ligera"
+    }
+  ],
+  "education": {
+    "degree": "Ingeniería de Sistemas, egresado",
+    "school": "Universidad Nacional del Altiplano",
+    "place": "Puno, Perú",
+    "period": "oct 2021 – ago 2026",
+    "highlights": [
+      "Promedio ponderado acumulado: 16.55/20.",
+      "Tercio Superior y Décimo Superior en distintos periodos.",
+      "Formación en ingeniería de software, bases de datos, inteligencia artificial, ciencia de datos, ciberseguridad y sistemas de información."
+    ]
+  },
+  "achievements": [
+    { "title": "Primer lugar, Concurso de Proyectos Estudiantiles EPIS 2025-II", "detail": "DermaApp: análisis preliminar de imágenes dermatológicas con redes neuronales convolucionales. UNA Puno, nov 2025.", "project": "dermapp" },
+    { "title": "NASA International Space Apps Challenge 2025", "detail": "AgroPredict AI: análisis de información agrícola con imágenes satelitales, IoT y machine learning.", "project": "agropredict-ai" }
+  ],
+  "training": [
+    "Ponente: Taller de Programación en Python y C++ — CIP CD-Puno / EPIS UNAP, 2024",
+    "VIII Congreso Internacional de Ingeniería de Sistemas — Universidad de Lima, 2025",
+    "Taller de Ciencia de Datos — CIP CD-Puno / EPIS UNAP, 2025",
+    "Taller de Desarrollo de Aplicaciones Móviles en Android — CIP CD-Puno, 2023"
+  ],
+  "languages": [
+    { "name": "Español", "level": "Nativo" },
+    { "name": "Inglés", "level": "Básico–intermedio" },
+    { "name": "Aymara", "level": "Básico–intermedio" },
+    { "name": "Portugués", "level": "Básico" }
+  ],
   "skills": [
-    { "group": "Lenguajes", "items": ["Python", "TypeScript", "JavaScript", "PHP", "Dart", "SQL", "C / C++", "Java"] },
-    { "group": "Frontend y móvil", "items": ["React", "Next.js", "Flutter", "Tailwind CSS", "HTML y CSS", "Diseño responsive"] },
-    { "group": "Backend y APIs", "items": ["Node.js", "Express", "Laravel", "APIs REST", "Autenticación JWT"] },
-    { "group": "IA / ML", "items": ["TensorFlow", "scikit-learn", "Visión por computadora", "Sistemas de recomendación", "NLP"] },
-    { "group": "Datos", "items": ["PostgreSQL", "MySQL / MariaDB", "SQLite", "Pandas", "NumPy", "GDAL"] },
-    { "group": "Herramientas", "items": ["Git y GitHub", "Docker", "Linux", "Vercel", "Postman", "Scrum"] }
+    { "group": "Lenguajes", "items": ["Dart", "TypeScript", "JavaScript", "Python", "PHP", "SQL", "HTML y CSS"] },
+    { "group": "Frontend y móvil", "items": ["Flutter", "React", "Next.js", "Tailwind CSS", "Apps offline-first"] },
+    { "group": "Backend e integración", "items": ["APIs REST", "Laravel", "Node.js", "FastAPI", "Autenticación", "Arquitectura cliente-servidor"] },
+    { "group": "IA y datos", "items": ["TensorFlow", "Deep learning", "Visión por computadora", "Machine learning", "Pandas", "NumPy"] },
+    { "group": "Bases de datos", "items": ["MySQL", "MariaDB", "PostgreSQL", "SQLite"] },
+    { "group": "Infraestructura y gestión", "items": ["Linux", "Docker y Docker Compose", "Git y GitHub", "Redes y NAS", "Metodologías ágiles", "Documentación técnica"] }
   ]
 }
