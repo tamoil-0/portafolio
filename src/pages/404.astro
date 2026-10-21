@@ -1,15 +1,101 @@
 ---
 import Base from '../layouts/Base.astro';
-import { url } from '../lib/site';
+import Icon from '../components/Icon.astro';
+import { projects, url } from '../lib/site';
 ---
 <Base title="Página no encontrada" description="La página que buscas no existe.">
-  <section class="container nf">
-    <p class="eyebrow">Error 404</p>
-    <h1 class="display">Esta página no existe.</h1>
-    <a class="btn btn-primary" href={url()}>Volver al inicio</a>
+  <section class="nf" data-nf>
+    <div class="nf-bg" aria-hidden="true">
+      <span class="blob b1"></span><span class="blob b2"></span><span class="nf-grid"></span>
+    </div>
+
+    <div class="container nf-inner">
+      <p class="eyebrow in" style="--i:0">Error 404</p>
+
+      <div class="digits" aria-hidden="true">
+        <span class="d" style="--k:0">4</span>
+        <span class="d ring-wrap" style="--k:1"><span class="ring"></span><span class="ring-core"></span></span>
+        <span class="d" style="--k:2">4</span>
+      </div>
+
+      <h1 class="nf-title display in" style="--i:3">Te perdiste en el altiplano.</h1>
+      <p class="lead in" style="--i:4">
+        La página que buscas no existe o cambió de dirección. Pero hay {projects.length} proyectos esperándote.
+      </p>
+      <div class="nf-actions in" style="--i:5">
+        <a class="btn btn-primary" href={url()}><Icon name="arrowLeft" size={16} /> Volver al inicio</a>
+        <a class="btn btn-secondary" href={url('#todos')}>Ver proyectos <Icon name="arrowRight" size={16} /></a>
+      </div>
+    </div>
   </section>
 </Base>
+
 <style>
-  .nf { min-height: 60vh; display: grid; align-content: center; justify-items: start; gap: var(--s-5); padding-block: var(--s-9); }
-  .nf h1 { font-size: var(--step-4); }
+  .nf { position: relative; isolation: isolate; overflow: hidden; min-height: calc(100svh - var(--nav-h)); display: grid; align-items: center; padding-block: var(--s-8); }
+  .nf-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; }
+  .b1 { width: min(560px, 90vw); aspect-ratio: 1; background: var(--accent); top: -10%; left: -8%; animation: drift-a 20s ease-in-out infinite alternate; }
+  .b2 { width: min(480px, 80vw); aspect-ratio: 1; background: var(--accent-2); bottom: -15%; right: -10%; opacity: 0.24; animation: drift-b 24s ease-in-out infinite alternate; }
+  @keyframes drift-a { to { transform: translate(20vw, 10vh) scale(1.15); } }
+  @keyframes drift-b { to { transform: translate(-18vw, -12vh) scale(0.9); } }
+  .nf-grid {
+    position: absolute; inset: 0; opacity: 0.55;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 45%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse 60% 60% at 50% 45%, #000 20%, transparent 75%);
+  }
+
+  .nf-inner { display: grid; justify-items: center; text-align: center; gap: var(--s-5); }
+  .in { animation: rise 900ms var(--ease) both; animation-delay: calc(var(--i, 0) * 90ms + 40ms); }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); filter: blur(6px); } }
+
+  .digits {
+    --mx: 0; --my: 0;
+    display: flex; align-items: center; justify-content: center; gap: clamp(4px, 1.5vw, 18px);
+    font-family: var(--font-display); font-weight: 800; font-size: clamp(7rem, 26vw, 15rem); line-height: 0.9; letter-spacing: -0.06em;
+  }
+  .d {
+    display: inline-block; background: var(--grad); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: pop 900ms var(--ease-spring) both, bob 4.5s ease-in-out infinite alternate, grad-pan 8s ease-in-out infinite alternate;
+    animation-delay: calc(var(--k) * 110ms + 120ms), calc(var(--k) * 400ms + 1s), 0s;
+    translate: calc(var(--mx) * (var(--k) - 1) * 10px) calc(var(--my) * 8px);
+    transition: translate 600ms var(--ease);
+  }
+  @keyframes pop { from { opacity: 0; transform: translateY(40%) scale(0.6) rotate(-8deg); } }
+  @keyframes bob { from { transform: translateY(-6px) rotate(-2deg); } to { transform: translateY(8px) rotate(2deg); } }
+  @keyframes grad-pan { to { background-position: 100% 0; } }
+
+  /* El "0" es un anillo que gira */
+  .ring-wrap { position: relative; width: 0.72em; height: 0.92em; display: grid; place-items: center; background: none; }
+  .ring {
+    position: absolute; inset: 0.06em 0; border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--accent), #b23cdc, var(--accent-2), var(--accent-3), var(--accent));
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 0.15em), #000 calc(100% - 0.15em + 1px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 0.15em), #000 calc(100% - 0.15em + 1px));
+    animation: spin 6s linear infinite;
+  }
+  .ring-core { width: 0.14em; height: 0.14em; border-radius: 50%; background: var(--accent-2); box-shadow: 0 0 30px var(--accent-2); animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes spin { to { transform: rotate(1turn); } }
+  @keyframes pulse { 50% { transform: scale(1.5); opacity: 0.6; } }
+
+  .nf-title { font-size: var(--step-3); max-width: 18ch; }
+  .lead { max-width: 52ch; }
+  .nf-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-3); margin-top: var(--s-2); }
+  @media (max-width: 480px) {
+    .nf-actions .btn { flex: 1 1 100%; }
+  }
 </style>
+
+<script>
+  // Los dígitos siguen ligeramente al puntero
+  const nf = document.querySelector<HTMLElement>('[data-nf]');
+  const digits = nf?.querySelector<HTMLElement>('.digits');
+  if (nf && digits && matchMedia('(pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
+    nf.addEventListener('pointermove', (e) => {
+      const r = nf.getBoundingClientRect();
+      digits.style.setProperty('--mx', (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+      digits.style.setProperty('--my', (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+    });
+  }
+</script>

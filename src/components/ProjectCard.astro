@@ -1,41 +1,40 @@
 ---
 import Icon from './Icon.astro';
 import ProjectMedia from './ProjectMedia.astro';
-import { categoriesOf, fmtPeriod, projectUrl, techsOf, type Project } from '../lib/site';
+import { ACCESS_LABEL, catClass, categoriesOf, fmtPeriod, projectUrl, techsOf, type Project } from '../lib/site';
 interface Props { project: Project }
 const { project: p } = Astro.props;
 const techs = techsOf(p);
-const searchText = [p.title, p.shortDescription, ...p.stack, ...p.tags, ...techs].join(' ').toLowerCase();
+const searchText = [p.title, p.shortDescription, p.context, ...p.stack, ...p.tags, ...techs].join(' ').toLowerCase();
 ---
 <article
-  class="card reveal"
+  class="card spot reveal"
   data-card
   data-categories={categoriesOf(p).join('|')}
   data-search={searchText}
   data-techs={techs.join('|')}
   data-live={p.liveUrl ? '1' : '0'}
-  data-private={p.isPrivate ? '1' : '0'}
   data-team={(p.teamSize ?? 1) > 1 ? '1' : '0'}
   data-start={p.period.start}
   data-order={p.order}
 >
-  <div class="card-media">
+  <div class="card-media" style={`view-transition-name: media-${p.slug}`}>
     <ProjectMedia project={p} />
+    {p.liveUrl ? (
+      <span class="flag"><span class="live-dot" /> En línea</span>
+    ) : (
+      <span class="flag"><Icon name="lock" size={12} /> {p.access ? ACCESS_LABEL[p.access.type] : 'Sin página pública'}</span>
+    )}
   </div>
   <div class="card-body">
     <p class="card-meta">
-      <span class="badge badge-accent">{p.category}</span>
-      <span class="muted">{fmtPeriod(p.period)}</span>
+      <span class:list={['badge', catClass(p.category)]}>{p.category}</span>
+      <span class="mono when">{fmtPeriod(p.period)}</span>
     </p>
     <h3 class="card-title"><a href={projectUrl(p)} class="stretched">{p.title}</a></h3>
-    <p class="card-desc muted">{p.shortDescription}</p>
-    <ul class="badges" aria-label="Tecnologías">
-      {p.stack.slice(0, 4).map((s) => <li class="badge">{s}</li>)}
-      {p.stack.length > 4 && <li class="badge">+{p.stack.length - 4}</li>}
-    </ul>
+    <p class="card-desc">{p.shortDescription}</p>
     <div class="card-foot">
-      {p.isPrivate && <span class="badge"><Icon name="lock" size={12} /> Proyecto privado</span>}
-      {p.teamSize && p.teamSize > 1 ? <span class="badge"><Icon name="users" size={12} /> Equipo</span> : null}
+      <span class="more">Ver proyecto <Icon name="arrowRight" size={16} /></span>
       {p.liveUrl && <a class="mini-link" href={p.liveUrl} target="_blank" rel="noopener">Ver página <Icon name="external" size={14} /></a>}
     </div>
   </div>
@@ -43,26 +42,38 @@ const searchText = [p.title, p.shortDescription, ...p.stack, ...p.tags, ...techs
 
 <style>
   .card {
-    position: relative; display: flex; flex-direction: column;
-    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-    overflow: hidden;
-    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease), opacity 300ms var(--ease);
+    display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow-sm);
+    transition: transform 450ms var(--ease), box-shadow 450ms var(--ease), border-color 300ms var(--ease), opacity 800ms var(--ease), filter 800ms var(--ease);
   }
-  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--text) 18%, var(--line)); }
+  .card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: var(--line-strong); }
   .card:focus-within { border-color: var(--accent); }
-  .card-media { aspect-ratio: 16 / 10; overflow: hidden; background: var(--surface-2); border-bottom: 1px solid var(--line); }
-  .card-media :global(img), .card-media :global(svg) { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 500ms var(--ease); }
-  .card:hover .card-media :global(img), .card:hover .card-media :global(svg) { transform: scale(1.03); }
-  .card-body { display: flex; flex-direction: column; gap: var(--s-3); padding: var(--s-5); flex: 1; }
-  .card-meta { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); font-size: var(--step--1); }
+  .card-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--surface-2); }
+  .card-media::after { content: ''; position: absolute; inset: auto 0 0; height: 45%; background: linear-gradient(to top, rgb(0 0 0 / 0.28), transparent); pointer-events: none; opacity: 0.8; }
+  .card-media > :global(img), .card-media > :global(svg) { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 900ms var(--ease); }
+  .card:hover .card-media > :global(img), .card:hover .card-media > :global(svg) { transform: scale(1.06); }
+  .flag {
+    position: absolute; left: 12px; bottom: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 7px;
+    padding: 6px 11px; border-radius: 999px; font-size: 0.74rem; font-weight: 600; color: #fff;
+    background: rgb(12 10 24 / 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgb(255 255 255 / 0.16);
+  }
+  .card-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: var(--s-3); padding: var(--s-5); flex: 1; }
+  .card-meta { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); }
+  .when { font-size: var(--step--2); color: var(--faint); }
   .card-title { font-size: var(--step-1); }
   .card-title a { text-decoration: none; }
+  .card-title a:hover { color: var(--text); }
   .stretched::after { content: ''; position: absolute; inset: 0; z-index: 1; }
-  .card-desc { font-size: var(--step--1); line-height: 1.6; }
-  .card-foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); margin-top: auto; padding-top: var(--s-2); }
+  .card-desc { font-size: var(--step--1); line-height: 1.6; color: var(--muted); }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); margin-top: auto; padding-top: var(--s-3); border-top: 1px dashed var(--line); }
+  .more { display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: var(--accent); }
+  .more :global(svg) { transition: transform var(--dur) var(--ease); }
+  .card:hover .more :global(svg) { transform: translateX(4px); }
   .mini-link {
     position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 4px;
-    font-size: 0.82rem; font-weight: 600; text-decoration: none; min-height: 32px; padding: 0 var(--s-2);
+    font-size: 0.82rem; font-weight: 600; text-decoration: none; min-height: 36px; padding: 0 var(--s-3);
+    border-radius: 999px; border: 1px solid var(--line);
   }
+  .mini-link:hover { border-color: var(--accent); }
   .card[hidden] { display: none; }
 </style>

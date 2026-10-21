@@ -30,6 +30,7 @@ npm run preview    # sirve dist/ para revisarlo
 | `role`, `teamSize`, `period` (`{"start": "2026-05", "end": "2026-06"}`), `status`, `context` | ficha del proyecto |
 | `isPrivate` | `true` muestra el candado "Proyecto privado" |
 | `liveUrl` | página pública (botón "Ver página") o `null`; `repoUrl` se guarda pero no se muestra |
+| `access` | si no hay `liveUrl`: `{ "type": "institucional" \| "empresa" \| "prototipo", "note": "por qué es privado" }`; si hay `liveUrl`, `null` |
 | `problem`, `solution`, `howItWorks[]`, `results[]` | secciones de la página de detalle |
 | `architecture[]` | líneas tipo `"App -> API -> Base de datos"` (referencia interna; la arquitectura se muestra con láminas) |
 | `ai` | `null` o `{ "models": [], "technique": "", "datasets": [], "metrics": [] }` |
@@ -48,9 +49,12 @@ Los datos personales (bio, contacto, habilidades) están en `data/profile.json`.
 
 Todo está en variables CSS al inicio de `src/styles/global.css`:
 
-- `--accent` es el único color de acento (hay un valor para modo claro y otro para modo oscuro).
+- `--accent` (índigo), `--accent-2` (coral) y `--accent-3` (turquesa) son los acentos; `--grad` es el degradado de marca. Hay valores para modo claro y oscuro.
+- `--c-ia`, `--c-web`, `--c-movil`… son los colores fijos de cada categoría.
 - `--bg`, `--surface`, `--text`, `--muted` y `--line` son los neutros.
-- Las fuentes son Inter (texto) e Instrument Serif (títulos), servidas desde el propio sitio con `@fontsource`.
+- Las fuentes son Bricolage Grotesque (títulos), Inter (texto) y JetBrains Mono (etiquetas), servidas desde el propio sitio con `@fontsource`.
+
+El número de WhatsApp (botón flotante y botones de contacto) está en `whatsapp` dentro de `data/profile.json`.
 
 Si cambias colores, regenera la imagen para redes sociales con `node scripts/brand-assets.mjs`.
 
@@ -66,6 +70,6 @@ Para usar un dominio propio o Vercel, cambia `site` y quita `base` en `astro.con
 data/            projects.json y profile.json (todo el contenido)
 public/          favicon, imagen OG, robots.txt y capturas en public/projects/<slug>/
 scripts/         capturas (Playwright), imagen OG y escaneo de secretos
-src/components/  piezas reutilizables (tarjeta, galería, diagrama, portada SVG…)
+src/components/  piezas reutilizables (tarjeta, galería, menú, botón de WhatsApp, portada SVG…)
 src/pages/       inicio, detalle de proyecto (/proyectos/<slug>/) y 404
 ```

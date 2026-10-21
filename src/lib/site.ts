@@ -29,6 +29,8 @@ export interface Project {
   isPrivate: boolean;
   repoUrl: string | null;
   liveUrl: string | null;
+  /** Por qué no tiene página pública (solo si liveUrl es null). */
+  access: { type: 'institucional' | 'empresa' | 'prototipo'; note: string } | null;
   context: string;
   problem: string;
   solution: string;
@@ -74,6 +76,19 @@ export const techsOf = (p: Pick<Project, 'stack'>) =>
 export const categoriesOf = (p: Pick<Project, 'category' | 'tags'>) =>
   CATEGORIES.map((c) => c.key).filter((k) => k === p.category || p.tags.includes(k));
 
+/** Clase CSS de color por categoría (.cat-ia, .cat-movil…). */
+export const catClass = (c: string) =>
+  'cat cat-' + c.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+export const ACCESS_LABEL: Record<string, string> = {
+  institucional: 'Uso institucional',
+  empresa: 'Uso privado de empresa',
+  prototipo: 'Prototipo privado',
+};
+
+export const whatsappUrl = (text = 'Hola Jhon, vi tu portafolio y me gustaría conversar.') =>
+  `https://wa.me/${profile.whatsapp}?text=${encodeURIComponent(text)}`;
+
 const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 export const fmtMonth = (ym: string | null) => {
   if (!ym) return 'actualidad';
@@ -84,15 +99,3 @@ export const fmtPeriod = (p: Project['period']) =>
   p.start === p.end || !p.end ? fmtMonth(p.start) : `${fmtMonth(p.start)} – ${fmtMonth(p.end)}`;
 
 export const teamLabel = (n: number | null) => (n && n > 1 ? `Equipo de ${n} personas` : 'Individual');
-
-/** Nodos y aristas a partir de líneas "A -> B" para el diagrama de arquitectura. */
-export function parseArchitecture(lines: string[]) {
-  const nodes: string[] = [];
-  const edges: [string, string][] = [];
-  for (const line of lines) {
-    const parts = line.split(/\s*(?:->|→)\s*/).map((s) => s.trim()).filter(Boolean);
-    parts.forEach((n) => { if (!nodes.includes(n)) nodes.push(n); });
-    for (let i = 0; i < parts.length - 1; i++) edges.push([parts[i], parts[i + 1]]);
-  }
-  return { nodes, edges };
-}

@@ -1,63 +1,90 @@
 ---
 import Icon from './Icon.astro';
-import { profile, url } from '../lib/site';
+import { profile, url, whatsappUrl } from '../lib/site';
 const links = [
-  { href: url('#proyectos'), label: 'Proyectos' },
-  { href: url('#trayectoria'), label: 'Trayectoria' },
-  { href: url('#sobre-mi'), label: 'Sobre mí' },
-  { href: url('#contacto'), label: 'Contacto' },
+  { href: url('#proyectos'), id: 'proyectos', label: 'Proyectos' },
+  { href: url('#trayectoria'), id: 'trayectoria', label: 'Trayectoria' },
+  { href: url('#sobre-mi'), id: 'sobre-mi', label: 'Sobre mí' },
+  { href: url('#contacto'), id: 'contacto', label: 'Contacto' },
 ];
 ---
-<header class="nav">
-  <div class="container nav-inner">
+<header class="nav" data-nav>
+  <div class="nav-shell">
     <a class="brand" href={url()} aria-label={`${profile.shortName}, inicio`}>
-      <span class="brand-mark" aria-hidden="true">JA</span>
+      <span class="brand-mark" aria-hidden="true">
+        {profile.photo ? <img src={url(profile.photo.src)} alt="" width="36" height="36" /> : 'JA'}
+      </span>
       <span class="brand-name">{profile.shortName}</span>
     </a>
-    <nav aria-label="Principal">
+    <nav aria-label="Principal" class="nav-main">
       <ul class="nav-links">
-        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        {links.map((l) => <li><a href={l.href} data-spy={l.id}>{l.label}</a></li>)}
       </ul>
     </nav>
-    <button class="theme-toggle" type="button" aria-label="Cambiar tema claro u oscuro" data-theme-toggle>
-      <span class="i-sun"><Icon name="sun" /></span>
-      <span class="i-moon"><Icon name="moon" /></span>
-    </button>
+    <div class="nav-actions">
+      <button class="icon-btn" type="button" aria-label="Cambiar tema claro u oscuro" data-theme-toggle>
+        <span class="i-sun"><Icon name="sun" /></span>
+        <span class="i-moon"><Icon name="moon" /></span>
+      </button>
+      <a class="btn btn-primary nav-cta" href={whatsappUrl()} target="_blank" rel="noopener">
+        <Icon name="whatsapp" size={16} /> Hablemos
+      </a>
+      <button class="icon-btn menu-btn" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu-movil" data-menu-btn>
+        <Icon name="menu" />
+      </button>
+    </div>
+  </div>
+  <div class="sheet" id="menu-movil" data-sheet hidden>
+    <ul>
+      {links.map((l, i) => <li style={`--i:${i}`}><a href={l.href} data-sheet-link>{l.label} <Icon name="arrowRight" size={18} /></a></li>)}
+    </ul>
+    <a class="btn btn-wa" href={whatsappUrl()} target="_blank" rel="noopener"><Icon name="whatsapp" size={18} /> Escríbeme por WhatsApp</a>
   </div>
 </header>
 
 <style>
-  .nav {
-    position: sticky; top: 0; z-index: 50;
-    background: color-mix(in srgb, var(--bg) 82%, transparent);
-    backdrop-filter: saturate(160%) blur(12px);
-    -webkit-backdrop-filter: saturate(160%) blur(12px);
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--dur) var(--ease);
+  .nav { position: sticky; top: 0; z-index: 50; padding: 12px var(--gutter) 0; pointer-events: none; }
+  .nav-shell {
+    pointer-events: auto; max-width: calc(var(--maxw) - 2 * var(--gutter) + 40px); margin-inline: auto;
+    display: flex; align-items: center; gap: var(--s-4); height: 60px; padding: 0 8px 0 10px;
+    border-radius: 999px; border: 1px solid transparent; background: transparent;
+    transition: background 400ms var(--ease), border-color 400ms var(--ease), box-shadow 400ms var(--ease), max-width 500ms var(--ease);
   }
-  .nav.is-scrolled { border-bottom-color: var(--line); }
-  .nav-inner { display: flex; align-items: center; gap: var(--s-5); height: 64px; }
-  .brand { display: inline-flex; align-items: center; gap: var(--s-3); text-decoration: none; font-weight: 600; margin-right: auto; }
+  .nav.is-scrolled .nav-shell {
+    background: var(--glass); border-color: var(--line); box-shadow: var(--shadow);
+    backdrop-filter: saturate(180%) blur(16px); -webkit-backdrop-filter: saturate(180%) blur(16px);
+    max-width: 920px;
+  }
+  .brand { display: inline-flex; align-items: center; gap: var(--s-3); text-decoration: none; font-weight: 700; font-family: var(--font-display); letter-spacing: -0.01em; margin-right: auto; }
   .brand:hover { color: var(--text); }
   .brand-mark {
-    display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px;
-    background: var(--text); color: var(--bg); font-size: 0.75rem; letter-spacing: 0.02em;
-    transition: background var(--dur) var(--ease);
+    display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; padding: 2px;
+    background: var(--grad); color: #fff; font-size: 0.8rem; overflow: hidden;
+    transition: transform 500ms var(--ease-spring);
   }
-  .brand:hover .brand-mark { background: var(--accent); color: var(--on-accent); }
-  .nav-links { display: flex; gap: var(--s-1); list-style: none; }
+  .brand-mark img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 20%; border: 2px solid var(--bg); }
+  .brand:hover .brand-mark { transform: rotate(-8deg) scale(1.06); }
+  .nav-links { display: flex; gap: 2px; list-style: none; }
   .nav-links a {
-    display: inline-flex; align-items: center; min-height: 40px; padding: 0 var(--s-3);
-    border-radius: 999px; text-decoration: none; font-size: var(--step--1); color: var(--muted);
+    position: relative; display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px;
+    border-radius: 999px; text-decoration: none; font-size: var(--step--1); font-weight: 500; color: var(--muted);
     transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
   }
   .nav-links a:hover { color: var(--text); background: var(--surface-2); }
-  .theme-toggle {
-    display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px;
-    border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer;
-    transition: border-color var(--dur) var(--ease);
+  .nav-links a.is-active { color: var(--text); background: var(--accent-soft); }
+  .nav-links a.is-active::after {
+    content: ''; position: absolute; left: 50%; bottom: 5px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--accent);
   }
-  .theme-toggle:hover { border-color: var(--text); }
+  .nav-actions { display: flex; align-items: center; gap: var(--s-2); }
+  .nav-cta { min-height: 42px; padding: 0 18px; }
+  .icon-btn {
+    display: grid; place-items: center; width: 42px; height: 42px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer;
+    transition: border-color var(--dur) var(--ease), transform 500ms var(--ease-spring);
+  }
+  .icon-btn:hover { border-color: var(--accent); }
+  [data-theme-toggle]:hover { transform: rotate(25deg); }
+  .menu-btn { display: none; }
   .i-moon { display: none; }
   :global(:root[data-theme='dark']) .i-sun { display: none; }
   :global(:root[data-theme='dark']) .i-moon { display: block; }
@@ -65,26 +92,64 @@ const links = [
     :global(:root:not([data-theme='light'])) .i-sun { display: none; }
     :global(:root:not([data-theme='light'])) .i-moon { display: block; }
   }
-  @media (max-width: 720px) {
-    .brand-name { display: none; }
-    .nav-inner { gap: var(--s-2); }
-    .nav-links a { padding: 0 var(--s-2); }
+
+  .sheet {
+    pointer-events: auto; margin: 8px auto 0; max-width: 520px; padding: var(--s-4); border-radius: var(--radius);
+    background: var(--glass); border: 1px solid var(--line); box-shadow: var(--shadow-lg);
+    backdrop-filter: saturate(180%) blur(18px); -webkit-backdrop-filter: saturate(180%) blur(18px);
+    display: grid; gap: var(--s-3); animation: sheet-in 380ms var(--ease) both;
   }
-  @media (max-width: 520px) {
-    .nav-links li:nth-child(2), .nav-links li:nth-child(3) { display: none; }
+  .sheet[hidden] { display: none; }
+  .sheet ul { list-style: none; display: grid; }
+  .sheet li { animation: sheet-item 420ms var(--ease) both; animation-delay: calc(var(--i) * 50ms + 80ms); }
+  .sheet a[data-sheet-link] {
+    display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 var(--s-3);
+    font-family: var(--font-display); font-size: var(--step-1); font-weight: 600; text-decoration: none; border-radius: var(--radius-sm);
   }
+  .sheet a[data-sheet-link]:hover { background: var(--surface-2); }
+  @keyframes sheet-in { from { opacity: 0; transform: translateY(-10px) scale(0.98); } }
+  @keyframes sheet-item { from { opacity: 0; transform: translateX(-12px); } }
+
+  @media (max-width: 860px) {
+    .nav-main, .nav-cta { display: none; }
+    .menu-btn { display: grid; }
+  }
+  @media (max-width: 400px) { .brand-name { font-size: 0.95rem; } }
 </style>
 
 <script>
   const root = document.documentElement;
-  const nav = document.querySelector('.nav');
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
   document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
     const current = root.dataset.theme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     const next = current === 'dark' ? 'light' : 'dark';
-    root.dataset.theme = next;
+    const swap = () => { root.dataset.theme = next; };
+    // Transición suave del tema donde el navegador lo soporta
+    (document as Document & { startViewTransition?: (cb: () => void) => void }).startViewTransition?.(swap) ?? swap();
     try { localStorage.setItem('theme', next); } catch {}
   });
-  const onScroll = () => nav?.classList.toggle('is-scrolled', scrollY > 8);
+  const onScroll = () => nav?.classList.toggle('is-scrolled', scrollY > 12);
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  // Menú móvil
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
+  const sheet = document.querySelector<HTMLElement>('[data-sheet]');
+  const setMenu = (open: boolean) => {
+    if (!btn || !sheet) return;
+    sheet.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+    btn.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+  };
+  btn?.addEventListener('click', () => setMenu(sheet?.hidden ?? true));
+  sheet?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+
+  // Sección activa en el menú
+  const spies = document.querySelectorAll<HTMLAnchorElement>('[data-spy]');
+  const spy = new IntersectionObserver((entries) => entries.forEach((e) => {
+    if (!e.isIntersecting) return;
+    spies.forEach((a) => a.classList.toggle('is-active', a.dataset.spy === e.target.id));
+  }), { rootMargin: '-45% 0px -50% 0px' });
+  spies.forEach((a) => { const s = document.getElementById(a.dataset.spy!); if (s) spy.observe(s); });
 </script>

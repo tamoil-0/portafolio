@@ -3,99 +3,346 @@ import Icon from './Icon.astro';
 import { url, type ProjectImage } from '../lib/site';
 interface Props { images: ProjectImage[]; title: string }
 const { images, title } = Astro.props;
+
+const items = images.map((img, i) => ({ img, i, thumb: url(img.src.replace(/\.webp$/, '-720.webp')) }));
+const desk = items.filter((x) => x.img.kind !== 'mobile');
+const mob = items.filter((x) => x.img.kind === 'mobile');
+
+// Distribución "bento" sobre una rejilla de 6 columnas según cuántas capturas hay.
+const bento = (n: number): string[] => {
+  if (n === 1) return ['s-full'];
+  if (n === 2 || n === 4) return Array(n).fill('s-half');
+  const out = ['s-big', 's-side', 's-side'];
+  const rest = n - 3;
+  const full = rest - (rest % 3);
+  for (let k = 0; k < full; k++) out.push('s-third');
+  if (rest % 3 === 1) out.push('s-full');
+  if (rest % 3 === 2) out.push('s-half', 's-half');
+  return out;
+};
+const spans = bento(desk.length);
+// En pantallas angostas (2 columnas): si una captura queda sola en su fila, ocupa todo el ancho.
+const wide = spans.map(() => false);
+let run = 0;
+spans.forEach((s, k) => {
+  const full = s === 's-big' || s === 's-full';
+  if (full) { if (run % 2) wide[k - 1] = true; run = 0; } else run++;
+});
+if (run % 2) wide[spans.length - 1] = true;
+const label = (img: ProjectImage, i: number) =>
+  `Ampliar ${img.generated ? 'ilustración' : 'captura'} ${i + 1} de ${images.length}: ${img.alt}`;
+const sparkle = '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>';
+const expand = '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>';
 ---
 {images.length > 0 && (
   <div class="gallery" data-gallery>
-    <ul class="thumbs">
-      {images.map((img, i) => (
-        <li class:list={['thumb', img.kind === 'mobile' && 'is-mobile']}>
-          {img.generated && <span class="thumb-tag">Ilustración</span>}
-          <button type="button" data-index={i} aria-label={`Ampliar captura ${i + 1} de ${images.length}: ${img.alt}`}>
-            <img
-              src={url(img.src.replace(/\.webp$/, '-720.webp'))}
-              alt={img.alt}
-              width={img.width}
-              height={img.height}
-              loading="lazy"
-              decoding="async"
-            />
-          </button>
-        </li>
-      ))}
-    </ul>
-    <dialog class="lightbox" aria-label={`Galería de ${title}`}>
-      <img alt="" data-lb-img src={url(images[0].src)} loading="lazy" decoding="async" />
-      <p class="lb-caption" data-lb-caption></p>
+    {desk.length > 0 && (
+      <ul class="bento">
+        {desk.map(({ img, i, thumb }, k) => (
+          <li class:list={['tile', spans[k], wide[k] && 'm-wide']}>
+            {img.generated && (
+              <span class="tag"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" set:html={sparkle} />Ilustración</span>
+            )}
+            <button class="shot" type="button" data-index={i} aria-label={label(img, i)}>
+              <img src={thumb} alt={img.alt} width={img.width} height={img.height} loading="lazy" decoding="async" />
+              <span class="zoom" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={expand} /></span>
+              <span class="cap" aria-hidden="true">{img.alt}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {mob.length > 0 && (
+      <div class:list={['phones-stage', desk.length > 0 && 'has-desk']}>
+        {desk.length > 0 && <p class="stage-label">En el celular</p>}
+        <ul class="phones">
+          {mob.map(({ img, i, thumb }, k) => (
+            <li class="phone-tile" style={`--k:${k}`}>
+              {img.generated && (
+                <span class="tag"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" set:html={sparkle} />Ilustración</span>
+              )}
+              <button class="phone" type="button" data-index={i} aria-label={label(img, i)}>
+                <span class="screen">
+                  <img src={thumb} alt={img.alt} width={img.width} height={img.height} loading="lazy" decoding="async" />
+                  <span class="cap" aria-hidden="true">{img.alt}</span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <dialog class="lb" aria-label={`Galería de ${title}`}>
+      <div class="lb-stage" data-lb-stage>
+        <figure class="lb-fig">
+          <img alt="" data-lb-img src={url(images[0].src)} width={images[0].width} height={images[0].height} decoding="async" draggable="false" />
+          <figcaption class="lb-cap">
+            <span class="lb-count" data-lb-count></span>
+            <span data-lb-caption></span>
+          </figcaption>
+        </figure>
+      </div>
       <button class="lb-btn lb-close" type="button" data-lb-close aria-label="Cerrar"><Icon name="close" /></button>
       {images.length > 1 && (
         <>
-          <button class="lb-btn lb-prev" type="button" data-lb-prev aria-label="Anterior"><Icon name="arrowLeft" /></button>
-          <button class="lb-btn lb-next" type="button" data-lb-next aria-label="Siguiente"><Icon name="arrowRight" /></button>
+          <button class="lb-btn lb-prev" type="button" data-lb-prev aria-label="Imagen anterior"><Icon name="arrowLeft" /></button>
+          <button class="lb-btn lb-next" type="button" data-lb-next aria-label="Imagen siguiente"><Icon name="arrowRight" /></button>
         </>
       )}
-      <script type="application/json" data-lb-data set:html={JSON.stringify(images.map((i) => ({ src: url(i.src), alt: i.generated ? `${i.alt} (recreación ilustrativa)` : i.alt })))} />
+      <script
+        type="application/json"
+        data-lb-data
+        set:html={JSON.stringify(images.map((i) => ({
+          src: url(i.src), w: i.width, h: i.height,
+          alt: i.generated ? `${i.alt} (recreación ilustrativa)` : i.alt,
+        })))}
+      />
     </dialog>
   </div>
 )}
 
 <style>
-  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--s-4); list-style: none; }
-  .thumb { position: relative; }
-  .thumb.is-mobile { max-width: 220px; }
-  .thumb-tag {
-    position: absolute; top: 8px; left: 8px; z-index: 1; pointer-events: none;
-    font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 999px;
-    background: color-mix(in srgb, var(--surface) 88%, transparent); border: 1px solid var(--line); color: var(--muted);
+  .gallery { display: grid; gap: var(--s-6); }
+
+  /* ---------- Bento de capturas ---------- */
+  .bento { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--s-4); list-style: none; }
+  .s-full { grid-column: span 6; } .s-half { grid-column: span 3; } .s-third { grid-column: span 2; }
+  .s-side { grid-column: span 2; } .s-big { grid-column: span 4; grid-row: span 2; }
+
+  .tile, .phone-tile { position: relative; transition: transform 450ms var(--ease); }
+  .tile:hover, .phone-tile:hover { transform: translateY(-6px); }
+  .tag {
+    position: absolute; top: 10px; left: 10px; z-index: 2; pointer-events: none;
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.01em; color: var(--text);
+    background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   }
-  .thumb button {
-    display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-sm);
-    overflow: hidden; background: var(--surface-2); cursor: zoom-in;
+  .tag svg { color: var(--accent); }
+
+  .shot {
+    position: relative; display: block; width: 100%; aspect-ratio: 16 / 10; padding: 0; overflow: hidden;
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-2); cursor: zoom-in; color: inherit;
+    box-shadow: var(--shadow-sm); transition: box-shadow 450ms var(--ease), border-color 450ms var(--ease);
   }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; aspect-ratio: 16 / 10; transition: transform 400ms var(--ease); }
-  .thumb.is-mobile img { aspect-ratio: 390 / 844; }
-  .thumb button:hover img { transform: scale(1.03); }
-  .lightbox {
-    width: min(1200px, 94vw); max-height: 92vh; padding: var(--s-4); border: 0; border-radius: var(--radius);
-    background: var(--surface); color: var(--text); overflow: visible;
+  .s-big .shot { aspect-ratio: auto; height: 100%; min-height: 240px; }
+  .s-full .shot { aspect-ratio: 16 / 8; }
+  .shot:hover { box-shadow: var(--shadow-lg); border-color: var(--line-strong); }
+  .shot img, .screen img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top;
+    transition: transform 700ms var(--ease);
   }
-  .lightbox::backdrop { background: rgb(0 0 0 / 0.75); }
-  .lightbox img { width: 100%; max-height: 78vh; object-fit: contain; border-radius: var(--radius-sm); }
-  .lb-caption { margin-top: var(--s-3); font-size: var(--step--1); color: var(--muted); text-align: center; }
+  .shot:hover img, .phone:hover img { transform: scale(1.04); }
+
+  .zoom {
+    position: absolute; top: 10px; right: 10px; z-index: 1; display: grid; place-items: center; width: 34px; height: 34px;
+    border-radius: 50%; color: #fff; background: rgb(15 13 31 / 0.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    opacity: 0; transform: scale(0.8); transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease-spring);
+  }
+  .cap {
+    position: absolute; inset: auto 0 0; z-index: 1; padding: var(--s-7) var(--s-4) var(--s-3); text-align: left;
+    font-size: var(--step--1); font-weight: 500; line-height: 1.4; color: #fff;
+    background: linear-gradient(to top, rgb(10 8 22 / 0.85), rgb(10 8 22 / 0));
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    opacity: 0; transform: translateY(10px); transition: opacity 350ms var(--ease), transform 350ms var(--ease);
+  }
+  .shot:hover .cap, .shot:focus-visible .cap, .phone:hover .cap, .phone:focus-visible .cap { opacity: 1; transform: none; }
+  .shot:hover .zoom, .shot:focus-visible .zoom { opacity: 1; transform: none; }
+  @media (hover: none) {
+    .zoom { opacity: 1; transform: none; width: 30px; height: 30px; }
+    .cap { display: none; }
+  }
+
+  /* ---------- Celulares ---------- */
+  .phones-stage {
+    position: relative; overflow: hidden; display: grid; gap: var(--s-5); justify-items: center;
+    padding: clamp(var(--s-6), 5vw, var(--s-8)) var(--s-4); border-radius: var(--radius-lg);
+    border: 1px solid var(--line); background: var(--grad-soft), var(--surface);
+  }
+  .phones-stage::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.6;
+    background-image: radial-gradient(var(--line-strong) 1px, transparent 1px); background-size: 18px 18px;
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+    mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  }
+  .stage-label {
+    position: relative; font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .phones {
+    position: relative; list-style: none; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end;
+    gap: clamp(var(--s-4), 3vw, var(--s-7)); width: 100%;
+  }
+  .phone-tile { width: clamp(132px, 22vw, 220px); }
+  .phone-tile:nth-child(even) { margin-bottom: var(--s-5); }
+  .phone-tile .tag { top: 36px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+  .phone {
+    position: relative; display: block; width: 100%; padding: 7px; border: 0; border-radius: 34px; cursor: zoom-in;
+    background: linear-gradient(145deg, #2a2640, #0f0d1f 55%); color: inherit;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06) inset, 0 1px 0 1px rgb(0 0 0 / 0.25), var(--shadow-lg);
+    transition: box-shadow 450ms var(--ease);
+  }
+  .phone::before {
+    content: ''; position: absolute; z-index: 2; top: 13px; left: 50%; width: 30%; height: 14px; transform: translateX(-50%);
+    border-radius: 999px; background: #05040b;
+  }
+  .phone:hover { box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1) inset, var(--glow); }
+  .screen { position: relative; display: block; aspect-ratio: 390 / 844; overflow: hidden; border-radius: 27px; background: var(--surface-2); }
+  .screen .cap { padding-inline: var(--s-3); font-size: var(--step--2); }
+
+  /* ---------- Lightbox ---------- */
+  .lb {
+    position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0;
+    border: 0; background: transparent; color: #f4f2ff; overflow: hidden;
+  }
+  .lb::backdrop { background: rgb(8 6 18 / 0.8); backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2); }
+  .lb[open], .lb[open]::backdrop { animation: lb-in 320ms var(--ease) both; }
+  .lb[open] .lb-fig { animation: lb-zoom 520ms var(--ease) both; }
+  .lb.is-closing, .lb.is-closing::backdrop { animation: lb-out 220ms var(--ease) forwards; }
+  .lb.is-closing .lb-fig { animation: lb-zoom-out 220ms var(--ease) forwards; }
+  @keyframes lb-in { from { opacity: 0; } }
+  @keyframes lb-out { to { opacity: 0; } }
+  @keyframes lb-zoom { from { opacity: 0; transform: scale(0.94) translateY(16px); } }
+  @keyframes lb-zoom-out { to { opacity: 0; transform: scale(0.96); } }
+
+  .lb-stage { position: absolute; inset: 0; display: grid; place-items: center; padding: 72px 84px 28px; touch-action: pan-y; }
+  .lb-fig { margin: 0; display: grid; justify-items: center; gap: var(--s-4); max-width: 100%; }
+  .lb-fig img {
+    width: auto; height: auto; max-width: min(1400px, 100%); max-height: calc(100dvh - 190px);
+    object-fit: contain; border-radius: var(--radius-sm); background: rgb(255 255 255 / 0.04);
+    box-shadow: 0 40px 100px -30px rgb(0 0 0 / 0.9); user-select: none; -webkit-user-select: none; cursor: grab;
+  }
+  .lb-cap { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: var(--s-2) var(--s-3); max-width: 70ch; text-align: center; font-size: var(--step--1); color: rgb(244 242 255 / 0.8); }
+  .lb-count {
+    font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: 0.08em; padding: 3px 10px; border-radius: 999px;
+    background: rgb(255 255 255 / 0.1); border: 1px solid rgb(255 255 255 / 0.15); color: #fff;
+  }
   .lb-btn {
-    position: absolute; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 999px;
-    border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer;
+    position: absolute; z-index: 2; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; cursor: pointer;
+    color: #fff; background: rgb(255 255 255 / 0.1); border: 1px solid rgb(255 255 255 / 0.18);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: background var(--dur) var(--ease), transform var(--dur) var(--ease-spring), border-color var(--dur) var(--ease);
   }
-  .lb-btn:hover { border-color: var(--text); }
-  .lb-close { top: -16px; right: -16px; }
-  .lb-prev { left: -16px; top: 45%; }
-  .lb-next { right: -16px; top: 45%; }
+  .lb-btn:hover { background: rgb(255 255 255 / 0.2); border-color: rgb(255 255 255 / 0.4); transform: scale(1.06); }
+  .lb-btn:active { transform: scale(0.94); }
+  .lb-close { top: 16px; right: 16px; }
+  .lb-prev { left: 20px; top: 50%; margin-top: -24px; }
+  .lb-next { right: 20px; top: 50%; margin-top: -24px; }
+  .lb-prev:hover :global(svg) { transform: translateX(-2px); }
+  .lb-next:hover :global(svg) { transform: translateX(2px); }
+  .lb-btn :global(svg) { transition: transform var(--dur) var(--ease); }
+
+  @media (max-width: 900px) {
+    .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-3); }
+    .s-big, .s-full { grid-column: span 2; grid-row: auto; }
+    .s-big .shot, .s-full .shot { aspect-ratio: 16 / 10; height: auto; min-height: 0; }
+    .s-half, .s-third, .s-side { grid-column: span 1; }
+    .m-wide { grid-column: span 2; }
+    .m-wide .shot { aspect-ratio: 16 / 9; }
+  }
   @media (max-width: 640px) {
-    .lb-close { right: 4px; top: 4px; }
-    .lb-prev { left: 4px; } .lb-next { right: 4px; }
+    .lb-stage { padding: 64px 12px 96px; }
+    .lb-fig img { max-height: calc(100dvh - 230px); }
+    .lb-prev, .lb-next { top: auto; bottom: 20px; margin-top: 0; }
+    .lb-prev { left: calc(50% - 60px); } .lb-next { right: calc(50% - 60px); }
+    .shot { border-radius: var(--radius-sm); }
+    .tag { top: 6px; left: 6px; padding: 2px 7px; font-size: 0.62rem; gap: 4px; }
+    .tag svg { width: 10px; height: 10px; }
+    .phone-tile .tag { top: 32px; }
+    .phone-tile:nth-child(even) { margin-bottom: 0; }
   }
 </style>
 
 <script>
   document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((g) => {
     const dlg = g.querySelector('dialog')!;
+    const stage = dlg.querySelector<HTMLElement>('[data-lb-stage]')!;
     const img = dlg.querySelector<HTMLImageElement>('[data-lb-img]')!;
     const cap = dlg.querySelector<HTMLElement>('[data-lb-caption]')!;
-    const data: { src: string; alt: string }[] = JSON.parse(dlg.querySelector('[data-lb-data]')!.textContent || '[]');
+    const count = dlg.querySelector<HTMLElement>('[data-lb-count]')!;
+    const data: { src: string; alt: string; w: number; h: number }[] =
+      JSON.parse(dlg.querySelector('[data-lb-data]')!.textContent || '[]');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const pad = (n: number) => String(n).padStart(2, '0');
     let i = 0;
-    const show = (n: number) => {
+    let closing = false;
+
+    const show = (n: number, dir = 0) => {
       i = (n + data.length) % data.length;
-      img.src = data[i].src; img.alt = data[i].alt; cap.textContent = `${i + 1} / ${data.length} · ${data[i].alt}`;
+      const d = data[i];
+      img.width = d.w; img.height = d.h; img.src = d.src; img.alt = d.alt;
+      cap.textContent = d.alt;
+      count.textContent = `${pad(i + 1)} / ${pad(data.length)}`;
+      if (dir && !reduce.matches) {
+        img.animate(
+          [{ opacity: 0, transform: `translateX(${dir * 48}px) scale(0.97)` }, { opacity: 1, transform: 'none' }],
+          { duration: 380, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+        );
+      }
+      // Precarga de las vecinas
+      [i - 1, i + 1].forEach((k) => { new Image().src = data[(k + data.length) % data.length].src; });
     };
+
+    const open = (n: number) => {
+      closing = false;
+      dlg.classList.remove('is-closing');
+      show(n);
+      dlg.showModal();
+      document.documentElement.style.overflow = 'hidden';
+    };
+    const finish = () => { if (dlg.open) dlg.close(); };
+    const close = () => {
+      if (closing || !dlg.open) return;
+      if (reduce.matches) return finish();
+      closing = true;
+      dlg.classList.add('is-closing');
+      setTimeout(finish, 260);
+    };
+    dlg.addEventListener('close', () => {
+      closing = false;
+      dlg.classList.remove('is-closing');
+      document.documentElement.style.overflow = '';
+    });
+    dlg.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
+
     g.querySelectorAll<HTMLButtonElement>('[data-index]').forEach((b) =>
-      b.addEventListener('click', () => { show(Number(b.dataset.index)); dlg.showModal(); }),
+      b.addEventListener('click', () => open(Number(b.dataset.index))),
     );
-    dlg.querySelector('[data-lb-close]')?.addEventListener('click', () => dlg.close());
-    dlg.querySelector('[data-lb-prev]')?.addEventListener('click', () => show(i - 1));
-    dlg.querySelector('[data-lb-next]')?.addEventListener('click', () => show(i + 1));
-    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.querySelector('[data-lb-close]')?.addEventListener('click', close);
+    dlg.querySelector('[data-lb-prev]')?.addEventListener('click', () => show(i - 1, -1));
+    dlg.querySelector('[data-lb-next]')?.addEventListener('click', () => show(i + 1, 1));
     dlg.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') show(i - 1);
-      if (e.key === 'ArrowRight') show(i + 1);
+      if (data.length < 2) return;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(i - 1, -1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(i + 1, 1); }
+    });
+
+    // Deslizar (táctil o arrastrando con el mouse)
+    let x0 = 0, y0 = 0, dragging = false, swiped = false;
+    stage.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('button')) return;
+      dragging = true; swiped = false; x0 = e.clientX; y0 = e.clientY;
+    });
+    stage.addEventListener('pointermove', (e) => {
+      if (!dragging || data.length < 2) return;
+      const dx = e.clientX - x0;
+      if (Math.abs(dx) > 8) { swiped = true; img.style.transform = `translateX(${dx * 0.5}px)`; img.style.opacity = String(1 - Math.min(Math.abs(dx) / 600, 0.4)); }
+    });
+    const end = (e: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      const dx = e.clientX - x0, dy = e.clientY - y0;
+      img.style.transform = ''; img.style.opacity = '';
+      if (data.length > 1 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(dx < 0 ? i + 1 : i - 1, dx < 0 ? 1 : -1);
+    };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', end);
+
+    // Clic fuera de la imagen: cerrar
+    dlg.addEventListener('click', (e) => {
+      if (swiped) { swiped = false; return; }
+      if (e.target === dlg || e.target === stage) close();
     });
   });
 </script>

@@ -3,8 +3,8 @@
     "id": "sciverse-docentes",
     "slug": "sciverse-docentes",
     "title": "SciVerse para Docentes",
-    "shortDescription": "Plataforma con IA (Gemini) que genera sesiones de aprendizaje alineadas al CNEB y las exporta a Word.",
-    "longDescription": "SciVerse es una plataforma de Teaching TIC Consultorías que ayuda a docentes peruanos a preparar sesiones de aprendizaje, fichas, guías de laboratorio, proyectos STEAM e instrumentos de evaluación alineados al Currículo Nacional (CNEB). La IA (Gemini) genera cada sesión en 4 módulos encadenados con una estructura validada, y el asistente Kantu sugiere propósitos, contextos y evidencias. Los materiales se guardan en una biblioteca y se exportan a Word con las plantillas oficiales y la marca del colegio. Me incorporé al MVP que había construido el cliente para auditarlo, profesionalizarlo y ampliarlo: ordené el uso de la IA y los créditos, construí planes, pagos y panel administrativo, la exportación a Word y el atlas anatómico 3D, rediseñé la interfaz y escribí las pruebas.",
+    "shortDescription": "Plataforma con IA que ayuda a docentes peruanos a preparar sesiones de aprendizaje y descargarlas en Word.",
+    "longDescription": "SciVerse es una plataforma de Teaching TIC Consultorías que ayuda a docentes peruanos a preparar sesiones de aprendizaje, fichas, guías de laboratorio, proyectos STEAM e instrumentos de evaluación alineados al Currículo Nacional (CNEB), con inteligencia artificial y el asistente Kantu. Los materiales se guardan en una biblioteca y se descargan en Word con las plantillas oficiales y la marca del colegio. Me sumé a la primera versión que había construido el cliente para revisarla a fondo y mejorarla: ordené el uso de la IA y de los créditos, construí los planes, los pagos, el panel de administración, la exportación a Word y un atlas anatómico en 3D, rediseñé la interfaz y escribí las pruebas automáticas.",
     "category": "IA",
     "tags": [
       "IA generativa",
@@ -29,7 +29,7 @@
       "Three.js",
       "Vitest"
     ],
-    "role": "Me incorporé al MVP existente del cliente e hice una auditoría técnica completa en 27 documentos (arquitectura, seguridad, IA, base de datos, UX y accesibilidad). Centralicé el acceso a Gemini con reintentos, idempotencia y control de costos, endurecí los créditos y reembolsos, y desarrollé las migraciones del núcleo comercial (planes, pagos manuales, activación y permisos por plan), el panel administrativo con auditoría y exportación a Excel, la exportación a Word, la guía de laboratorio y el atlas 3D. También rediseñé la interfaz con criterios de accesibilidad AA, reduje las funciones serverless de 19 a 8 para entrar en el plan Hobby de Vercel y escribí la suite de pruebas.",
+    "role": "Me sumé al producto ya existente del cliente: hice una revisión técnica completa, desarrollé los planes y pagos, el panel de administración y nuevas funciones, y rediseñé la interfaz para hacerla más accesible.",
     "teamSize": 2,
     "period": {
       "start": "2026-08",
@@ -39,22 +39,22 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/teachingticconsultorias-source/pruebatt",
     "liveUrl": "https://pruebatt-five.vercel.app",
+    "access": null,
     "context": "Profesional: producto comercial de Teaching TIC Consultorías S.A.C.",
-    "problem": "Los docentes dedican muchas horas a redactar sesiones e instrumentos alineados al CNEB en los formatos que exige su colegio. Además, el MVP había crecido a base de parches: créditos de IA que no se cobraban, endpoints sin control de costo, un despliegue frágil y ninguna prueba.",
-    "solution": "Un generador con IA que conoce los procesos didácticos por área y competencia, produce contenido estructurado y validado, y lo convierte en documentos Word listos para entregar. Sobre esa base construí la capa de producto: créditos que se descuentan de forma atómica y se reembolsan si algo falla, protección contra solicitudes duplicadas, validaciones de entrada, planes y pagos administrables, panel de administración y pruebas automatizadas.",
+    "problem": "Los docentes dedican muchas horas a redactar sesiones e instrumentos alineados al CNEB en los formatos que pide su colegio. Además, la primera versión de la plataforma había crecido a base de parches: créditos de IA que no se cobraban, costos sin control, una publicación frágil y ninguna prueba.",
+    "solution": "Un generador con IA que conoce cómo se enseña cada área y competencia, y entrega documentos Word listos para presentar. Sobre esa base construí lo necesario para venderlo como producto: créditos que se devuelven si algo falla, protección contra pedidos duplicados, planes, pagos, panel de administración y pruebas automáticas.",
     "howItWorks": [
-      "El docente se registra con confirmación por correo e indica su nivel, grado y área.",
-      "Llena el formulario (tema, competencia, capacidades, propósito y evidencia) y puede pedir sugerencias a Kantu.",
-      "El servidor valida el formulario, evita solicitudes duplicadas con una clave de idempotencia y descuenta un crédito de forma atómica.",
-      "Gemini genera la sesión en 4 módulos encadenados (alineación, secuencia, evaluación y anexos); un control de calidad rechaza el contenido de relleno y, si algo falla, se devuelve el crédito.",
-      "La sesión se guarda en la biblioteca del docente y se exporta a Word con la plantilla oficial o la marca de su colegio.",
-      "Desde el panel de administración se gestionan docentes, planes, pagos manuales y auditoría, y se exporta la lista de docentes a Excel."
+      "El docente se registra, confirma su correo e indica su nivel, grado y área.",
+      "Llena un formulario con el tema, la competencia, el propósito y la evidencia, y puede pedir sugerencias al asistente Kantu.",
+      "La IA arma la sesión en 4 partes (alineación, secuencia, evaluación y anexos); si algo falla, se le devuelve el crédito.",
+      "La sesión se guarda en su biblioteca y la descarga en Word con la plantilla oficial o la marca de su colegio.",
+      "El equipo administrador gestiona docentes, planes y pagos desde un panel y exporta la lista de docentes a Excel."
     ],
     "results": [
-      "28 archivos de pruebas con Vitest: créditos, idempotencia, pagos, administración, validaciones de entrada, exportación a Word y atlas.",
-      "15 migraciones SQL versionadas, con scripts de verificación contra producción.",
-      "Funciones serverless reducidas de 19 a 8 para caber en el plan gratuito de Vercel.",
-      "Auditoría técnica documentada en 27 informes."
+      "28 archivos de pruebas automáticas que cubren créditos, pagos, administración, validaciones y exportación a Word.",
+      "15 actualizaciones de la base de datos registradas y verificadas contra el sistema en producción.",
+      "Reduje las funciones del servidor de 19 a 8 para que el sistema entre en el plan gratuito del hosting.",
+      "Revisión técnica completa documentada en 27 informes."
     ],
     "architecture": [
       "React 18 + Vite (Vercel) -> Supabase Auth (sesión del docente)",
@@ -112,8 +112,8 @@
     "id": "friding",
     "slug": "friding",
     "title": "Friding",
-    "shortDescription": "Red social peruana para crear y unirse a salidas grupales, con chat, foros, Momentos y notificaciones push.",
-    "longDescription": "Friding es una red social que conecta a personas que quieren organizar planes en su ciudad con quienes quieren sumarse. El organizador publica una salida y acepta o rechaza solicitudes, y los aceptados coordinan en un chat propio; además hay foros con votos, una galería de fotos y videos (Momentos) y Previas, grupos de hasta 4 personas formados por afinidad que tienen una semana para convertirse en plan. En un equipo de 3, me sumé en febrero de 2026 y lideré la reestructuración del backend en PHP, la PWA con notificaciones push, el cliente móvil en Flutter y el despliegue a producción. Está en línea en friding.com; la app en Flutter sigue en fase de prototipo.",
+    "shortDescription": "Red social peruana para proponer salidas en grupo y sumarse a planes de otras personas en tu ciudad.",
+    "longDescription": "Friding es una red social que conecta a quienes quieren organizar planes en su ciudad con personas que quieren sumarse. El organizador publica una salida y elige quién participa; los aceptados coordinan en un chat propio, y además hay foros, una galería de fotos y videos (Momentos) y Previas, grupos de hasta 4 personas con intereses afines que tienen una semana para convertirse en plan. En un equipo de 3, me sumé en febrero de 2026 y lideré la reorganización del sistema, la versión instalable con avisos al celular, la app móvil (todavía en prototipo) y la puesta en línea en friding.com.",
     "category": "Web",
     "tags": [
       "red social",
@@ -139,7 +139,7 @@
       "Hosting compartido (hPanel)",
       "Nixpacks / FrankenPHP (pruebas de despliegue)"
     ],
-    "role": "Desde febrero de 2026 fui el desarrollador full-stack con más commits del equipo. Reestructuré el backend a MVC (Controller, Service, DAO y Validator) con un módulo de seguridad propio (CSRF, rate limiting, sanitización, tokens y protección contra path traversal), e implementé la PWA con Web Push, los recordatorios por cron, la autenticación JSON para clientes nativos y el cliente móvil en Flutter. También desarrollé chat, foros, notificaciones, Momentos y Previas, y me encargué del SEO, los scripts SQL de migración, la auditoría de la base de producción y el flujo de despliegue seguro.",
+    "role": "Fui el desarrollador con más aportes del equipo: reorganicé el sistema y reforcé su seguridad, y creé la app móvil, las notificaciones, el chat y los foros, entre otras funciones.",
     "teamSize": 3,
     "period": {
       "start": "2025-10",
@@ -149,21 +149,21 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": "https://friding.com",
+    "access": null,
     "context": "Profesional: Full-Stack Developer y Technology Lead en Friding (desde feb 2026).",
-    "problem": "Quienes quieren conocer gente y hacer planes en su ciudad no tienen un canal ordenado y seguro para proponer actividades, filtrar quién se suma y coordinarse sin exponer sus datos.",
-    "solution": "Una plataforma web instalable (PWA) en la que cada salida tiene su sistema de solicitudes, su chat y su historial. La verificación por correo, las reglas de convivencia, la aceptación de términos y una capa de seguridad propia dan confianza, y las notificaciones internas, por correo y push mantienen activa a la comunidad.",
+    "problem": "Quienes quieren conocer gente y hacer planes en su ciudad no tienen un canal ordenado y seguro para proponer actividades, elegir quién se suma y coordinarse sin exponer sus datos.",
+    "solution": "Una plataforma web que se puede instalar en el celular, donde cada salida tiene sus solicitudes, su chat y su historial. La verificación por correo, las reglas de convivencia y una capa de seguridad propia dan confianza, y los avisos por la app, el celular y el correo mantienen activa a la comunidad.",
     "howItWorks": [
-      "El visitante ve las salidas públicas sin iniciar sesión, se registra con un código que recibe por correo y acepta los términos.",
-      "Completa su perfil y crea una salida con fecha, lugar, cupo y portada, o pide unirse a una existente.",
-      "El organizador acepta o rechaza las solicitudes, y cada cambio se notifica dentro de la app, por Web Push o por correo.",
-      "Los participantes aceptados coordinan en el chat de la salida y después comparten fotos y videos en Momentos.",
-      "Quien no tiene plan entra a Previas: el sistema lo agrupa por tema, día, zona y edad en grupos de hasta 4 personas que tienen una semana para convertirse en plan.",
-      "Tareas programadas (cron) envían recordatorios push y saludos de cumpleaños, y cierran las previas vencidas."
+      "Cualquiera puede ver las salidas públicas; para participar, se registra con un código que recibe por correo.",
+      "Crea una salida con fecha, lugar, cupo y portada, o pide unirse a una que ya existe.",
+      "El organizador acepta o rechaza las solicitudes, y cada cambio llega como aviso en la app, en el celular o por correo.",
+      "Los aceptados coordinan en el chat de la salida y después comparten fotos y videos en Momentos.",
+      "Quien no tiene plan entra a Previas y se le agrupa por tema, día, zona y edad en grupos de hasta 4 personas."
     ],
     "results": [
-      "En producción en friding.com.",
-      "Auditoría de la base de datos de producción frente al código: 32 tablas verificadas, sin columnas faltantes.",
-      "Procedimiento de despliegue seguro documentado, con un script de verificación previo a cada publicación."
+      "En línea en friding.com.",
+      "Revisión de la base de datos en producción: 32 tablas verificadas, sin campos faltantes.",
+      "Procedimiento documentado para publicar cambios de forma segura, con una verificación antes de cada publicación."
     ],
     "architecture": [
       "Navegador / PWA (JS vanilla + Tailwind + Service Worker) -> public/index.php (router propio con middlewares)",
@@ -225,8 +225,8 @@
     "id": "agendia",
     "slug": "agendia",
     "title": "AgendIA",
-    "shortDescription": "Tres apps Flutter (estudiante, docente y familia) para acompañamiento escolar y prevención de la deserción.",
-    "longDescription": "AgendIA es un SaaS para colegios de secundaria que une gestión académica, orientación vocacional y prevención de la deserción escolar. La parte móvil es un monorepo Flutter con tres apps por rol (estudiante, docente y familia) y diez paquetes compartidos, que consumen la API REST de un backend Laravel a cargo de otro integrante. En un equipo de 4, construí la capa de dominio y datos con repositorios simulados y reales intercambiables, el flujo completo de acceso, el rediseño de la app de estudiante con el asistente 'Agi' y la compilación para iOS en CI. Gracias a los repositorios simulados, las tres apps ya funcionan de extremo a extremo con datos de prueba.",
+    "shortDescription": "Tres apps móviles (estudiante, docente y familia) para acompañar a escolares y prevenir la deserción.",
+    "longDescription": "AgendIA es una plataforma para colegios de secundaria que une la gestión académica, la orientación vocacional y la prevención de la deserción escolar, con tres apps móviles, una para cada rol (estudiante, docente y familia), conectadas al sistema central que desarrolló otro integrante. En un equipo de 4, construí la base compartida de las apps, todo el proceso de acceso, el rediseño de la app del estudiante con el asistente 'Agi' y la versión de prueba para iPhone. Gracias a los datos de prueba que preparé, las tres apps ya funcionan de principio a fin.",
     "category": "Móvil",
     "tags": [
       "Mobile",
@@ -256,7 +256,7 @@
       "GitHub Actions (build iOS)",
       "Laravel (backend del equipo)"
     ],
-    "role": "Fui autor de 11 de los 20 commits del repositorio móvil. Construí el modelo de dominio, los DTOs, mappers y fixtures, los repositorios Mock y Remote de todas las features, el flujo de acceso completo (login por rol, activación de cuenta, recuperación con OTP, cambio obligatorio de contraseña y selector de colegio y rol), el rediseño de la app de estudiante con el asistente 'Agi' y golden tests, y el pipeline de compilación para iOS. También escribí 82 archivos de test y la documentación de handoff para backend e IA (contratos de API, datos de demo y estándares de UI).",
+    "role": "Hice más de la mitad de los aportes a la app móvil: el inicio de sesión y la recuperación de cuenta, el rediseño de la app para estudiantes con su asistente 'Agi', las pruebas y la documentación.",
     "teamSize": 4,
     "period": {
       "start": "2026-09",
@@ -266,22 +266,22 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": "https://agendianet.com",
+    "access": null,
     "context": "Profesional: startup EdTech Agendianet (3 personas en móvil y 1 en backend).",
-    "problem": "En los colegios, las señales de riesgo de un estudiante (inasistencias, bajo rendimiento, problemas emocionales o familiares) quedan dispersas y no se convierten a tiempo en una intervención coordinada entre docentes, tutores y familia. Además, muchos usuarios tienen celulares Android de gama baja y conexión inestable.",
-    "solution": "Tres apps móviles por rol conectadas a un mismo backend. El estudiante hace check-ins emocionales y pide apoyo, el docente registra señales en pocos toques y gestiona casos, y la familia sigue el acompañamiento con un lenguaje no estigmatizante. Las apps tienen caché offline y una cola de envíos con Idempotency-Key, de modo que nada se pierde ni se duplica sin conexión.",
+    "problem": "En los colegios, las señales de riesgo de un estudiante (inasistencias, bajo rendimiento, problemas emocionales o familiares) quedan dispersas y no llegan a tiempo a docentes, tutores y familia. Además, muchos usuarios tienen celulares de gama baja y conexión inestable.",
+    "solution": "Tres apps por rol conectadas a un mismo sistema: el estudiante cuenta cómo se siente y pide apoyo, el docente registra señales en pocos toques y la familia sigue el acompañamiento con un lenguaje no estigmatizante. Las apps funcionan sin internet y envían todo después, sin perder ni duplicar nada.",
     "howItWorks": [
-      "Cada app (estudiante, docente y familia) es una capa delgada que combina paquetes compartidos del monorepo.",
-      "Las features siguen Clean Architecture: dominio en Dart puro, datos con DTOs y mappers, y presentación con Riverpod.",
-      "Cada repositorio tiene una versión Mock con datos de prueba y otra Remote que llama a la API REST; un flag elige cuál usar.",
-      "Los errores se manejan como resultados tipados (Result/Failure), así que la interfaz nunca recibe excepciones.",
-      "Lo que envía el usuario pasa por una cola offline con Idempotency-Key y se reintenta al volver la conexión, sin duplicarse.",
-      "En la app de estudiante, 'Agi' interpreta mensajes en español con un motor de reglas local y responde sobre la agenda, los cursos y las tareas."
+      "Cada persona entra con su rol (estudiante, docente o familia) y elige su colegio.",
+      "El estudiante cuenta cómo se siente, pide apoyo y consulta su agenda, cursos y tareas con el asistente 'Agi'.",
+      "El docente registra señales de riesgo en pocos toques y hace seguimiento a cada caso.",
+      "La familia sigue el acompañamiento desde su propia app.",
+      "Si no hay conexión, lo que se envía queda guardado y se manda solo al volver la señal, sin duplicarse."
     ],
     "results": [
-      "Las tres apps navegan completas con datos de prueba, sin necesitar backend.",
-      "103 archivos de test en el repositorio (82 escritos por mí), con golden tests de las pantallas de estudiante y de acceso.",
-      "Flujo de acceso completo en las tres apps: login, activación, recuperación con OTP, selector de colegio y rol, y biometría en docente y familia.",
-      "Compilación de prueba de la app de estudiante para iOS desde Windows mediante GitHub Actions."
+      "Las tres apps funcionan completas con datos de prueba, sin depender del sistema central.",
+      "103 archivos de pruebas automáticas en el proyecto, 82 escritos por mí.",
+      "Acceso completo en las tres apps: inicio de sesión, activación de cuenta, recuperación de contraseña, elección de colegio y rol, e ingreso biométrico en docente y familia.",
+      "Versión de prueba de la app del estudiante para iPhone, generada automáticamente desde Windows."
     ],
     "architecture": [
       "App estudiante / docente / familia -> paquetes compartidos (core, domain, data, auth, design_system, l10n, notifications)",
@@ -360,8 +360,8 @@
     "id": "sep-plataforma",
     "slug": "sep-plataforma",
     "title": "SEP: Semillero de Emprendedores Perú",
-    "shortDescription": "Plataforma de formación con paneles por rol, pagos por QR Yape/Plin y certificados PDF verificables.",
-    "longDescription": "Plataforma web para Semillero de Emprendedores Perú, una organización juvenil que forma a universitarios, docentes e instituciones de varias regiones del país en metodologías ágiles. Reúne el sitio público con catálogo de cursos, el registro, un aula con progreso por sesiones, la comunidad, pagos por QR con conciliación manual y certificados PDF con código verificable, sobre Supabase con políticas RLS y roles por usuario. Creé el repositorio y me encargué del rediseño visual de páginas y paneles, el SEO técnico, la configuración de Supabase, las plantillas de correo y parte de la lógica del servidor. El backend inicial, los pagos por QR y las pantallas de los paneles se trabajaron desde la cuenta institucional de SEP.",
+    "shortDescription": "Plataforma de cursos para una organización juvenil, con pagos por Yape/Plin y certificados verificables.",
+    "longDescription": "Plataforma web para Semillero de Emprendedores Perú, una organización juvenil que forma a universitarios, docentes e instituciones de varias regiones del país en metodologías ágiles. Reúne el sitio público con el catálogo de cursos, el registro, un aula con el avance por sesiones, la comunidad, pagos por QR revisados a mano y certificados en PDF con un código que cualquiera puede verificar. Creé el proyecto y me encargué del rediseño visual, la visibilidad en buscadores, la configuración de la base de datos, los correos y parte de la lógica interna; la primera versión del sistema, los pagos por QR y las pantallas de los paneles se trabajaron desde la cuenta institucional de SEP.",
     "category": "Comunidad",
     "tags": [
       "Web",
@@ -384,7 +384,7 @@
       "Vercel",
       "Render (worker opcional)"
     ],
-    "role": "Creé el repositorio y aporté 23 de los 34 commits: rediseño visual y jerarquía de UI de las páginas de marketing y los paneles, SEO técnico y verificación en Google, configuración de Supabase CLI, plantillas de correo, server actions y consultas, y documentación de lanzamiento. El backend inicial, los pagos por QR, los datos demo, las pantallas de paneles y el onboarding se hicieron desde la cuenta institucional de SEP.",
+    "role": "Inicié el proyecto e hice la mayor parte de los aportes: el rediseño visual de las páginas y paneles, el posicionamiento en Google, los correos automáticos y la documentación de lanzamiento.",
     "teamSize": 2,
     "period": {
       "start": "2026-08",
@@ -394,22 +394,22 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/Sep",
     "liveUrl": "https://sep-drab.vercel.app",
+    "access": null,
     "context": "Profesional: soy CTO de Semillero de Emprendedores Perú (SEP).",
-    "problem": "La organización gestionaba la formación, las inscripciones, los pagos y los certificados de estudiantes, docentes, mentores e instituciones de varias regiones sin una plataforma centralizada ni verificable.",
-    "solution": "Una plataforma con sitio público, autenticación y paneles por rol (estudiante, docente, institución, mentor o voluntario, speaker y admin). Los pagos se hacen por QR de Yape/Plin y un administrador los revisa; al aprobarse, se emite un certificado PDF que cualquiera puede verificar con su código.",
+    "problem": "La organización gestionaba la formación, las inscripciones, los pagos y los certificados de estudiantes, docentes, mentores e instituciones de varias regiones sin una plataforma central ni una forma de verificar los certificados.",
+    "solution": "Una plataforma con sitio público y un panel para cada tipo de usuario (estudiante, docente, institución, mentor o voluntario, speaker y admin). Los pagos se hacen por QR de Yape/Plin y un administrador los revisa; al aprobarse, se emite un certificado en PDF que cualquiera puede verificar con su código.",
     "howItWorks": [
-      "El usuario se registra por uno de tres flujos y sus roles se guardan del lado del servidor (una persona puede tener varios).",
-      "El estudiante se inscribe a un curso con control de cupos y avanza por sesiones semanales; su progreso se recalcula automáticamente.",
-      "Para certificados o programas pagados, el sistema genera un QR con referencia única y el estudiante sube su captura y el código de operación.",
-      "El administrador revisa el comprobante mediante un enlace temporal firmado y aprueba el pago.",
-      "Al aprobarse, se emite el certificado PDF con código único, verificable públicamente sin iniciar sesión, y se registran la auditoría y la notificación.",
-      "Los paneles de administración gestionan usuarios, postulaciones, colegios, eventos, donaciones, newsletter e impacto, y exportan el diagnóstico de 45 preguntas."
+      "La persona se registra y entra a su panel según su rol; una misma persona puede tener varios.",
+      "El estudiante se inscribe a un curso con cupos limitados y avanza por sesiones semanales; su progreso se actualiza solo.",
+      "Para certificados o programas pagados, paga con un QR de Yape/Plin y sube su captura con el código de operación.",
+      "Un administrador revisa el comprobante y aprueba el pago.",
+      "Se emite el certificado en PDF con un código único que cualquiera puede verificar sin iniciar sesión."
     ],
     "results": [
-      "84 páginas (page.tsx) en App Router entre sitio público, autenticación y 6 paneles por rol.",
-      "14 migraciones SQL en Supabase: enums, tablas, funciones, políticas RLS, storage, vistas analíticas y endurecimiento de backend.",
-      "Diagnóstico público de 45 preguntas con exportación para el equipo.",
-      "Documentación operativa en el repo: plan maestro, deploy, seguridad, SEO, UI/UX y guía de Supabase paso a paso."
+      "84 páginas entre sitio público, registro e inicio de sesión, y 6 paneles por rol.",
+      "14 actualizaciones de la base de datos, con permisos por usuario y refuerzos de seguridad.",
+      "Diagnóstico público de 45 preguntas, con exportación de respuestas para el equipo.",
+      "Documentación operativa: plan maestro, publicación, seguridad, buscadores, diseño y guía de la base de datos paso a paso."
     ],
     "architecture": [
       "Navegador -> Next.js 16 App Router (Server Components + Server Actions) en Vercel",
@@ -458,7 +458,7 @@
     "slug": "recomendador-semantico-tesis",
     "title": "Recomendador semántico de tesis",
     "shortDescription": "Encuentra tesis afines por su significado, no solo por palabras exactas, en repositorios de Puno y Arequipa.",
-    "longDescription": "Sistema que recomienda tesis y artículos relacionados de los repositorios institucionales de la UNAP y la UNSA comparando su significado, no solo sus palabras. Reúne los metadatos de esos repositorios, convierte títulos y resúmenes en vectores con el modelo multilingüe BAAI/bge-m3 y los indexa con FAISS para buscar por similitud; además agrupa la producción académica por temas sin etiquetas previas (HDBSCAN). Todo se expone en una API FastAPI y en una extensión de navegador que sugiere tesis relacionadas mientras se navega el repositorio. Lo hicimos en un equipo de 4; yo me encargué del despliegue y la operación del servicio.",
+    "longDescription": "Sistema que recomienda tesis y artículos relacionados de los repositorios de la UNAP y la UNSA comparando su significado, no solo sus palabras. Además agrupa automáticamente la producción académica por temas, y una extensión del navegador sugiere tesis relacionadas mientras se navega el repositorio. Lo hicimos en un equipo de 4; yo me encargué de dejar el servicio listo para funcionar en servidores y de mantenerlo en operación.",
     "category": "IA",
     "tags": [
       "NLP",
@@ -485,7 +485,7 @@
       "Hugging Face Spaces",
       "Extensión Chrome (Manifest V3, JavaScript)"
     ],
-    "role": "Me encargué del despliegue y la operación del servicio: lo configuré en Render y en Hugging Face Spaces con Docker, hice que la API arranque sin bloquearse mientras carga el modelo y que el índice FAISS se reconstruya solo desde la base de datos cuando falta. También mantengo el repositorio de despliegue con su pipeline de actualización.",
+    "role": "Me encargué de poner el servicio en línea y mantenerlo funcionando: lo publiqué en dos plataformas, hice que arranque sin trabarse mientras carga el modelo y que su índice se reconstruya solo si falta.",
     "teamSize": 4,
     "period": {
       "start": "2025-12",
@@ -495,21 +495,23 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/unap-research-hf",
     "liveUrl": null,
+    "access": {
+      "type": "prototipo",
+      "note": "Es un prototipo académico de investigación; no tiene una página pública abierta."
+    },
     "context": "Académico: curso de aprendizaje automático en una universidad de Puno (equipo de 4).",
-    "problem": "Los repositorios institucionales de tesis buscan por palabras exactas, así que un estudiante no encuentra trabajos relacionados que usan otros términos. Eso le hace perder tiempo y duplicar temas de investigación.",
-    "solution": "Un recomendador que compara el significado de títulos y resúmenes con embeddings multilingües y búsqueda vectorial, agrupa la producción académica por temas y lleva las recomendaciones al navegador del usuario mientras consulta el repositorio.",
+    "problem": "Los repositorios de tesis buscan por palabras exactas, así que un estudiante no encuentra trabajos relacionados que usan otros términos. Eso le hace perder tiempo y puede llevarlo a repetir temas ya investigados.",
+    "solution": "Un recomendador que compara el significado de títulos y resúmenes, agrupa las tesis por temas y muestra las recomendaciones en el navegador mientras el usuario consulta el repositorio.",
     "howItWorks": [
-      "Un script reúne los metadatos (título, resumen, autores y fecha) de repositorios DSpace de universidades peruanas y los guarda en PostgreSQL.",
-      "Cada documento se convierte en un vector (embedding) con BAAI/bge-m3 y se indexa en FAISS para buscar por similitud.",
-      "UMAP reduce las dimensiones y HDBSCAN agrupa las tesis en temas, que se etiquetan con TF-IDF.",
-      "La API FastAPI carga el modelo en segundo plano y atiende recomendaciones, detalle de documentos y temas.",
-      "Si falta el índice, se reconstruye automáticamente con los embeddings guardados en la base de datos.",
-      "La extensión del navegador detecta la tesis abierta y muestra un panel con tesis de contenido similar."
+      "El usuario abre la ficha de una tesis en el repositorio de su universidad.",
+      "La extensión del navegador detecta qué tesis está viendo.",
+      "Aparece un panel con tesis de contenido parecido, aunque usen otras palabras.",
+      "El sistema también organiza las tesis por temas, sin que nadie tenga que etiquetarlas a mano."
     ],
     "results": [
-      "Índice FAISS con 36 756 vectores de 1024 dimensiones.",
-      "API con endpoints de recomendación, detalle y temas, empaquetada con Docker para Hugging Face Spaces.",
-      "Cubre los repositorios institucionales de dos universidades: UNAP y UNSA."
+      "36 756 documentos indexados para buscar por significado.",
+      "Cubre los repositorios institucionales de dos universidades: UNAP y UNSA.",
+      "Servicio empaquetado para funcionar en la nube, con recomendaciones, detalle de cada documento y temas."
     ],
     "architecture": [
       "Repositorios DSpace -> 01.harvest_multi.py -> PostgreSQL",
@@ -571,8 +573,8 @@
     "id": "kuna-wallet",
     "slug": "kuna-wallet",
     "title": "KUNA Wallet",
-    "shortDescription": "Billetera educativa Web3 de ahorro para familias rurales de Puno, con asesor de IA en español y Solana Devnet.",
-    "longDescription": "KUNA Wallet es un MVP mobile-first que creé para el Dev3pack Hackathon 2026 con el objetivo de acercar el ahorro y la inclusión financiera a familias rurales de Puno. Permite crear metas de ahorro familiar, ver saldos en PEN y USDC, hacer depósitos y retiros de demostración y seguir módulos educativos. Incluye a 'Kuna', un asesor financiero con IA que responde en español a partir de los datos del usuario, y la validación de direcciones Solana con consulta de saldo en Devnet. Desarrollé por mi cuenta el frontend, la API serverless y la base de datos; los rendimientos que muestra son estimaciones educativas, no retornos reales.",
+    "shortDescription": "Billetera educativa de ahorro para familias rurales de Puno, con un asesor de IA que habla en español.",
+    "longDescription": "KUNA Wallet es un prototipo pensado para el celular que creé para el Dev3pack Hackathon 2026, con el objetivo de acercar el ahorro y la inclusión financiera a familias rurales de Puno. Permite crear metas de ahorro familiar, ver saldos en soles y en USDC (una moneda digital), simular depósitos y retiros, seguir módulos educativos y consultar a 'Kuna', un asesor con IA que responde en español según los datos del usuario. Lo desarrollé solo, de principio a fin; los rendimientos que muestra son estimaciones educativas, no retornos reales.",
     "category": "Web",
     "tags": [
       "Web",
@@ -601,7 +603,7 @@
       "OpenAI API",
       "@solana/web3.js"
     ],
-    "role": "Fui el único autor del proyecto: desarrollé el frontend en React (landing, dashboard, metas, transacciones, aprendizaje, inversión y perfil), la API serverless (autenticación JWT, billetera, metas, transacciones y tipo de cambio USDC/PEN) y el esquema y los datos iniciales de la base de datos. También integré el asesor de IA con respuestas de respaldo, la validación de wallets Solana y los ajustes de despliegue en Vercel.",
+    "role": "Lo desarrollé solo, de principio a fin: la página web y el panel de la billetera (metas, movimientos, aprendizaje e inversión), el sistema que los sostiene, la base de datos y el asesor con IA.",
     "teamSize": 1,
     "period": {
       "start": "2026-05",
@@ -611,20 +613,20 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/KunaWallet",
     "liveUrl": "https://kuna-wallet.vercel.app",
+    "access": null,
     "context": "Hackathon: Dev3pack 2026, desde Puno (Perú).",
-    "problem": "Muchas familias rurales ahorran de forma informal (efectivo en casa). Ese dinero pierde poder adquisitivo y la banca tradicional y las herramientas DeFi les resultan lejanas, técnicas y en inglés.",
-    "solution": "Una billetera educativa en español pensada para el celular: permite crear metas de ahorro familiar y seguir su progreso, comparar rendimientos estimados con el ahorro tradicional, consultar a un asesor de IA en lenguaje simple y vincular una dirección pública de Solana.",
+    "problem": "Muchas familias rurales ahorran de manera informal, con efectivo en casa. Ese dinero pierde valor, y la banca tradicional y las finanzas digitales les resultan lejanas, técnicas y en inglés.",
+    "solution": "Una billetera educativa en español pensada para el celular: permite crear metas de ahorro familiar, seguir su avance, comparar rendimientos estimados con el ahorro tradicional y consultar a un asesor de IA en lenguaje simple.",
     "howItWorks": [
-      "El usuario se registra o inicia sesión; la API emite un JWT y las contraseñas se guardan cifradas con bcrypt.",
-      "El dashboard consulta balance, metas y transacciones en Neon Postgres mediante funciones serverless de Vercel.",
-      "Los depósitos y retiros de demostración actualizan el balance y quedan registrados como transacciones en la base de datos.",
-      "El tipo de cambio USDC/PEN se obtiene de CoinGecko con una caché de 5 minutos.",
-      "El chat 'Kuna' arma un prompt con el balance, las metas y las transacciones del usuario y llama a gpt-4o-mini; si la API no está disponible, responde con intenciones predefinidas.",
-      "En Perfil se valida una dirección Solana, se consulta su saldo SOL en Devnet y se enlaza a Solana Explorer."
+      "El usuario crea su cuenta e inicia sesión.",
+      "En su panel ve su saldo, sus metas de ahorro y sus movimientos.",
+      "Hace depósitos y retiros de demostración, que quedan registrados en su historial.",
+      "Consulta al asesor 'Kuna', que le da consejos en español según su saldo y sus metas.",
+      "Si quiere, vincula una dirección de la red Solana y ve su saldo en la red de prueba."
     ],
     "results": [
-      "MVP desplegado en Vercel con demo pública y cuenta de prueba documentada.",
-      "Presentado en el Dev3pack Hackathon 2026, en los tracks Virtuals (IA) y Solana Mobile."
+      "Prototipo publicado con demo abierta y cuenta de prueba documentada.",
+      "Presentado en el Dev3pack Hackathon 2026, en las categorías Virtuals (IA) y Solana Mobile."
     ],
     "architecture": [
       "Navegador móvil -> React + Vite + Tailwind (SPA en Vercel)",
@@ -679,8 +681,8 @@
     "id": "jebi-hackathon-2026",
     "slug": "jebi-hackathon-2026",
     "title": "Mine Loading Analytics (Hackathon Jebi 2026)",
-    "shortDescription": "Análisis del carguío pala-camión en minería con visión por computadora, datos IMU y alertas para el operador.",
-    "longDescription": "Solución que desarrollamos en un equipo de 2 para el Hackathon Jebi 2026, a partir de video de cámaras montadas en una pala minera y de datos de sensores inerciales (IMU) aportados por el organizador. Detecta paladas y ciclos por camión, estima toneladas, tiempos de llenado, cambio y tiempo muerto, y genera alertas y un puntaje de coaching para el operador. También compara alternativas operacionales con simulación y teoría de colas, y presenta los resultados en dashboards de Streamlit y un informe técnico con recomendaciones priorizadas.",
+    "shortDescription": "Mide la carga de camiones en una mina a partir de video y sensores, y da alertas al operador de la pala.",
+    "longDescription": "Solución que desarrollamos en un equipo de 2 para el Hackathon Jebi 2026, a partir del video de cámaras montadas en una pala minera y de datos de sensores de movimiento aportados por el organizador. Detecta automáticamente cada palada y cada camión cargado, estima toneladas, tiempos de llenado y tiempos muertos, y genera alertas y un puntaje para orientar al operador. También compara alternativas para organizar la operación y presenta todo en paneles visuales y un informe con recomendaciones priorizadas; trabajé en todas estas partes de la solución del equipo.",
     "category": "IA",
     "tags": [
       "Hackathon",
@@ -703,7 +705,7 @@
       "Ultralytics YOLOv8",
       "Tkinter"
     ],
-    "role": "En un equipo de 2, trabajé en la solución del grupo y la subí completa al repositorio del hackathon: analizador de ciclos por video, fusión con IMU, análisis de productividad y proyecciones, simulador de layouts de carguío, coach del operador con alertas, dashboards en Streamlit e informe técnico.",
+    "role": "En un equipo de 2, trabajé en la solución y la entregué completa: análisis de los ciclos de trabajo a partir de video y sensores, proyecciones de productividad, alertas al operador, paneles e informe técnico.",
     "teamSize": 2,
     "period": {
       "start": "2026-04",
@@ -713,22 +715,25 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": null,
+    "access": {
+      "type": "empresa",
+      "note": "Se construyó con datos reales de una operación minera entregados por el organizador del hackathon, por eso no se publica."
+    },
     "context": "Hackathon: Jebi 2026, con datos reales de video e IMU de una operación minera.",
-    "problem": "En el carguío minero, la productividad de la pala varía mucho entre ciclos (en la muestra, de 72 a 130 s por camión) y las demoras (paladas incompletas, tiempo muerto, espera de camiones) solo se detectan al revisar reportes manuales al día siguiente.",
-    "solution": "Medir el proceso automáticamente desde el video de la pala y los datos IMU, alertar al operador casi en tiempo real y cuantificar el impacto de cambios operacionales (layout de carga, tamaño de flota) para priorizar decisiones.",
+    "problem": "En la carga de camiones en la mina, el tiempo varía mucho de un ciclo a otro (en la muestra, de 72 a 130 s por camión), y las demoras, como paladas incompletas, tiempo muerto o espera de camiones, solo se detectan al día siguiente revisando reportes manuales.",
+    "solution": "Medir el proceso automáticamente desde el video y los sensores de la pala, alertar al operador casi en tiempo real y calcular el impacto de cambios en la operación (forma de cargar, cantidad de camiones) para decidir qué priorizar.",
     "howItWorks": [
-      "Se analiza la actividad en una región del video para detectar paladas y agruparlas en ciclos por camión.",
-      "Los picos de la señal IMU se sincronizan con el video para reforzar la detección de paladas.",
-      "Con los ciclos se calculan KPIs (toneladas por hora, utilización y tiempos) y se proyectan por turno, día y semana.",
-      "Un simulador compara layouts de carga (lineal, doble cola, estrella y oval) y un modelo de colas M/D/1 estima la flota óptima.",
-      "El coach del operador genera alertas (palada ligera, tiempo muerto, sin camión, ciclo corto) y un puntaje, y puede usar YOLOv8 para detectar la pala y el camión.",
-      "Los dashboards en Streamlit y el informe técnico reúnen los resultados y las recomendaciones."
+      "Se cargan el video de la pala y los datos de sus sensores.",
+      "El sistema detecta cada palada y la agrupa por camión cargado.",
+      "Calcula toneladas por hora, uso de la pala y tiempos, y los proyecta por turno, día y semana.",
+      "Avisa al operador de paladas ligeras, tiempos muertos o falta de camión, y le da un puntaje.",
+      "Los paneles y el informe muestran los resultados, las alternativas comparadas y las recomendaciones."
     ],
     "results": [
-      "Sobre un video de 10 min 27 s, se detectaron 37 paladas en 6 ciclos, con 88.7% de utilización estimada de la pala.",
-      "El coaching score de la muestra fue de 64.8/100, con 22 alertas detectadas.",
-      "La simulación estimó +13.6% de t/h con doble cola lateral y una flota óptima de 12 camiones frente a los 10 actuales.",
-      "El informe técnico incluye recomendaciones priorizadas y un plan de implementación."
+      "En un video de 10 min 27 s se detectaron 37 paladas en 6 ciclos, con 88.7% de utilización estimada de la pala.",
+      "La muestra obtuvo un puntaje de 64.8/100 para el operador, con 22 alertas detectadas.",
+      "La simulación estimó +13.6% de toneladas por hora con doble cola lateral y una flota ideal de 12 camiones frente a los 10 actuales.",
+      "Informe técnico con recomendaciones priorizadas y un plan de implementación."
     ],
     "architecture": [
       "Video de la pala (mp4) -> video_cycle_analyzer.py -> paladas y ciclos (JSON/CSV)",
@@ -790,7 +795,7 @@
     "slug": "salud-preventiva-puno",
     "title": "SaludPuno: recomendador de salud preventiva",
     "shortDescription": "Recomienda centros de salud preventiva en Puno según el servicio, la distancia y las alertas climáticas.",
-    "longDescription": "SaludPuno es una aplicación web que recomienda establecimientos de salud de la región Puno para atención preventiva (vacunación, control prenatal, CRED, odontología, etc.). A partir de la ubicación, la edad, el tipo de atención y la distancia máxima, devuelve un ranking que combina similitud de perfil, cercanía y una penalización por alerta climática, y lo muestra en tarjetas explicativas, un mapa interactivo y gráficos. En un equipo de 3, preparé el despliegue y la entrega final, ajusté el motor de recomendación y los datos semilla, y rediseñé el frontend. Está desplegada con el frontend en Vercel y la API con PostgreSQL en Render.",
+    "longDescription": "SaludPuno es una aplicación web que recomienda establecimientos de salud de la región Puno para atención preventiva (vacunación, control prenatal, CRED, odontología, etc.). Según la ubicación, la edad, el tipo de atención y la distancia máxima, ordena las opciones por afinidad, cercanía y alertas climáticas, y las muestra en tarjetas que explican cada recomendación, un mapa y gráficos. En un equipo de 3, preparé la puesta en línea y la entrega final, ajusté la lógica de recomendación y los datos de los establecimientos, y rediseñé la interfaz.",
     "category": "IA",
     "tags": [
       "IA",
@@ -822,7 +827,7 @@
       "Render",
       "Jupyter"
     ],
-    "role": "En un equipo de 3, preparé el despliegue y la entrega final (Docker, CORS para Vercel y guía de despliegue) y ajusté el motor de recomendación y los datos semilla de establecimientos. También rediseñé el frontend (inicio, búsqueda, resultados, historial, login, administración y mapa) y actualicé los informes técnicos.",
+    "role": "En un equipo de 3, rediseñé las pantallas de la aplicación (búsqueda, resultados, historial y mapa), ajusté el motor de recomendaciones, preparé la puesta en línea y actualicé los informes técnicos.",
     "teamSize": 3,
     "period": {
       "start": "2026-05",
@@ -832,21 +837,22 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/SistemasRecomendacion",
     "liveUrl": "https://sistemas-recomendacion.vercel.app",
+    "access": null,
     "context": "Académico: curso de Sistemas de Recomendación, Universidad Nacional del Altiplano (Puno).",
-    "problem": "En la región Puno, con alta dispersión geográfica, zonas rurales y clima variable, una persona que necesita un servicio preventivo no siempre sabe qué establecimiento lo ofrece, qué categoría tiene, qué tan lejos está o si se ubica en una zona con alerta climática.",
-    "solution": "Un recomendador Top-N que ordena establecimientos combinando coincidencia de servicio, similitud de perfil, cercanía y riesgo climático, y que explica al usuario por qué recomienda cada opción. No emite diagnósticos ni guarda datos clínicos.",
+    "problem": "En la región Puno, con alta dispersión geográfica, zonas rurales y clima variable, una persona que necesita un servicio preventivo no siempre sabe qué establecimiento lo ofrece, qué categoría tiene, qué tan lejos está o si está en una zona con alerta climática.",
+    "solution": "Un recomendador que ordena los establecimientos según el servicio que ofrecen, su categoría, la cercanía y el riesgo climático, y que explica por qué recomienda cada opción. No emite diagnósticos ni guarda datos clínicos.",
     "howItWorks": [
-      "El usuario se registra o inicia sesión e indica tipo de atención, edad, ubicación, distancia máxima y número de resultados.",
-      "La API filtra los establecimientos activos dentro del radio usando la fórmula de Haversine.",
-      "Se construyen vectores del usuario y de cada establecimiento (categoría IPRESS, servicios, distancia normalizada y capacidad) y se calcula su similitud coseno.",
-      "Puntaje final = (0,5 × similitud + 0,35 × cercanía + 0,15 × coincidencia de servicio) × (1 − penalidad climática); la penalidad es 0,3 por cada nivel de alerta (0 a 3).",
-      "Se devuelve el ranking con distancia, servicios, horario y nivel de alerta; el frontend lo muestra en tarjetas, un mapa y un gráfico, y guarda la consulta en el historial."
+      "El usuario inicia sesión e indica el tipo de atención, su edad, su ubicación y la distancia máxima que puede recorrer.",
+      "El sistema busca los establecimientos activos dentro de esa distancia.",
+      "Los ordena según el servicio que ofrecen, su categoría, la cercanía y si hay alerta climática en la zona.",
+      "Muestra los resultados en tarjetas, un mapa y un gráfico, con distancia, servicios, horario y nivel de alerta.",
+      "La consulta queda guardada en el historial del usuario."
     ],
     "results": [
-      "Desplegado: frontend en Vercel y API con PostgreSQL en Render.",
-      "13 pruebas automatizadas aprobadas (autenticación, API de recomendación, historial y motor).",
-      "Base semilla de 209 establecimientos de salud de Puno con categoría, coordenadas, horario, capacidad y servicios.",
-      "Informe técnico en LaTeX y notebook con análisis exploratorio, mapas Folium, modelo basado en contenido y funciones de Precision@K y Recall@K."
+      "Publicado y funcionando en línea.",
+      "13 pruebas automáticas aprobadas.",
+      "Base de 209 establecimientos de salud de Puno con categoría, ubicación, horario, capacidad y servicios.",
+      "Informe técnico y análisis de datos con mapas y métricas para evaluar la calidad de las recomendaciones."
     ],
     "architecture": [
       "Usuario -> Frontend React/Vite (Vercel)",
@@ -895,7 +901,7 @@
     "slug": "impact-regional-fellowship-web",
     "title": "Impact Regional Fellowship: sitio oficial",
     "shortDescription": "Sitio oficial del IRF 2026: convocatoria, programa, mentores, agenda de mentorías y certificados verificables.",
-    "longDescription": "Sitio web del Impact Regional Fellowship 2026, un programa de innovación, emprendimiento y tecnología para jóvenes de regiones del Perú. Presenta el programa, la currícula, los ponentes, los mentores y los aliados, enlaza a la postulación y a las donaciones, y su contenido se actualiza desde Excel sin editar HTML. Fui el principal desarrollador y mantenedor: construí la agenda de mentorías con acceso por Google restringido por región y la sección /fellows con certificados descargables y verificables por QR. El otro integrante del equipo armó la estructura inicial y la página de resultados.",
+    "longDescription": "Sitio web del Impact Regional Fellowship 2026, un programa de innovación, emprendimiento y tecnología para jóvenes de regiones del Perú. Presenta el programa, la currícula, los ponentes, los mentores y los aliados, enlaza a la postulación y a las donaciones, y el equipo lo actualiza desde Excel sin tocar código. Fui el principal desarrollador y mantenedor: construí la agenda de mentorías, con acceso restringido por región, y la sección de fellows con certificados descargables y verificables con QR; el otro integrante armó la estructura inicial y la página de resultados.",
     "category": "Web",
     "tags": [
       "sitio institucional",
@@ -917,7 +923,7 @@
       "Python (PyMuPDF, qrcode, Pillow)",
       "JSON como fuente de datos"
     ],
-    "role": "Fui el principal desarrollador y mantenedor del sitio: mantuve al día mentores, ponentes, aliados y currícula con pipelines de Excel a JSON y construí la agenda de mentorías por región con inicio de sesión Google restringido al dominio institucional. Creé la página /fellows con verificación de certificados y el generador en Python de certificados PDF con QR, vistas previas e imágenes para LinkedIn. También hice la tabla de fellows por región, el procesamiento de fotos y los cambios de navegación y llamados a la acción.",
+    "role": "Fui el principal desarrollador y responsable del sitio: mantuve al día su contenido, creé la agenda de mentorías por región y el sistema que genera y verifica los certificados de los participantes.",
     "teamSize": 2,
     "period": {
       "start": "2026-03",
@@ -927,21 +933,21 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": "https://irf.spinoutworld.org",
+    "access": null,
     "context": "Comunitario: programa Impact Regional Fellowship de Spinout World (cohorte IRF26).",
     "problem": "Un programa con becarios en varias regiones necesitaba presentarse con credibilidad, mantener al día mucho contenido cambiante (mentores, ponentes, agenda, aliados) sin que el equipo no técnico tocara código, y entregar certificados que se pudieran verificar y compartir.",
-    "solution": "Un sitio estático modular generado desde plantillas, con datos en JSON que se producen desde Excel. Suma una agenda de mentorías con login Google por región y un sistema de certificados: generación por lotes en PDF y WebP con un QR que lleva a la página de verificación, y una página por fellow con vista previa para LinkedIn.",
+    "solution": "Un sitio cuyo contenido se actualiza desde hojas de Excel, con una agenda de mentorías donde cada región entra con su cuenta institucional y certificados con un QR que lleva a una página de verificación. Cada fellow tiene además una página para compartir su certificado en LinkedIn.",
     "howItWorks": [
-      "El equipo del programa actualiza mentores, ponentes, aliados y currícula en plantillas Excel.",
-      "Herramientas en el navegador o en Node convierten los Excel a JSON y un script de build arma las páginas desde las plantillas.",
-      "Los módulos JavaScript muestran programa, mentores, ponentes, aliados y resultados, con etiquetas de Google Tag Manager en los botones de acción.",
-      "En la agenda, cada región entra con su cuenta Google institucional y agenda con los mentores visitantes vía Calendly o Google Calendar.",
-      "Un script en Python toma la plantilla del certificado, escribe nombre, región, código y QR, y exporta el PDF, la vista previa y la imagen para compartir.",
-      "/fellows lista a los fellows por región y verifica cada certificado por su código; /f/CODIGO muestra la vista previa al compartir en LinkedIn."
+      "El equipo del programa actualiza mentores, ponentes, aliados y currícula en hojas de Excel, y el sitio toma esos datos.",
+      "El visitante conoce el programa y puede postular o donar desde los botones del sitio.",
+      "Cada región entra a la agenda con su cuenta institucional de Google y reserva citas con los mentores visitantes.",
+      "Cada fellow recibe su certificado en PDF con un código y un QR para verificarlo.",
+      "En la sección de fellows se verifica cualquier certificado por su código y se comparte en LinkedIn con vista previa."
     ],
     "results": [
       "En línea en irf.spinoutworld.org.",
       "31 páginas de certificado verificable para la cohorte IRF26, de 10 regiones.",
-      "El contenido se actualiza desde Excel con herramientas propias, sin editar el HTML a mano."
+      "El contenido se actualiza desde Excel con herramientas propias, sin editar el código a mano."
     ],
     "architecture": [
       "Excel (data/*.xlsx) -> herramientas/ (SheetJS) y tools/egresados-a-json.js -> data/*.json",
@@ -989,8 +995,8 @@
     "id": "irf-fondos-donaciones",
     "slug": "irf-fondos-donaciones",
     "title": "IRF 2026: donaciones por región",
-    "shortDescription": "Donaciones por región para el IRF 2026 con Mercado Pago, QR Yape/Plin, efectivo y mapa público de aportes.",
-    "longDescription": "Plataforma de recaudación del Impact Regional Fellowship 2026 en la que cada persona apoya a una región del Perú. Acepta tarjeta con Mercado Pago (confirmada por webhook), QR de Yape/Plin con comprobante y verificación manual, y aportes en efectivo, y muestra un mapa y un ranking de regiones con los donantes que aceptaron aparecer. En un equipo de 2, construí el backend de donaciones, el panel administrativo y la integración del frontend con la API; el otro integrante diseñó la experiencia visual de donación y el dashboard. Más adelante retomé esta lógica en Laravel para la fundación Comunitarios.",
+    "shortDescription": "Donaciones por región para el IRF 2026 con tarjeta, Yape/Plin o efectivo, y un mapa público de aportes.",
+    "longDescription": "Plataforma de recaudación del Impact Regional Fellowship 2026 en la que cada persona apoya a una región del Perú. Acepta tarjeta con Mercado Pago, QR de Yape/Plin con comprobante revisado a mano y aportes en efectivo, y muestra un mapa y un ranking de regiones con los donantes que aceptaron aparecer. En un equipo de 2, construí el sistema de donaciones, el panel de administración y su conexión con la página, cuyo diseño visual hizo el otro integrante; más adelante reutilicé esta lógica para la fundación Comunitarios.",
     "category": "Comunidad",
     "tags": [
       "crowdfunding",
@@ -1011,7 +1017,7 @@
       "GeoJSON de departamentos del Perú",
       "cPanel / Apache (.htaccess)"
     ],
-    "role": "Construí el backend de donaciones: preferencia de Mercado Pago, webhook que actualiza los estados, conciliación, endpoints de diagnóstico, esquema SQL y configuración por entornos. También hice el panel administrativo (login, sesión, usuarios admin, verificación de pagos por QR, registro de efectivo y exportación) e integré con la API el frontend de donaciones y el dashboard por región, cuyo diseño visual hizo el otro integrante.",
+    "role": "Construí el sistema de donaciones con pagos en línea y por QR, y el panel de administración para verificar pagos y exportar reportes. El otro integrante del equipo hizo el diseño visual.",
     "teamSize": 2,
     "period": {
       "start": "2026-03",
@@ -1021,16 +1027,16 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": "https://donaciones.spinoutworld.org",
+    "access": null,
     "context": "Comunitario: recaudación del Impact Regional Fellowship 2026 (Spinout World).",
     "problem": "El programa necesitaba financiar la participación de jóvenes de varias regiones con donaciones del público y de empresas, aceptar los medios de pago que se usan en Perú (tarjeta, Yape/Plin, efectivo) y rendir cuentas de forma transparente.",
-    "solution": "Una página de donación por región conectada a una API PHP. El pago con tarjeta se confirma por webhook del lado del servidor, sin confiar en el navegador; los pagos por QR y en efectivo pasan por un panel con verificación manual, y todos los canales llegan a una sola tabla que alimenta el ranking y el mapa público.",
+    "solution": "Una página de donación por región: los pagos con tarjeta se confirman directamente con Mercado Pago, sin depender del navegador del donante, y los pagos por QR y en efectivo se revisan en un panel. Todo llega a un mismo registro que alimenta el ranking y el mapa público.",
     "howItWorks": [
       "La persona elige una región y un monto, llena sus datos y decide si aparece o no en la lista pública.",
-      "La API registra la donación como pendiente y crea la preferencia de Mercado Pago, que la lleva al checkout.",
-      "Mercado Pago avisa al webhook, que consulta el pago y actualiza su estado; un proceso de conciliación recupera los pagos que no se notificaron.",
-      "Si paga con QR de Yape/Plin, sube su comprobante y un administrador lo verifica en el panel.",
-      "Tesorería registra los aportes en efectivo desde el panel, que también permite exportar las donaciones.",
-      "Las métricas y los donantes aprobados alimentan el mapa, el ranking y el feed por región."
+      "Si paga con tarjeta, pasa a Mercado Pago y el pago se confirma automáticamente.",
+      "Si paga con QR de Yape/Plin, sube su comprobante y un administrador lo verifica.",
+      "Tesorería registra los aportes en efectivo desde el panel y puede exportar las donaciones.",
+      "Las donaciones aprobadas aparecen en el mapa, el ranking y la lista de cada región."
     ],
     "results": [
       "En línea en donaciones.spinoutworld.org.",
@@ -1082,8 +1088,8 @@
     "id": "comunitarios-donaciones",
     "slug": "comunitarios-donaciones",
     "title": "Comunitarios: fondos y donaciones",
-    "shortDescription": "Módulo de donaciones en Laravel para una fundación de Puno: fondos, Mercado Pago, QR Yape/Plin y verificación.",
-    "longDescription": "Comunitarios es el sitio de una fundación territorial de Puno. Sobre la base Laravel que creó el otro integrante del equipo, construí el módulo de donaciones: fondos o campañas administrables, pago con Mercado Pago confirmado por un webhook con validación de firma, un canal QR de Yape/Plin con verificación manual reversible, conciliación de pagos y un tablero público con el progreso de cada fondo. Un panel con roles y políticas gestiona fondos, usuarios y verificaciones. El módulo está cubierto por pruebas con PHPUnit y se despliega en cPanel.",
+    "shortDescription": "Sistema de donaciones para una fundación de Puno: campañas, tarjeta, Yape/Plin y avance público.",
+    "longDescription": "Comunitarios es el sitio de una fundación territorial de Puno. Sobre la base que creó el otro integrante del equipo, construí el módulo de donaciones: fondos o campañas administrables, pagos con Mercado Pago confirmados de forma segura, pagos por QR de Yape/Plin revisados a mano (con opción de revertir la decisión) y un tablero público con el avance de cada fondo. También hice el panel de administración con roles y las pruebas automáticas, y rediseñé el sitio público.",
     "category": "Comunidad",
     "tags": [
       "Laravel",
@@ -1107,7 +1113,7 @@
       "PHPUnit",
       "GitHub Actions + cPanel"
     ],
-    "role": "Diseñé e implementé el módulo de donaciones sobre la base Laravel del otro integrante: modelos y migraciones (fondos, medios, donaciones, registro de webhooks y vista de conciliación), servicios de Mercado Pago, middleware de firma del webhook, canal QR con verificación y reversión, panel admin con roles y políticas, comandos Artisan y unas 20 pruebas. También rediseñé la UX/UI del sitio público y ajusté el despliegue en cPanel.",
+    "role": "Diseñé y construí el módulo de donaciones sobre la base que hizo el otro integrante: pagos en línea y por QR, panel de administración con permisos y pruebas. También rediseñé el sitio público.",
     "teamSize": 2,
     "period": {
       "start": "2026-08",
@@ -1117,21 +1123,21 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/dieguito55/comunitarios",
     "liveUrl": "https://comunitarios.org",
+    "access": null,
     "context": "Comunitario: fundación territorial de Puno (equipo de 2).",
     "problem": "La fundación necesitaba recibir donaciones para varios fondos o campañas con los medios de pago locales y mostrar con transparencia cuánto se recaudó, sin depender de cuadres manuales en hojas de cálculo.",
-    "solution": "Un módulo Laravel que concentra todos los canales de pago en una sola tabla, confirma los pagos de Mercado Pago del lado del servidor (webhook firmado y conciliación), revisa los pagos por QR con un flujo de verificación y reversión auditable, y recalcula contadores y métricas para el tablero público.",
+    "solution": "Un módulo que reúne todos los medios de pago en un solo registro, confirma de forma segura los pagos con Mercado Pago, revisa los pagos por QR con un proceso que se puede auditar y revertir, y mantiene actualizado el tablero público.",
     "howItWorks": [
-      "El administrador crea un fondo (meta, imágenes, estado y medios de pago) desde el panel o con un comando Artisan.",
-      "El donante entra a /donar/{fondo} y elige pagar con Mercado Pago o con QR Yape/Plin.",
-      "Con Mercado Pago se crea la preferencia y el donante paga en Checkout Pro; el webhook validado por firma registra la notificación y actualiza el estado.",
-      "Con QR el donante sube su comprobante; un verificador lo aprueba o rechaza con motivo, y la decisión se puede revertir.",
-      "Los servicios recalculan los contadores del fondo y el tablero público muestra el progreso; la conciliación recupera los pagos sin notificar.",
-      "GitHub Actions corre PHPUnit y el despliegue sincroniza public/ con el Document Root de cPanel."
+      "El administrador crea un fondo con su meta, imágenes y medios de pago.",
+      "El donante entra a la página del fondo y elige pagar con Mercado Pago o con QR de Yape/Plin.",
+      "Con Mercado Pago, el pago se confirma automáticamente al terminar.",
+      "Con QR, sube su comprobante y un verificador lo aprueba o rechaza indicando el motivo; la decisión se puede revertir.",
+      "El tablero público muestra cuánto lleva recaudado cada fondo."
     ],
     "results": [
       "En línea en comunitarios.org.",
-      "Unos 20 archivos de pruebas (feature y unitarias): webhook, conciliación, canal QR, reversión, panel, SEO y despliegue.",
-      "Guía técnica para replicar el sistema de donaciones en otra organización."
+      "Unos 20 archivos de pruebas automáticas que cubren pagos, verificación por QR, reversión y panel.",
+      "Guía para replicar el sistema de donaciones en otra organización."
     ],
     "architecture": [
       "Blade + Vite (público) -> rutas web /, /donar/{fondo}, /fondos/{fondo}, /donacion/resultado",
@@ -1180,8 +1186,8 @@
     "id": "rowan",
     "slug": "rowan",
     "title": "Rowan: mentoría para startups peruanas",
-    "shortDescription": "Sitio y MVP de Rowan con diagnóstico de startups por IA, portales por rol y PostgreSQL.",
-    "longDescription": "Sitio institucional y MVP de Rowan, una startup peruana que acompaña a otras startups en las etapas de comunidad, idea, incubación e inversión. Además de las páginas públicas (servicios, nosotros y el podcast Territorio 01), incluye un diagnóstico con IA que genera 5 preguntas adaptadas a cada startup y devuelve un puntaje, fortalezas, riesgos y el plan recomendado. Lo desarrollé por mi cuenta: el sitio, el diagnóstico, la autenticación con sesiones en PostgreSQL y los portales separados para startup, mentor y admin, con límites de uso.",
+    "shortDescription": "Sitio de una startup peruana que acompaña a otras startups, con diagnóstico por IA y portales por rol.",
+    "longDescription": "Sitio institucional y primera versión del producto de Rowan, una startup peruana que acompaña a otras startups en las etapas de comunidad, idea, incubación e inversión. Además de las páginas públicas (servicios, nosotros y el podcast Territorio 01), incluye un diagnóstico con IA que hace 5 preguntas adaptadas a cada startup y devuelve un puntaje, fortalezas, riesgos y el plan recomendado. Lo desarrollé solo: el sitio, el diagnóstico, el inicio de sesión y los portales separados para startups, mentores y administradores.",
     "category": "Web",
     "tags": [
       "Web",
@@ -1203,7 +1209,7 @@
       "Vercel",
       "Render"
     ],
-    "role": "Fui el único autor del código: diseñé y desarrollé el sitio institucional (hero, alianzas, equipo, planes, podcast y video), el flujo de diagnóstico con IA, la autenticación con sesiones en PostgreSQL y los portales de startup, mentor y admin. Formo parte del equipo de Rowan en el área de Tecnología Web y Producto Digital.",
+    "role": "Escribí solo todo el código: la web institucional, el diagnóstico con IA y los espacios para startups, mentores y administradores. Formo parte del equipo de Tecnología Web y Producto Digital de Rowan.",
     "teamSize": 1,
     "period": {
       "start": "2026-04",
@@ -1213,19 +1219,20 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": "https://rowan-pagina.vercel.app",
+    "access": null,
     "context": "Profesional: Technology Lead / Full-Stack Developer en ROWAN (desde mar 2026).",
     "problem": "Las startups en etapa temprana, sobre todo fuera de Lima, no saben en qué nivel de madurez están ni qué tipo de acompañamiento les conviene. Rowan necesitaba mostrar su propuesta y captar startups.",
     "solution": "Un sitio institucional con planes escalonados y un diagnóstico con IA. Con el nombre y la idea de la startup, el sistema genera preguntas a medida, evalúa las respuestas, recomienda un plan y guarda el resultado para darle seguimiento desde los portales.",
     "howItWorks": [
-      "La startup ingresa su nombre y un resumen de su idea en la página de diagnóstico.",
-      "El servidor pide a la IA, con un JSON Schema estricto, 5 preguntas con 4 opciones ordenadas por madurez.",
-      "Con las respuestas, una segunda llamada devuelve un puntaje de 0 a 100, la etapa, el plan recomendado, fortalezas, riesgos y 3 próximos pasos, y Zod valida la salida.",
-      "Los diagnósticos, usuarios, sesiones y asignaciones de mentor se guardan en PostgreSQL; las operaciones de IA y los accesos tienen límites persistentes.",
-      "El registro público solo crea cuentas de startup; las de mentor y admin se crean con un script, y la sesión usa un token opaco en una cookie HttpOnly."
+      "La startup escribe su nombre y un resumen de su idea en la página de diagnóstico.",
+      "La IA le hace 5 preguntas a medida, cada una con 4 opciones.",
+      "Con sus respuestas recibe un puntaje de 0 a 100, su etapa, el plan recomendado, fortalezas, riesgos y 3 próximos pasos.",
+      "El resultado se guarda para darle seguimiento desde los portales de startup, mentor y administrador.",
+      "Solo las startups se registran por su cuenta; las cuentas de mentor y administrador las crea el equipo."
     ],
     "results": [
-      "Sitio con 4 páginas públicas, diagnóstico con IA y 3 portales por rol (startup, mentor, admin).",
-      "Esquema PostgreSQL con 6 tablas (users, sessions, startup_profiles, diagnostics, mentor_assignments, request_events) y health check que valida la conexión."
+      "Sitio con 4 páginas públicas, diagnóstico con IA y 3 portales por rol (startup, mentor y administrador).",
+      "Base de datos propia con 6 tablas para usuarios, sesiones, perfiles, diagnósticos, asignaciones de mentor y registro de uso."
     ],
     "architecture": [
       "Navegador -> Next.js 16 App Router (páginas públicas + portales /startup, /mentor, /admin)",
@@ -1280,8 +1287,8 @@
     "id": "sistema-capacitaciones-pj",
     "slug": "sistema-capacitaciones-pj",
     "title": "Gestión de capacitaciones y calificación OMR",
-    "shortDescription": "Plataforma web y app de escritorio para gestionar capacitaciones, asistencias y calificar hojas ópticas (OMR).",
-    "longDescription": "Sistema que cubre el ciclo completo de una capacitación presencial: creación de eventos, inscripción masiva desde Excel, control de entrada y salida por DNI, calificación de exámenes y reportes. Lo desarrollé por mi cuenta para una institución pública de Puno. Combina una API en Laravel 10, una interfaz en Vue 3 con Vuetify y una aplicación de escritorio en Python que lee hojas ópticas escaneadas en PDF con OpenCV, genera un reporte PDF por participante y sincroniza los resultados con la API.",
+    "shortDescription": "Gestiona las capacitaciones del Poder Judicial de Puno: asistencia por DNI y calificación automática.",
+    "longDescription": "Sistema que cubre todo el ciclo de una capacitación presencial: creación de eventos, inscripción masiva desde Excel, control de entrada y salida por DNI, calificación de exámenes y reportes. Lo desarrollé por mi cuenta para el Poder Judicial de Puno. Tiene un panel web y un programa de escritorio que lee automáticamente las hojas de respuestas escaneadas, genera un reporte PDF por participante y envía los resultados al sistema.",
     "category": "Web",
     "tags": [
       "full-stack",
@@ -1310,7 +1317,7 @@
       "ReportLab",
       "PyInstaller"
     ],
-    "role": "Fui el único autor del repositorio: desarrollé la API en Laravel (eventos, personas, inscripciones, registros de asistencia, evaluaciones y roles) y la interfaz en Vue. También construí el módulo OMR de escritorio en Python (detección de marcas de referencia, recorte, lectura de respuestas y DNI, cálculo de puntaje y reporte PDF) y lo empaqueté como ejecutable.",
+    "role": "Lo desarrollé solo, de principio a fin: el panel web para gestionar capacitaciones, inscripciones, asistencia y evaluaciones, y el programa de escritorio que califica los exámenes y genera reportes.",
     "teamSize": 1,
     "period": {
       "start": "2025-09",
@@ -1320,20 +1327,23 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/capacitaciones_pj",
     "liveUrl": null,
-    "context": "Proyecto aplicado: sistema para una institución pública de Puno.",
-    "problem": "El control de asistencia y la calificación de exámenes en capacitaciones presenciales se hacía de forma manual, con riesgo de duplicados, errores de conteo y demoras en la entrega de resultados.",
-    "solution": "Una plataforma web que centraliza eventos, participantes y asistencias (registro por DNI con validación de duplicados y orden de entrada y salida), y un módulo de escritorio que califica automáticamente las hojas ópticas escaneadas y publica los resultados en la misma base de datos.",
+    "access": {
+      "type": "institucional",
+      "note": "Es un sistema de uso interno del Poder Judicial de Puno, una institución del Estado, por eso no tiene una página pública."
+    },
+    "context": "Proyecto aplicado: sistema para el Poder Judicial de Puno.",
+    "problem": "El control de asistencia y la calificación de exámenes en las capacitaciones presenciales se hacía a mano, con riesgo de duplicados, errores de conteo y demoras en la entrega de resultados.",
+    "solution": "Una plataforma web que reúne eventos, participantes y asistencias (registro por DNI que evita duplicados y respeta el orden de entrada y salida), y un programa de escritorio que califica solo las hojas de respuestas escaneadas y guarda los resultados en el mismo sistema.",
     "howItWorks": [
-      "El administrador crea el evento y carga a los participantes de forma masiva desde Excel.",
-      "Durante la capacitación se registra la entrada y la salida por DNI; la interfaz se actualiza periódicamente para que varias personas operen a la vez.",
-      "Al terminar, el módulo OMR obtiene los eventos finalizados desde la API y carga la clave de respuestas.",
-      "Convierte el PDF escaneado en imágenes, detecta los cuadrados de referencia con OpenCV, recorta el área útil y lee las respuestas y el DNI.",
-      "Calcula el puntaje, genera un PDF de resultado con evidencia por participante y sincroniza los resultados con la API.",
+      "El administrador crea el evento y carga a todos los participantes de una vez desde Excel.",
+      "En la capacitación se registra la entrada y la salida de cada persona con su DNI; varias personas pueden registrar a la vez.",
+      "Al terminar, se escanean las hojas de respuestas y el programa de escritorio las califica con la clave del examen.",
+      "Cada participante obtiene un reporte PDF con su puntaje y la evidencia de su hoja.",
       "Desde la web se consultan los resultados y se exportan asistencias y evaluaciones a Excel."
     ],
     "results": [
-      "API con 38 definiciones de ruta, 11 modelos y exportaciones a Excel de asistencias y evaluaciones.",
-      "Módulo OMR de escritorio (~2700 líneas) compilado como ejecutable para usarse sin instalar Python.",
+      "Sistema web con exportación a Excel de asistencias y evaluaciones.",
+      "Programa de lectura de hojas de respuestas (~2700 líneas de código) que se usa como ejecutable, sin instalar nada adicional.",
       "Entrega documentada con manual de usuario, memoria descriptiva y documento de código fuente."
     ],
     "architecture": [
@@ -1390,8 +1400,8 @@
     "id": "allprocar",
     "slug": "allprocar",
     "title": "Allprocar",
-    "shortDescription": "App móvil Flutter que conecta a dueños de vehículos con talleres, servicios y repuestos, con asistente de IA.",
-    "longDescription": "Allprocar es una plataforma de posventa automotriz. Su app móvil para clientes permite registrar vehículos, buscar talleres, servicios y repuestos, solicitar atención y conversar con un asistente de IA. En el equipo de 5 que desarrolló la app, me encargué del módulo de perfil y gestión del usuario, del servicio de chat con proveedores de modelos de lenguaje y de la integración de ramas para el code freeze. No participé en el backend GraphQL en Go ni en el frontend B2B del ecosistema.",
+    "shortDescription": "App móvil que conecta a dueños de vehículos con talleres, servicios y repuestos, con un asistente de IA.",
+    "longDescription": "Allprocar es una plataforma de posventa automotriz. Su app móvil para clientes permite registrar vehículos, buscar talleres, servicios y repuestos, solicitar atención y conversar con un asistente de IA. En el equipo de 5 que desarrolló la app, me encargué de la sección de perfil del usuario, del asistente de IA y de unir el trabajo de varias partes del equipo antes del cierre de versión; no participé en el sistema central ni en la plataforma para empresas.",
     "category": "Móvil",
     "tags": [
       "Mobile",
@@ -1417,7 +1427,7 @@
       "Patrol (E2E)",
       "mocktail"
     ],
-    "role": "Fui desarrollador móvil en Flutter (10 de 41 commits, de marzo a mayo de 2026). Construí el módulo de perfil (edición, vehículos e historial, citas, métodos de pago, direcciones, pedidos, preferencias de notificación, seguro, club de beneficios, ayuda y asistencia mecánica) y el servicio de chat de IA con selección de proveedor (Gemini o Groq), fallback entre modelos y sugerencia de talleres. También integré las ramas de notificaciones y chat para el code freeze, corregí pantallas del catálogo y limpié el analizador antes del merge de la conexión con el backend GraphQL.",
+    "role": "Fui desarrollador de la app móvil: construí la sección de perfil del usuario (vehículos, citas, pagos, pedidos y más) y el asistente de chat con IA que sugiere talleres.",
     "teamSize": 5,
     "period": {
       "start": "2026-03",
@@ -1427,21 +1437,20 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": "https://allprocar.com",
+    "access": null,
     "context": "Profesional: Mobile Developer Intern en Allprocar (desde feb 2026).",
-    "problem": "El dueño de un vehículo tiene la oferta de posventa (talleres, servicios, repuestos, asistencia) fragmentada y le cuesta diagnosticar qué necesita su auto o a quién acudir.",
-    "solution": "Una app móvil que centraliza el perfil del conductor y sus vehículos, el catálogo de talleres, servicios y repuestos, el flujo de solicitud de servicio y un asistente conversacional que orienta sobre fallas comunes y sugiere talleres.",
+    "problem": "El dueño de un vehículo encuentra la oferta de posventa (talleres, servicios, repuestos, asistencia) fragmentada y le cuesta saber qué necesita su auto o a quién acudir.",
+    "solution": "Una app móvil que reúne el perfil del conductor y sus vehículos, el catálogo de talleres, servicios y repuestos, la solicitud de servicio y un asistente que orienta sobre fallas comunes y sugiere talleres.",
     "howItWorks": [
-      "El usuario se registra o inicia sesión, y su sesión se guarda de forma segura en el dispositivo.",
-      "Desde el perfil gestiona vehículos, citas, direcciones, métodos de pago y preferencias de notificación.",
-      "El catálogo muestra talleres, servicios y repuestos, y permite iniciar una nueva solicitud.",
-      "El asistente envía la conversación al proveedor de IA configurado (Gemini o Groq), con fallback entre modelos y proveedores.",
-      "Si el mensaje menciona una falla común (frenos, batería, motor, etc.), se añade una sugerencia de talleres de demostración.",
-      "En la versión final, la app se conecta al backend GraphQL del equipo."
+      "El usuario crea su cuenta o inicia sesión, y su sesión queda guardada de forma segura en el celular.",
+      "Desde su perfil gestiona sus vehículos, citas, direcciones, métodos de pago y notificaciones.",
+      "En el catálogo busca talleres, servicios y repuestos, y puede iniciar una solicitud de atención.",
+      "El asistente de IA lo orienta sobre fallas comunes (frenos, batería, motor, etc.) y le sugiere talleres de ejemplo."
     ],
     "results": [
-      "Módulo de perfil integrado a la rama principal de desarrollo (develop).",
-      "Asistente de IA con fallback entre proveedores integrado en la app.",
-      "El PR de conexión completa con el backend GraphQL se integró después de mi limpieza del analizador."
+      "Sección de perfil integrada a la versión principal en desarrollo de la app.",
+      "Asistente de IA integrado en la app, que cambia de proveedor automáticamente si uno falla.",
+      "Tras mi limpieza del código, se integró la conexión completa de la app con el sistema central."
     ],
     "architecture": [
       "App Flutter (Riverpod) -> Servicios de dominio (auth, perfil, vehículos, citas)",
@@ -1513,8 +1522,8 @@
     "id": "agropredict-ai",
     "slug": "agropredict-ai",
     "title": "AgroPredict AI",
-    "shortDescription": "Plataforma web que estima etapa de cultivo, vigor y riego para cultivos andinos de Puno, con asistente de IA.",
-    "longDescription": "AgroPredict AI es una aplicación web para productores del altiplano de Puno: el usuario elige región, cultivo andino (papa nativa, quinua, cañihua, haba, cebada, etc.), fecha de siembra y tipo de energía para bombeo, y la app calcula la etapa del cultivo, un vigor estimado (NDVI), el déficit de agua, el agua ahorrada y el CO₂ evitado. Incluye un mapa para dibujar la parcela y un asistente de IA (GPT-4o-mini) que responde usando el contexto climático de la parcela. La creamos en un equipo de 6 para el NASA International Space Apps Challenge 2025 y luego la adapté para la feria Titikaka Energético 2026. Fui el único autor del código del repositorio.",
+    "shortDescription": "Web que estima la etapa, el vigor y las necesidades de riego de cultivos andinos de Puno, con asistente de IA.",
+    "longDescription": "AgroPredict AI es una aplicación web para productores del altiplano de Puno: el usuario elige región, cultivo andino (papa nativa, quinua, cañihua, haba, cebada, etc.), fecha de siembra y tipo de energía para bombear agua, y la app calcula la etapa del cultivo, su vigor estimado, la falta de agua, el agua ahorrada y el CO₂ evitado. Incluye un mapa para dibujar la parcela y un asistente de IA que responde según el clima de la zona. La creamos en un equipo de 6 para el NASA International Space Apps Challenge 2025 y luego la adapté para la feria Titikaka Energético 2026; escribí todo el código del proyecto.",
     "category": "IA",
     "tags": [
       "IA",
@@ -1536,7 +1545,7 @@
       "Framer Motion",
       "Vercel"
     ],
-    "role": "En un equipo de 6, fui el único autor de commits del repositorio: desarrollé la aplicación en Next.js (landing, dashboard NDVI y área de dibujo de parcelas), la ruta API del asistente con OpenAI y el despliegue en Vercel. También preparé la versión mejorada para la feria Titikaka Energético 2026, con un modelo agronómico por región y cultivo, el guion de video y un checklist.",
+    "role": "En un equipo de 6, desarrollé todo el código de la aplicación: la página web, el panel de monitoreo de cultivos y el asistente con IA. Luego preparé la versión mejorada para la feria Titikaka Energético 2026.",
     "teamSize": 6,
     "period": {
       "start": "2025-10",
@@ -1546,20 +1555,21 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/agropredict-ai",
     "liveUrl": "https://agropredict-ai.vercel.app",
+    "access": null,
     "context": "Hackathon: NASA International Space Apps Challenge 2025 y feria Titikaka Energético 2026 (Puno).",
-    "problem": "Los productores del altiplano de Puno enfrentan heladas, estrés hídrico y poca información para decidir cuándo regar o cosechar, y el bombeo de agua suele depender de energía convencional.",
-    "solution": "Una herramienta web que traduce datos climáticos regionales en indicadores agronómicos fáciles de leer (etapa del cultivo, vigor y déficit de agua), con recomendaciones de riego y de uso de energía limpia, más un asistente de IA para resolver dudas en lenguaje natural.",
+    "problem": "Los productores del altiplano de Puno enfrentan heladas, falta de agua y poca información para decidir cuándo regar o cosechar, y el bombeo de agua suele depender de energía convencional.",
+    "solution": "Una herramienta web que convierte datos climáticos de la región en indicadores fáciles de leer (etapa del cultivo, vigor y falta de agua), con recomendaciones de riego y de uso de energía limpia, más un asistente de IA para resolver dudas en lenguaje sencillo.",
     "howItWorks": [
-      "El usuario elige región (Puno, Juliaca, Ilave, Azángaro, Ayaviri, Sandia, Yunguyo), cultivo, fecha de siembra y fuente de energía, y puede dibujar su parcela en el mapa.",
-      "Con la temperatura regional se calculan los grados-día de crecimiento (GDD) acumulados y se determina la etapa fenológica del cultivo.",
-      "Un modelo de reglas estima NDVI (vigor de la vegetación), déficit hídrico según lluvia y reserva del suelo, agua ahorrada y CO₂ evitado según la energía de bombeo.",
-      "El panel muestra los indicadores y una recomendación por etapa.",
-      "El asistente envía la pregunta junto con el contexto (temperatura, humedad, presión, altitud, etapa) a GPT-4o-mini y devuelve una respuesta breve."
+      "El usuario elige región (Puno, Juliaca, Ilave, Azángaro, Ayaviri, Sandia, Yunguyo), cultivo, fecha de siembra y fuente de energía.",
+      "Puede dibujar su parcela en el mapa.",
+      "La app calcula en qué etapa está el cultivo según el calor acumulado desde la siembra.",
+      "Muestra el vigor estimado, la falta de agua, el agua ahorrada, el CO₂ evitado y una recomendación para esa etapa.",
+      "El asistente de IA responde dudas teniendo en cuenta el clima y la etapa del cultivo."
     ],
     "results": [
-      "Aplicación desplegada y accesible en Vercel.",
+      "Aplicación publicada y accesible en línea.",
       "Presentada en el NASA International Space Apps Challenge 2025.",
-      "Modelo agronómico con 7 regiones de Puno y cultivos andinos parametrizados (temperatura base y grados-día de madurez por cultivo)."
+      "Modelo agronómico con 7 regiones de Puno y parámetros propios para cada cultivo andino."
     ],
     "architecture": [
       "Usuario -> Next.js (Vercel): landing + /demo",
@@ -1609,8 +1619,8 @@
     "id": "dermapp",
     "slug": "dermapp",
     "title": "DermaApp: detección de enfermedades de la piel",
-    "shortDescription": "Clasifica imágenes de lesiones de la piel con transfer learning y ejecuta el modelo en el navegador.",
-    "longDescription": "DermApp es un proyecto de aprendizaje profundo hecho en un equipo de 4: un modelo de visión basado en MobileNetV2 clasifica imágenes de lesiones cutáneas (melanoma, eccema, psoriasis y otras) y se exporta a TensorFlow.js para que una app React lo ejecute en el navegador, sin enviar la foto a un servidor. Yo escribí el pipeline de entrenamiento y, por mi cuenta, un backend FastAPI que añade aprendizaje continuo: cuando un especialista valida una imagen, el modelo se reentrena solo en GitHub Actions y se vuelve a publicar. Es una herramienta de apoyo educativo, no de diagnóstico.",
+    "shortDescription": "Clasifica fotos de lesiones de la piel con IA, directamente en el navegador, como apoyo educativo.",
+    "longDescription": "DermApp es un proyecto de inteligencia artificial hecho en un equipo de 4: un modelo reconoce en fotos lesiones de la piel (melanoma, eccema, psoriasis y otras) y funciona dentro del navegador, sin enviar la foto a ningún servidor. Yo preparé el entrenamiento del modelo y, por mi cuenta, un sistema que lo mejora continuamente: cuando un especialista valida una imagen, el modelo se vuelve a entrenar y se actualiza solo. Es una herramienta de apoyo educativo, no de diagnóstico, y obtuvo el primer lugar en el Concurso de Proyectos EPIS 2025-II.",
     "category": "IA",
     "tags": [
       "Deep Learning",
@@ -1632,7 +1642,7 @@
       "Vite",
       "Tailwind CSS"
     ],
-    "role": "Escribí el script de entrenamiento (carga y división del dataset, pipeline tf.data, MobileNetV2 con base congelada, dropout, early stopping y entrenamiento en GPU con DirectML) y ajusté el despliegue web. Además desarrollé por mi cuenta el backend FastAPI de reentrenamiento continuo, que incorpora imágenes validadas, dispara el reentrenamiento en GitHub Actions y reexporta el modelo a TensorFlow.js.",
+    "role": "Programé el entrenamiento del modelo de IA que analiza las imágenes y ajusté su publicación web. Además, creé por mi cuenta un sistema que reentrena el modelo solo con nuevas imágenes validadas.",
     "teamSize": 4,
     "period": {
       "start": "2025-10",
@@ -1642,20 +1652,24 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/dieguito55/aprendizaje_profundo",
     "liveUrl": null,
+    "access": {
+      "type": "prototipo",
+      "note": "Es un prototipo académico de investigación; no tiene una página pública abierta."
+    },
     "context": "Académico: curso de aprendizaje profundo, UNA Puno. Primer lugar en el Concurso de Proyectos EPIS 2025-II.",
     "problem": "Identificar a tiempo enfermedades de la piel requiere un especialista, y muchas personas no acceden a uno a tiempo. Una herramienta de orientación podría ayudar a reconocer cuándo una lesión merece consulta.",
-    "solution": "Un modelo de visión entrenado con transfer learning que clasifica imágenes de lesiones en 10 categorías y se ejecuta en el propio navegador, sin enviar la imagen a un servidor. Es una herramienta de apoyo educativo, no de diagnóstico.",
+    "solution": "Un modelo de IA que clasifica fotos de lesiones en 10 categorías y funciona en el propio navegador, sin enviar la imagen a un servidor. Es una herramienta de apoyo educativo, no de diagnóstico.",
     "howItWorks": [
-      "Las imágenes del dataset se organizan por carpetas de clase y se dividen 80% para entrenamiento y 20% para validación.",
-      "Se normalizan los píxeles y se arma un pipeline tf.data con caché y prefetch.",
-      "MobileNetV2 (ImageNet) se usa como extractor congelado, seguido de GlobalAveragePooling, Dense(256), Dropout(0.3) y softmax de 10 clases.",
-      "Se entrena con Adam (lr 1e-4) y EarlyStopping, y se guarda el mejor modelo según la precisión de validación.",
-      "El modelo se convierte a TensorFlow.js (model.json y shards) y la app web lo carga para inferir sobre una imagen subida o capturada con la webcam."
+      "El usuario sube una foto de la lesión o la toma con la cámara web.",
+      "El modelo la analiza en el propio navegador, sin enviarla a ningún servidor.",
+      "La app muestra la probabilidad de cada una de las 10 categorías.",
+      "El usuario puede revisar su historial y leer una ficha de cada enfermedad.",
+      "Cuando un especialista valida imágenes nuevas, el modelo se vuelve a entrenar y se actualiza automáticamente."
     ],
     "results": [
       "Primer lugar en el Concurso de Proyectos Estudiantiles EPIS 2025-II de la Universidad Nacional del Altiplano.",
-      "Modelo exportado a TensorFlow.js e integrado en la app web: subir una imagen o usar la webcam, ver probabilidades por clase, historial y fichas de cada enfermedad.",
-      "Ciclo de reentrenamiento automático funcionando: el historial del backend registra modelos reentrenados por el pipeline."
+      "App web funcional: subir una imagen o usar la cámara web, ver probabilidades por categoría, historial y fichas de cada enfermedad.",
+      "Mejora continua funcionando: el sistema registra los modelos que se volvieron a entrenar automáticamente."
     ],
     "architecture": [
       "Dataset de imágenes -> tf.data (80/20, normalización) -> MobileNetV2 congelado + cabeza densa",
@@ -1714,8 +1728,8 @@
     "id": "omniface",
     "slug": "omniface",
     "title": "OmniFace: asistencia por reconocimiento facial",
-    "shortDescription": "Sistema de asistencia con reconocimiento facial en vivo, panel web y app móvil con notificaciones push.",
-    "longDescription": "OmniFace es una plataforma de control de asistencia y salida basada en reconocimiento facial en tiempo real. El backend en FastAPI identifica a cada persona comparando su rostro con los registrados (InsightFace y FAISS), muestra el enmallado facial con MediaPipe, estima emociones con un modelo Keras y puede mejorar fotos con GPEN. En un equipo de 2, publiqué la versión completa del sistema, que suma el módulo de clientes, la gestión de dispositivos, las notificaciones push con Firebase y la app móvil en Flutter. Se usa desde un panel web en React.",
+    "shortDescription": "Control de asistencia con reconocimiento facial en vivo, panel web y app móvil con avisos al celular.",
+    "longDescription": "OmniFace es una plataforma de control de asistencia y salida que reconoce a las personas por su rostro en tiempo real con cámaras. Además de registrar entradas y salidas, muestra una malla del rostro, estima la emoción y puede mejorar la calidad de las fotos, todo desde un panel web. En un equipo de 2, publiqué la versión completa del sistema, que suma el módulo de clientes, la gestión de dispositivos, los avisos al celular y la app móvil.",
     "category": "IA",
     "tags": [
       "reconocimiento facial",
@@ -1743,7 +1757,7 @@
       "Tailwind CSS",
       "Flutter"
     ],
-    "role": "En un equipo de 2, publiqué la versión completa del sistema. Respecto a la versión inicial, añade el módulo de clientes (registro, reconocimiento y asistencias), la gestión de dispositivos, las notificaciones push con Firebase y la app móvil en Flutter.",
+    "role": "En un equipo de 2, publiqué la versión completa del sistema, que suma el registro y reconocimiento de clientes, el control de asistencia, la gestión de dispositivos, las notificaciones y la app móvil.",
     "teamSize": 2,
     "period": {
       "start": "2025-06",
@@ -1753,19 +1767,23 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": null,
+    "access": {
+      "type": "prototipo",
+      "note": "Es un prototipo académico privado y no está desplegado de forma pública."
+    },
     "context": "Académico: Ingeniería de Sistemas, UNA Puno.",
-    "problem": "El registro manual o por tarjeta de asistencia es lento y permite suplantación; además, los usuarios no reciben confirmación inmediata de su marcación.",
-    "solution": "Reconocimiento facial en vivo desde cámaras conectadas al backend, con identificación por similitud de embeddings, registro automático de entradas y salidas, y aviso push al celular de la persona registrada.",
+    "problem": "El registro de asistencia manual o con tarjeta es lento y permite que alguien marque por otra persona; además, nadie recibe confirmación inmediata de su marcación.",
+    "solution": "Reconocimiento facial en vivo desde cámaras conectadas al sistema, que registra automáticamente las entradas y salidas y envía un aviso al celular de la persona registrada.",
     "howItWorks": [
-      "El administrador registra a las personas y sus fotos desde el panel web; opcionalmente, las imágenes se mejoran con GPEN.",
-      "El backend genera embeddings faciales con InsightFace y construye un índice FAISS por usuario u organización.",
-      "Durante la operación, la cámara transmite por WebSocket y cada rostro se detecta, se convierte en embedding y se busca en FAISS.",
-      "Cada reconocimiento registra la asistencia o la salida en MySQL, y el panel muestra el enmallado facial y la emoción estimada.",
-      "Para clientes, se envía una notificación push con Firebase Cloud Messaging que se ve en la app Flutter."
+      "El administrador registra a las personas y sus fotos desde el panel web.",
+      "La cámara transmite en vivo y el sistema reconoce a cada persona por su rostro.",
+      "Cada reconocimiento registra automáticamente la entrada o la salida.",
+      "El panel muestra la malla del rostro y la emoción estimada.",
+      "Los clientes reciben un aviso en su celular a través de la app móvil."
     ],
     "results": [
-      "Backend con routers separados para autenticación, personas, departamentos, clientes, asistencias, salidas, dispositivos y notificaciones.",
-      "Tres clientes: panel web React (11 páginas), app móvil Flutter y streaming en vivo por WebSocket."
+      "Sistema completo con módulos de acceso, personas, departamentos, clientes, asistencias, salidas, dispositivos y notificaciones.",
+      "Tres formas de uso: panel web (11 páginas), app móvil y cámara en vivo."
     ],
     "architecture": [
       "Cámara -> WebSocket -> FastAPI (recon_live)",
@@ -1827,8 +1845,8 @@
     "id": "ecoing-inspeccion-ligera",
     "slug": "ecoing-inspeccion-ligera",
     "title": "ECOING: inspección de líneas eléctricas",
-    "shortDescription": "App móvil offline-first y API web para inspeccionar postes de líneas eléctricas con fotos, GPS y reportes.",
-    "longDescription": "Sistema para registrar en campo inspecciones de postes de líneas eléctricas. Una app Flutter con base de datos local permite llenar formularios, secciones RST, coordenadas y fotos sin conexión, y sincronizarlos después con un backend PHP que administra proyectos, el padrón de estructuras e imágenes, y genera reportes PDF y Excel por línea. Hay una variante de la app (Proyecto Embreado) centrada en la evidencia fotográfica obligatoria por poste. Yo desarrollé y publiqué las apps móviles en Flutter.",
+    "shortDescription": "App de campo para inspeccionar postes de líneas eléctricas con fotos y GPS, incluso sin internet.",
+    "longDescription": "Sistema para registrar en campo inspecciones de postes de líneas eléctricas. Una app móvil permite llenar formularios, tomar fotos y guardar coordenadas sin conexión, y sincronizarlos después con un sistema central que administra proyectos, el padrón de estructuras y las imágenes, y genera reportes PDF y Excel por línea. Desarrollé y publiqué las apps móviles, incluida una variante (Proyecto Embreado) centrada en las fotos obligatorias de cada poste.",
     "category": "Móvil",
     "tags": [
       "móvil",
@@ -1856,7 +1874,7 @@
       "FPDF",
       "XAMPP"
     ],
-    "role": "Desarrollé y publiqué las apps móviles en Flutter: pantallas de proyectos, búsqueda por línea, formularios de inspección de postes, captura de imágenes, base de datos local y sincronización.",
+    "role": "Desarrollé y publiqué las apps móviles para inspeccionar postes en campo: proyectos, búsqueda por línea, formularios, fotos, guardado de datos en el teléfono y sincronización.",
     "teamSize": null,
     "period": {
       "start": "2025-09",
@@ -1866,20 +1884,24 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/INSPECCIONLIGERA",
     "liveUrl": null,
+    "access": {
+      "type": "empresa",
+      "note": "Es una herramienta interna de ECOING Contratistas Generales; los datos se guardan en el servidor local (NAS) de la empresa, no en la nube."
+    },
     "context": "Profesional: Asistente de Desarrollo de Software en ECOING Contratistas Generales (ago 2024 – jul 2025).",
     "problem": "Las inspecciones de postes en zonas con poca cobertura se registraban en papel o planillas, con fotos dispersas, coordenadas inconsistentes y reportes armados a mano.",
-    "solution": "Una app de campo que trabaja sin conexión, guarda formularios y fotos localmente, valida la evidencia requerida y sincroniza con un servidor central que consolida el padrón y genera reportes por línea.",
+    "solution": "Una app de campo que funciona sin internet, guarda formularios y fotos en el teléfono, revisa que esté la evidencia requerida y sincroniza después con un servidor central que consolida el padrón y genera reportes por línea.",
     "howItWorks": [
-      "El inspector inicia sesión y descarga los proyectos y las estructuras del padrón.",
-      "En campo busca la línea o estructura, llena el formulario del poste y las secciones RST, y toma fotos con ubicación GPS.",
-      "Los datos y las imágenes se guardan en el teléfono (SQLite) y quedan pendientes mientras no hay conexión.",
-      "Al recuperar la señal, la app sincroniza formularios, secciones e imágenes con la API PHP.",
-      "El servidor valida y normaliza las imágenes, controla los 28 tipos de foto requeridos y genera reportes PDF y Excel por línea."
+      "El inspector inicia sesión y descarga los proyectos y las estructuras que debe revisar.",
+      "En campo busca la línea o el poste, llena el formulario y toma fotos con su ubicación GPS.",
+      "Todo se guarda en el teléfono mientras no hay señal.",
+      "Al recuperar la conexión, la app envía los formularios y las fotos al servidor.",
+      "El servidor revisa los 28 tipos de foto requeridos y genera reportes PDF y Excel por línea."
     ],
     "results": [
       "Padrón base de 1235 estructuras cargado para pruebas.",
-      "Base de datos local con 6 tablas (proyectos, postes, datos de poste, secciones RST, formularios pendientes e imágenes locales).",
-      "Documentación de despliegue en servidor y contrato de sincronización móvil."
+      "La app guarda en el teléfono proyectos, postes, formularios pendientes e imágenes para trabajar sin señal.",
+      "Documentación para instalar el sistema en el servidor y para la sincronización con el móvil."
     ],
     "architecture": [
       "App Flutter -> SQLite local (captura offline)",
@@ -1930,8 +1952,8 @@
     "id": "aruplay",
     "slug": "aruplay",
     "title": "AruPlay: aprende aymara jugando",
-    "shortDescription": "App móvil de hackathon para aprender aymara con minijuegos, retos y detección de objetos con traducción.",
-    "longDescription": "AruPlay es una app Flutter creada en una hackathon para promover el aprendizaje del aymara. Ofrece minijuegos (memoria, pupiletras y Matachola), retos, muro social, ranking y contenido inspiracional. El módulo 'Detecta' usa la cámara para reconocer objetos y mostrar su nombre en aymara con pronunciación y audio. En un equipo de 2, creé la app base, los tres minijuegos y la integración de la cámara; mi compañero implementó la detección en vivo con audio y traducciones.",
+    "shortDescription": "App móvil para aprender aymara con minijuegos, retos y una cámara que traduce objetos del entorno.",
+    "longDescription": "AruPlay es una app móvil creada en una hackathon para promover el aprendizaje del aymara. Ofrece minijuegos (memoria, pupiletras y Matachola), retos, un muro social, ranking y contenido inspiracional, y su módulo 'Detecta' usa la cámara para reconocer objetos y mostrar su nombre en aymara con pronunciación y audio. En un equipo de 2, creé la base de la app, los tres minijuegos y la conexión con la cámara; mi compañero hizo la detección en vivo con audio y traducciones.",
     "category": "Comunidad",
     "tags": [
       "lenguas originarias",
@@ -1949,7 +1971,7 @@
       "audioplayers",
       "API REST (detección y traducción)"
     ],
-    "role": "Creé la base de la app (estructura, datos, estilos y pantallas de inicio, conecta, juega, inspírate, muro, perfil y retos), los tres minijuegos y el audio. Integré la cámara y preparé la capa de servicios y la guía de API del módulo de detección; un compañero implementó la detección en vivo con audio y traducciones.",
+    "role": "Creé la base de la app con sus pantallas principales, los tres minijuegos y el audio, e integré la cámara. Un compañero implementó la detección en vivo con audio y traducciones.",
     "teamSize": 2,
     "period": {
       "start": "2025-12",
@@ -1959,17 +1981,21 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": null,
+    "access": {
+      "type": "prototipo",
+      "note": "Es un prototipo privado creado en una hackathon y no está desplegado de forma pública."
+    },
     "context": "Hackathon: diciembre de 2025, proyecto cultural para la región Puno.",
-    "problem": "El aymara tiene pocos recursos digitales atractivos para jóvenes, lo que limita su aprendizaje y uso cotidiano.",
-    "solution": "Una app gamificada que combina minijuegos, retos y reconocimiento de objetos del entorno con su traducción y pronunciación en aymara.",
+    "problem": "El aymara tiene pocos recursos digitales atractivos para jóvenes, lo que limita su aprendizaje y su uso cotidiano.",
+    "solution": "Una app con dinámica de juego que combina minijuegos, retos y reconocimiento de objetos del entorno con su traducción y pronunciación en aymara.",
     "howItWorks": [
-      "El usuario inicia sesión y accede a las secciones de juego, retos, muro y perfil.",
+      "El usuario inicia sesión y entra a las secciones de juego, retos, muro y perfil.",
       "En 'Juega' practica vocabulario con minijuegos de memoria, pupiletras y Matachola.",
-      "En 'Detecta' la cámara captura imágenes periódicamente (cada ~400 ms en modo en vivo) y las envía a la API.",
-      "La API devuelve el objeto detectado, su traducción al aymara, la fonética y el audio, que la app reproduce."
+      "En 'Detecta' apunta la cámara a un objeto de su entorno.",
+      "La app muestra el nombre del objeto en aymara, cómo se pronuncia, y reproduce su audio."
     ],
     "results": [
-      "Prototipo funcional con 16 archivos de pantalla (incluidos 3 minijuegos), desarrollado durante la hackathon."
+      "Prototipo funcional con 16 pantallas (incluidos 3 minijuegos), desarrollado durante la hackathon."
     ],
     "architecture": [
       "App Flutter -> Cámara (captura periódica)",
@@ -2010,8 +2036,8 @@
     "id": "clasico-irf",
     "slug": "clasico-irf",
     "title": "Clásico IRF",
-    "shortDescription": "Micrositio mobile-first para una dinámica de predicciones deportivas, con verificación manual de pagos.",
-    "longDescription": "Micrositio para una dinámica privada de predicciones del partido Alianza vs. Universitario, organizada por el Impact Regional Fellowship (IRF). Los participantes se registran, aportan por Yape y suben su comprobante, y un administrador verifica el monto recibido; el sistema calcula la exposición y el riesgo por equipo y gestiona las liquidaciones. Lo desarrollé por mi cuenta, con énfasis en la privacidad (nombres enmascarados en la base de datos), la seguridad (RLS, URLs firmadas, rate limit y honeypot) y las pruebas automatizadas.",
+    "shortDescription": "Micrositio para celular de una dinámica privada de predicciones deportivas, con pagos revisados a mano.",
+    "longDescription": "Micrositio para una dinámica privada de predicciones del partido Alianza vs. Universitario, organizada por el Impact Regional Fellowship (IRF). Los participantes se registran, aportan por Yape y suben su comprobante, un administrador verifica el monto, y el sistema controla el riesgo por equipo y calcula las liquidaciones. Lo desarrollé solo, cuidando la privacidad (los nombres se muestran parcialmente ocultos), la seguridad y las pruebas automáticas.",
     "category": "Comunidad",
     "tags": [
       "Web",
@@ -2032,7 +2058,7 @@
       "Testing Library",
       "Vercel"
     ],
-    "role": "Fui el único autor: desarrollé el formulario de predicción con validación, el panel de administración (configuración, verificación, resultados y liquidaciones), las migraciones SQL con RLS y funciones atómicas (RPC), la lógica de riesgo y exposición, y las pruebas con Vitest.",
+    "role": "Lo desarrollé solo: el formulario de predicciones, el panel de administración (configuración, verificación, resultados y liquidaciones), la base de datos, el cálculo de riesgos y las pruebas.",
     "teamSize": 1,
     "period": {
       "start": "2026-09",
@@ -2042,19 +2068,20 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/clasico_irf",
     "liveUrl": "https://clasico-irf.vercel.app",
+    "access": null,
     "context": "Comunitario: dinámica privada del Impact Regional Fellowship (IRF).",
     "problem": "La organización necesitaba registrar participaciones con aporte económico para un evento deportivo sin exponer datos personales, sin pagos automáticos y controlando la pérdida máxima.",
-    "solution": "Registro público con validación estricta y comprobante privado, y verificación manual por un administrador. Una función atómica en la base de datos controla el límite de riesgo, y la lista pública muestra solo nombres enmascarados y montos verificados.",
+    "solution": "Registro público con validaciones estrictas y comprobante privado, revisado a mano por un administrador. El sistema respeta un límite de riesgo y la lista pública solo muestra nombres parcialmente ocultos y montos verificados.",
     "howItWorks": [
-      "El participante elige equipo y monto, paga con el QR oficial y sube su comprobante; se validan el tipo real del archivo, su tamaño y los datos con Zod.",
-      "El registro pasa por un honeypot, una clave de idempotencia y un rate limit persistente (5 intentos cada 10 minutos, con la IP hasheada).",
-      "La participación queda pendiente y aparece en la lista pública con el nombre enmascarado dentro de Postgres.",
-      "El administrador revisa el comprobante con una URL firmada de 120 segundos e ingresa el monto verificado; una función con bloqueo aplica el límite de riesgo.",
-      "Se registra el resultado y se calculan las liquidaciones (ganadores pendientes de pago, perdedores anulados y empate a fondos de IRF), sin pagos automáticos."
+      "El participante elige equipo y monto, paga con el QR oficial y sube su comprobante.",
+      "El sistema bloquea registros automáticos y limita los intentos a 5 cada 10 minutos.",
+      "Su participación aparece en la lista pública con el nombre parcialmente oculto.",
+      "Un administrador revisa el comprobante e ingresa el monto verificado, siempre dentro del límite de riesgo.",
+      "Al final se registra el resultado y se calculan las liquidaciones, sin pagos automáticos."
     ],
     "results": [
-      "4 migraciones SQL con RLS en todas las tablas y 2 buckets privados.",
-      "Suite de pruebas Vitest en 4 archivos: lógica de negocio, validación, formulario (Testing Library) e integración con Supabase."
+      "4 actualizaciones de la base de datos con permisos en todas las tablas y 2 espacios privados para archivos.",
+      "Pruebas automáticas en 4 archivos: reglas del negocio, validaciones, formulario e integración con la base de datos."
     ],
     "architecture": [
       "Navegador móvil -> Next.js 16 (página pública + /registro/[code] + /admin) en Vercel",
@@ -2088,8 +2115,8 @@
     "id": "huella-joven-backend",
     "slug": "huella-joven-backend",
     "title": "Huella Joven: app de voluntariado",
-    "shortDescription": "API REST para una app móvil de voluntariado juvenil: actividades validadas, oportunidades, grupos y notificaciones.",
-    "longDescription": "API REST para Huella Joven, una app móvil que registra y valida la participación de jóvenes en actividades de impacto (ambiente, educación, ciudadanía, digital, salud y cultura). Maneja usuarios con roles (joven, validador, organización y admin), actividades con validación, oportunidades con inscripción, grupos juveniles con mensajes y notificaciones. La desarrollé por mi cuenta y la desplegué como función serverless en Vercel con Neon Postgres, con una ruta optimizada para reducir la latencia desde el móvil.",
+    "shortDescription": "Sistema detrás de una app de voluntariado juvenil: registra y valida actividades, oportunidades y grupos.",
+    "longDescription": "Sistema central de Huella Joven, una app móvil que registra y valida la participación de jóvenes en actividades de impacto (ambiente, educación, ciudadanía, digital, salud y cultura). Maneja usuarios con distintos roles (joven, validador, organización y administrador), actividades que deben ser validadas, oportunidades con inscripción, grupos juveniles con mensajes y notificaciones. Lo desarrollé por mi cuenta, lo puse en funcionamiento en la nube y lo optimicé para que la app responda más rápido.",
     "category": "Comunidad",
     "tags": [
       "Backend",
@@ -2111,7 +2138,7 @@
       "Helmet",
       "Vercel"
     ],
-    "role": "Fui el único autor: diseñé el modelo de datos en Prisma, los controladores y rutas REST, la validación con Zod, la autenticación JWT y los datos de prueba. También adapté la API a serverless en Vercel (timeouts, diagnóstico de base de datos y una ruta rápida con el driver de Neon).",
+    "role": "Lo desarrollé solo: diseñé la base de datos y el sistema que da servicio a la app móvil, con inicio de sesión seguro y validación de datos, y lo adapté para funcionar en la nube con buen rendimiento.",
     "teamSize": 1,
     "period": {
       "start": "2026-05",
@@ -2121,19 +2148,22 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/huella_joven_backend",
     "liveUrl": null,
+    "access": {
+      "type": "empresa",
+      "note": "Es una app móvil desarrollada para el BCP; es privada y no tiene una demo pública."
+    },
     "context": "Profesional: app móvil de voluntariado juvenil desarrollada para el BCP.",
-    "problem": "Las actividades de voluntariado y participación juvenil no quedan registradas ni validadas de forma verificable, y los jóvenes tienen dificultad para encontrar oportunidades y grupos.",
-    "solution": "Un backend que registra actividades con evidencia, permite que validadores y organizaciones las aprueben, publica oportunidades con inscripción y gestiona grupos y notificaciones para la app móvil.",
+    "problem": "Las actividades de voluntariado y participación juvenil no quedan registradas ni validadas de forma verificable, y a los jóvenes les cuesta encontrar oportunidades y grupos.",
+    "solution": "Un sistema que registra actividades con evidencia, permite que validadores y organizaciones las aprueben, publica oportunidades con inscripción y gestiona grupos y notificaciones para la app móvil.",
     "howItWorks": [
-      "El usuario se registra o inicia sesión y recibe un JWT con su rol (joven, validador, organización o admin).",
-      "El joven registra actividades por rubro y un validador las aprueba o rechaza.",
+      "El joven se registra en la app y accede según su rol.",
+      "Registra sus actividades por rubro y un validador las aprueba o rechaza.",
       "Las organizaciones publican oportunidades y los jóvenes se inscriben o cancelan.",
-      "En los grupos juveniles se puede unirse y enviar mensajes, y las notificaciones informan de los cambios.",
-      "La API corre como función serverless en Vercel con Prisma y Neon, y una ruta con el driver HTTP de Neon reduce la latencia del móvil."
+      "En los grupos juveniles puede unirse y enviar mensajes, y recibe avisos de cada cambio."
     ],
     "results": [
-      "API con 5 módulos (auth, activities, opportunities, groups, notifications), más de 30 endpoints documentados y 9 modelos Prisma.",
-      "Desplegada en Vercel con health check y endpoint de diagnóstico de base de datos."
+      "5 módulos (acceso, actividades, oportunidades, grupos y notificaciones) y más de 30 servicios documentados.",
+      "Funcionando en la nube, con revisiones del estado del sistema y de la base de datos."
     ],
     "architecture": [
       "App móvil Huella Joven -> HTTPS/JSON -> Vercel (api/index.ts y api/fast-api.ts)",
@@ -2176,8 +2206,8 @@
     "id": "inventario-pj",
     "slug": "inventario-pj",
     "title": "InventarioPJ",
-    "shortDescription": "Inventario patrimonial de equipos con app Flutter de escaneo QR o código de barras y API Spring Boot.",
-    "longDescription": "Sistema de inventario patrimonial de bienes y equipos de una institución. Tiene una API REST en Spring Boot con MySQL, autenticación JWT, documentación Swagger y reportes en Excel, y una app móvil en Flutter para inventariar en campo escaneando códigos QR o de barras (movimiento de equipos, inventario anual, inventario de almacén y responsables). En un equipo de 4, trabajé en la app móvil: creé la base del proyecto, el login, el escáner y la estructura por capas. El backend lo desarrolló principalmente otro integrante.",
+    "shortDescription": "App móvil para inventariar los bienes del Poder Judicial escaneando su código QR o de barras.",
+    "longDescription": "Sistema de inventario patrimonial de bienes y equipos del Poder Judicial. Tiene un sistema central que guarda los datos y genera reportes en Excel, y una app móvil para inventariar en campo escaneando códigos QR o de barras (movimiento de equipos, inventario anual, inventario de almacén y responsables). En un equipo de 4, trabajé en la app móvil: la base del proyecto, el inicio de sesión, el escáner y la organización del código; el sistema central lo desarrolló principalmente otro integrante.",
     "category": "Móvil",
     "tags": [
       "Mobile",
@@ -2204,7 +2234,7 @@
       "Apache POI",
       "springdoc-openapi (Swagger)"
     ],
-    "role": "Fui desarrollador de la app móvil en Flutter (17 de 83 commits). Creé el proyecto con login y dashboard, implementé el escáner de códigos QR y de barras con linterna y reorganicé el código en capas (servicio de API, almacenamiento del token y modelos). También añadí el menú principal (movimiento de equipos, inventario anual e inventario de almacén), ajusté la identidad visual y resolví conflictos entre las ramas de móvil y backend.",
+    "role": "Participé como desarrollador de la app móvil: creé el inicio de sesión, el panel principal, el escáner de códigos QR y de barras, el menú de movimientos e inventarios, y ajusté la identidad visual.",
     "teamSize": 4,
     "period": {
       "start": "2025-04",
@@ -2214,20 +2244,24 @@
     "isPrivate": true,
     "repoUrl": null,
     "liveUrl": null,
-    "context": "Proyecto en equipo: inventario patrimonial institucional (4 integrantes).",
-    "problem": "El inventario patrimonial de equipos se hace a mano: se ubica cada bien por su código patrimonial, se registra a su responsable y sus movimientos, y luego hay que consolidar los reportes. Es lento y propenso a errores.",
-    "solution": "Una app móvil que identifica cada equipo escaneando su código, conectada a una API central que registra inventarios, bloques o ubicaciones, responsables y movimientos, y genera reportes en Excel.",
+    "access": {
+      "type": "institucional",
+      "note": "Es el sistema interno de inventario de bienes del Poder Judicial, una institución del Estado; por eso es privado."
+    },
+    "context": "Proyecto en equipo: inventario patrimonial del Poder Judicial (4 integrantes).",
+    "problem": "El inventario patrimonial de equipos se hace a mano: hay que ubicar cada bien por su código patrimonial, registrar a su responsable y sus movimientos, y luego consolidar los reportes. Es lento y propenso a errores.",
+    "solution": "Una app móvil que identifica cada equipo escaneando su código, conectada a un sistema central que registra inventarios, ubicaciones, responsables y movimientos, y genera reportes en Excel.",
     "howItWorks": [
-      "El usuario inicia sesión en la app y la API le devuelve un token JWT con su rol.",
-      "Desde el menú elige movimiento de equipos, inventario anual o inventario de almacén.",
-      "La cámara escanea el código QR o de barras del equipo; se puede usar la linterna en ambientes oscuros.",
-      "La app consulta la API por código patrimonial y bloque, y registra el inventariado o el movimiento.",
-      "El backend persiste en MySQL y exporta reportes a Excel con plantilla."
+      "El usuario inicia sesión en la app.",
+      "Elige movimiento de equipos, inventario anual o inventario de almacén.",
+      "Escanea con la cámara el código QR o de barras del equipo, y puede encender la linterna en lugares oscuros.",
+      "La app registra el equipo como inventariado o anota su movimiento y su responsable.",
+      "Luego se descargan los reportes en Excel."
     ],
     "results": [
-      "API con endpoints de login, categorías, bloques, equipos, inventario, responsables y movimientos, documentada con Swagger.",
-      "App móvil funcional con escaneo de códigos, inventariado, movimientos y registro de responsables (rama mobile).",
-      "Exportación de reportes a Excel en el backend."
+      "Sistema central con inicio de sesión, categorías, bloques, equipos, inventario, responsables y movimientos, con documentación.",
+      "App móvil funcional con escaneo de códigos, inventariado, movimientos y registro de responsables.",
+      "Exportación de reportes a Excel."
     ],
     "architecture": [
       "App Flutter -> Escáner QR/código de barras (mobile_scanner)",
@@ -2270,8 +2304,8 @@
     "id": "clasificador-frescura-carne",
     "slug": "clasificador-frescura-carne",
     "title": "Clasificador multimodal de frescura de carne",
-    "shortDescription": "Clasifica carne en fresca, semifresca o no apta combinando foto, pH y color, con mapa de calor explicativo.",
-    "longDescription": "Aplicación de escritorio que evalúa la frescura de una muestra de carne a partir de una foto y, opcionalmente, de mediciones de laboratorio (temperatura, días de almacenamiento, pH y color CIELAB). Una red neuronal multimodal combina la imagen con esos datos y devuelve la clase (fresco, semifresco o no apto) con sus probabilidades. Para que el resultado se pueda interpretar, muestra un mapa de calor Grad-CAM con la zona de la imagen que influyó en la decisión, estadísticas de color y una comparación con los promedios del dataset. Lo desarrollé de forma individual en Python, con PyTorch y Tkinter.",
+    "shortDescription": "Evalúa si la carne está fresca, semifresca o no apta a partir de una foto y mediciones de laboratorio.",
+    "longDescription": "Aplicación de escritorio que evalúa la frescura de una muestra de carne a partir de una foto y, si se tienen, de mediciones de laboratorio (temperatura, días de almacenamiento, pH y color). Un modelo de IA combina la imagen con esos datos y devuelve si la carne está fresca, semifresca o no apta, con sus probabilidades. Para que el resultado se entienda, marca en la foto la zona que más influyó en la decisión y muestra estadísticas de color; lo desarrollé de forma individual.",
     "category": "IA",
     "tags": [
       "IA",
@@ -2294,7 +2328,7 @@
       "Tkinter",
       "PyInstaller"
     ],
-    "role": "Lo desarrollé de forma individual: el script de entrenamiento multimodal (imagen y datos tabulares) y la aplicación de escritorio con segmentación, predicción, Grad-CAM y análisis de color.",
+    "role": "Lo desarrollé de forma individual: el entrenamiento del modelo de IA, que combina fotos y datos, y la aplicación de escritorio que predice la frescura de la carne y analiza su color.",
     "teamSize": 1,
     "period": {
       "start": "2025-12",
@@ -2304,19 +2338,23 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/AlpacaAI",
     "liveUrl": null,
+    "access": {
+      "type": "prototipo",
+      "note": "Es un prototipo de investigación académica y no está desplegado como servicio público."
+    },
     "context": "Académico: proyecto de investigación en la Universidad Nacional del Altiplano (Puno).",
-    "problem": "Determinar la frescura de la carne suele requerir análisis de laboratorio o juicio visual subjetivo; se necesita una herramienta rápida, objetiva y explicable que apoye la inspección.",
-    "solution": "Un modelo que analiza la foto de la muestra y sus mediciones fisicoquímicas al mismo tiempo, entrega una clasificación con probabilidades y señala visualmente en qué parte de la imagen se basó.",
+    "problem": "Saber si la carne está fresca suele requerir análisis de laboratorio o un juicio visual subjetivo; hace falta una herramienta rápida, objetiva y que explique su resultado para apoyar la inspección.",
+    "solution": "Un modelo que analiza al mismo tiempo la foto de la muestra y sus mediciones de laboratorio, entrega una clasificación con probabilidades y señala en la imagen en qué se basó.",
     "howItWorks": [
-      "El usuario carga la foto de la muestra; la app segmenta la carne y recorta la región de interés.",
-      "La imagen se convierte a 6 canales (RGB + CIELAB) y se redimensiona a 320×320.",
-      "Una EfficientNet-B0 adaptada a 6 canales extrae rasgos visuales; un MLP procesa temperatura, día, pH, L*, a*, b* (estandarizados).",
-      "Ambos vectores se fusionan y una capa final predice FRESCO / SEMIFRESCO / NO_APTO.",
-      "Grad-CAM genera el mapa de calor de la zona decisiva y la app muestra histogramas LAB, índices WI/RI y comparación con promedios por clase."
+      "El usuario carga la foto de la muestra y, si los tiene, sus datos de laboratorio.",
+      "La app recorta automáticamente la zona de la carne.",
+      "El modelo analiza la imagen y los datos al mismo tiempo.",
+      "Muestra la clasificación (fresco, semifresco o no apto) con sus probabilidades.",
+      "Marca con un mapa de calor la zona decisiva y compara el color con los promedios de cada clase."
     ],
     "results": [
-      "Modelo multimodal integrado en una aplicación de escritorio con explicabilidad visual (Grad-CAM).",
-      "Configuración registrada en meta.json: 3 clases con 366 / 594 / 800 muestras, Focal Loss con pesos por clase y partición GroupShuffleSplit por temperatura-día para evitar fuga de información."
+      "Modelo integrado en una aplicación de escritorio que explica visualmente sus decisiones.",
+      "Entrenado con 3 clases de 366, 594 y 800 muestras, separando los datos por temperatura y día para que la evaluación sea confiable."
     ],
     "architecture": [
       "Foto de la muestra -> Segmentación OpenCV + recorte",
@@ -2379,8 +2417,8 @@
     "id": "generador-credenciales-irf26",
     "slug": "generador-credenciales-irf26",
     "title": "Generador de credenciales IRF26",
-    "shortDescription": "App web para que becarios, mentores y organizadores del IRF26 creen y descarguen su credencial con foto.",
-    "longDescription": "Herramienta web del evento IRF26 para que cada participante genere su credencial oficial: elige su rol (becario, mentor u organizador), escribe su nombre, elige su región y sube su foto, que puede encuadrar con zoom y arrastre. La credencial se compone en un canvas de 1200×1200 y se descarga en alta calidad; al mismo tiempo, una versión optimizada en WebP y el registro se guardan en Supabase, en buckets privados con políticas de solo inserción. Una diseñadora del equipo subió el diseño base y yo construí la aplicación funcional.",
+    "shortDescription": "Web para que becarios, mentores y organizadores del IRF26 creen y descarguen su credencial con foto.",
+    "longDescription": "Herramienta web del evento IRF26 para que cada participante cree su credencial oficial: elige su rol (becario, mentor u organizador), escribe su nombre, elige su región y sube su foto, que puede acomodar con zoom y arrastre. La credencial se descarga al instante en alta calidad, y una copia liviana queda guardada de forma privada para el registro del evento. Una diseñadora del equipo hizo el diseño base y yo construí la aplicación.",
     "category": "Comunidad",
     "tags": [
       "evento",
@@ -2398,7 +2436,7 @@
       "Supabase (Postgres + Storage + RLS)",
       "Vercel"
     ],
-    "role": "A partir del diseño base de la diseñadora del equipo, construí la aplicación: formulario por rol, validaciones, carga y encuadre de la foto, composición de la credencial en canvas, compresión a WebP con tope de tamaño, descarga e integración con Supabase (tabla, buckets y políticas). También limpié código malicioso que se había inyectado en el repositorio.",
+    "role": "A partir del diseño base de la diseñadora del equipo, construí la aplicación: formulario por rol, carga y encuadre de la foto, armado y descarga de la credencial. También limpié código malicioso del proyecto.",
     "teamSize": 2,
     "period": {
       "start": "2026-06",
@@ -2408,15 +2446,16 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/W1ndl0ve/Generador-de-credenciales-IRF-2026",
     "liveUrl": "https://generador-de-credenciales-irf-2026.vercel.app",
+    "access": null,
     "context": "Comunitario: evento IRF26 (Impact Regional Fellowship).",
     "problem": "El programa quería que cada participante tuviera una credencial oficial con su foto para compartir en redes, sin que el equipo de diseño tuviera que armarlas una por una.",
-    "solution": "Un generador self-service en el navegador que reproduce el diseño oficial, deja ajustar la foto y entrega la imagen final al instante. Al mismo tiempo guarda una copia optimizada para el registro del evento.",
+    "solution": "Un generador que cada participante usa por su cuenta en el navegador: reproduce el diseño oficial, deja ajustar la foto y entrega la imagen final al instante, guardando además una copia para el registro del evento.",
     "howItWorks": [
-      "El participante elige su rol; el rol cambia el distintivo y el color de acento.",
-      "Escribe su nombre (máximo 32 caracteres), elige una de las 10 regiones y sube su foto (JPG, PNG o WEBP de hasta 15 MB).",
+      "El participante elige su rol; el distintivo y el color cambian según el rol.",
+      "Escribe su nombre, elige una de las 10 regiones y sube su foto.",
       "Ajusta el encuadre con zoom o arrastrando la foto sobre la vista previa.",
-      "Al descargar, la credencial se compone en un canvas de 1200×1200 con el fondo, el logo y la tipografía oficiales.",
-      "Se generan versiones WebP comprimidas y se suben a buckets privados de Supabase junto con el registro (política de solo inserción)."
+      "Descarga su credencial de 1200×1200 con el fondo, el logo y la tipografía oficiales.",
+      "Una copia comprimida se guarda de forma privada para el registro del evento."
     ],
     "results": [],
     "architecture": [
@@ -2449,8 +2488,8 @@
     "id": "melifluo",
     "slug": "melifluo",
     "title": "MELIFLUO: web de carpintería con CMS",
-    "shortDescription": "Web de una empresa de muebles a medida con panel admin para editar contenido, servicios y galería vía Firebase.",
-    "longDescription": "Sitio web de una empresa de carpintería y muebles a medida, con portada, nosotros, servicios, galería y contacto por WhatsApp. Incluye un panel de administración para editar textos, servicios, galería y datos de contacto sin tocar código; los cambios se guardan en Firebase Firestore y las imágenes se comprimen en el navegador antes de subirse. Lo desarrollé por mi cuenta, desde la maqueta responsive hasta el panel y su integración con Firestore.",
+    "shortDescription": "Web de una empresa de muebles a medida, con un panel para editar servicios, fotos y contacto sin programar.",
+    "longDescription": "Sitio web de una empresa de carpintería y muebles a medida, con portada, nosotros, servicios, galería y contacto por WhatsApp. Incluye un panel de administración para editar textos, servicios, galería y datos de contacto sin tocar código, y las imágenes se optimizan solas antes de subirse. Lo desarrollé por mi cuenta, desde el diseño adaptable a celulares hasta el panel de administración.",
     "category": "Web",
     "tags": [
       "Web",
@@ -2468,7 +2507,7 @@
       "Firebase Firestore",
       "Vercel"
     ],
-    "role": "Fui el único autor: maqueté el sitio responsive, construí el panel de administración (edición por secciones, gestión de servicios y galería, subida por archivo o URL) e integré Firestore con compresión de imágenes en canvas. También corregí el menú móvil.",
+    "role": "Lo desarrollé solo: el sitio web adaptable a celulares, el panel de administración para editar secciones, servicios y galería, y la carga optimizada de imágenes.",
     "teamSize": 1,
     "period": {
       "start": "2026-02",
@@ -2478,17 +2517,18 @@
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/MELIFLUO",
     "liveUrl": "https://melifluo.vercel.app",
+    "access": null,
     "context": "Profesional: web para un negocio de carpintería y muebles a medida.",
     "problem": "El negocio necesitaba presencia web y poder actualizar sus servicios, fotos y datos de contacto sin depender de un programador.",
-    "solution": "Una SPA con panel de administración que guarda cada sección en Firestore y comprime las imágenes en el cliente para no exceder los límites de almacenamiento del documento.",
+    "solution": "Un sitio con panel de administración donde se actualiza cada sección y se suben fotos que se reducen automáticamente para no exceder el espacio de almacenamiento.",
     "howItWorks": [
-      "El sitio carga el contenido de cada sección (hero, about, services, gallery, contact) desde Firestore, con valores por defecto si no hay datos.",
-      "El administrador entra a /admin y edita cada sección con un botón de guardar propio.",
-      "Las imágenes subidas se redimensionan a 600 px y se comprimen como JPEG en un canvas antes de guardarse; también se pueden agregar por URL.",
-      "Los botones de contacto abren WhatsApp y las redes configuradas desde el panel."
+      "El visitante recorre portada, nosotros, servicios, galería y contacto.",
+      "Los botones de contacto abren WhatsApp y las redes sociales del negocio.",
+      "El administrador entra al panel y edita cada sección por separado.",
+      "Puede subir fotos desde su equipo o desde un enlace; se reducen automáticamente antes de guardarse."
     ],
     "results": [
-      "Sitio desplegado en Vercel con CMS funcional sincronizado en Firestore."
+      "Sitio publicado en línea, con un panel de contenido que funciona y guarda los cambios."
     ],
     "architecture": [
       "Navegador -> SPA React + Vite (Vercel, rewrites SPA)",

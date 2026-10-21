@@ -2,10 +2,11 @@
   "name": "Jhon Marco Aracayo Mamani",
   "shortName": "Jhon Aracayo",
   "role": "Technology Lead · Desarrollador full-stack",
-  "tagline": "Ingeniero de Sistemas egresado de la UNA Puno. Desarrollo apps móviles offline-first, plataformas web y backends, y lidero equipos que llevan productos digitales a producción.",
+  "tagline": "Ingeniero de Sistemas egresado de la UNA Puno. Desarrollo apps móviles que funcionan sin internet, plataformas web y sistemas a medida, y lidero equipos que llevan productos digitales a producción.",
   "location": "Puno, Perú",
   "email": "jaracayo7@gmail.com",
-  "photo": { "src": "img/jhon.webp", "alt": "Jhon Marco Aracayo Mamani", "width": 260, "height": 325 },
+  "whatsapp": "51931582435",
+  "photo": { "src": "img/jhon.webp", "alt": "Jhon Marco Aracayo Mamani", "width": 320, "height": 400 },
   "availability": null,
   "links": {
     "github": "https://github.com/tamoil-0",
@@ -13,7 +14,7 @@
   },
   "bio": [
     "Soy egresado de Ingeniería de Sistemas de la Universidad Nacional del Altiplano (Puno). Tengo experiencia en desarrollo de software, liderazgo tecnológico y digitalización de procesos operativos: apps móviles, plataformas web, servicios backend e infraestructura.",
-    "Me interesa especialmente la gestión de información, la integración de sistemas y las operaciones en lugares con conectividad limitada. Trabajo con Flutter, React, Next.js, PHP, SQL, APIs REST, Linux y Docker, y uso inteligencia artificial cuando aporta a un problema concreto."
+    "Me interesa especialmente la gestión de información, la integración de sistemas y las operaciones en lugares con conectividad limitada. Trabajo con tecnologías web y móviles actuales, y uso inteligencia artificial cuando aporta a un problema concreto."
   ],
   "interests": [
     "Digitalización de operaciones de campo y captura de datos sin conexión",
@@ -36,7 +37,7 @@
       "org": "ROWAN",
       "period": "mar 2026 – actualidad",
       "place": "Remoto",
-      "summary": "Desarrollo de productos digitales combinando implementación full-stack y coordinación técnica; decisiones de arquitectura e integración de servicios.",
+      "summary": "Desarrollo de productos digitales de punta a punta y coordinación técnica del equipo.",
       "project": "rowan"
     },
     {
@@ -44,7 +45,7 @@
       "org": "Friding",
       "period": "feb 2026 – actualidad",
       "place": "Remoto",
-      "summary": "Desarrollo y mejora de la plataforma web, organización técnica del proyecto, integración de APIs y bases de datos, y mantenibilidad del código.",
+      "summary": "Desarrollo y mejora de la plataforma web, y organización técnica del proyecto para que crezca de forma ordenada.",
       "project": "friding"
     },
     {
@@ -52,7 +53,7 @@
       "org": "Allprocar",
       "period": "feb 2026 – actualidad",
       "place": "Remoto",
-      "summary": "Desarrollo y mantenimiento de funcionalidades móviles en Flutter; colaboración con el equipo mediante Git, GitHub e integración de servicios.",
+      "summary": "Desarrollo y mantenimiento de funciones de la app móvil, trabajando en coordinación con el equipo.",
       "project": "allprocar"
     },
     {
@@ -60,7 +61,7 @@
       "org": "ECOING Contratistas Generales S.R.L.",
       "period": "ago 2024 – jul 2025",
       "place": "Perú",
-      "summary": "Apps móviles offline-first con Flutter y SQLite para inspecciones de campo, servicios backend con PHP, MariaDB y APIs REST, e infraestructura con Linux, Docker, redes y NAS.",
+      "summary": "Apps móviles para inspecciones de campo que funcionan sin internet, el sistema que recibe y reporta esa información, y la infraestructura propia de la empresa (servidores, redes y NAS).",
       "project": "ecoing-inspeccion-ligera"
     }
   ],

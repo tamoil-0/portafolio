@@ -3,12 +3,20 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import Gallery from '../../components/Gallery.astro';
 import ProjectMedia from '../../components/ProjectMedia.astro';
-import { fmtPeriod, profile, projects, projectUrl, teamLabel, url, type Project } from '../../lib/site';
+import {
+  ACCESS_LABEL, catClass, fmtPeriod, profile, projects, projectUrl, teamLabel, url, whatsappUrl, type Project,
+} from '../../lib/site';
 
 export function getStaticPaths() {
+  const n = projects.length;
+  // Navegación circular: siempre hay anterior y siguiente.
   return projects.map((p, i) => ({
     params: { slug: p.slug },
-    props: { project: p, prev: projects[i - 1] ?? null, next: projects[i + 1] ?? null },
+    props: {
+      project: p,
+      prev: n > 1 ? projects[(i - 1 + n) % n] : null,
+      next: n > 2 ? projects[(i + 1) % n] : null,
+    },
   }));
 }
 interface Props { project: Project; prev: Project | null; next: Project | null }
@@ -28,144 +36,618 @@ const jsonLd = {
   ...(p.liveUrl ? { sameAs: [p.liveUrl] } : {}),
   ...(ogImage ? { image: new URL(url(ogImage), Astro.site).href } : {}),
 };
-const meta = [
-  { k: 'Contexto', v: p.context },
-  { k: 'Mi rol', v: p.role },
-  { k: 'Equipo', v: teamLabel(p.teamSize) },
-  { k: 'Periodo', v: fmtPeriod(p.period) },
-  { k: 'Estado', v: p.status },
+
+const access = p.liveUrl ? null : (p.access ?? null);
+const host = (() => {
+  try { return p.liveUrl ? new URL(p.liveUrl).hostname.replace(/^www\./, '') : null; } catch { return null; }
+})();
+const words = p.title.split(/\s+/);
+
+// "Profesional: producto comercial de…" → tipo + detalle
+const [ctxKind, ...ctxRest] = p.context.split(':');
+const ctxDetail = ctxRest.join(':').trim();
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+const waText = whatsappUrl(`Hola Jhon, vi tu proyecto ${p.title} en tu portafolio.`);
+const mailHref = `mailto:${profile.email}?subject=${encodeURIComponent(`Consulta sobre ${p.title}`)}`;
+
+const I = {
+  calendar: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/>',
+  pulse: '<path d="M3 12h4l2.5-6 5 12 2.5-6h4"/>',
+  briefcase: '<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8.5 7V5.5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2V7M3 12.5h18"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 20.5a8 8 0 0 1 16 0"/>',
+  alert: '<path d="M12 3.5 2.5 20h19L12 3.5Z"/><path d="M12 10v4.5M12 17.2v.3"/>',
+  bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3Z"/>',
+  chevron: '<path d="m6 9 6 6 6-6"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  cpu: '<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2.5v3M15 2.5v3M9 18.5v3M15 18.5v3M2.5 9h3M2.5 15h3M18.5 9h3M18.5 15h3"/>',
+};
+const WA = '<path fill="currentColor" d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.59-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.41-.08-.13-.27-.2-.57-.35M12.05 21.79h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88m8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.69 1.45h.01c6.55 0 11.89-5.34 11.89-11.89 0-3.18-1.24-6.16-3.48-8.41Z"/>';
+
+const facts = [
+  { icon: I.calendar, k: 'Periodo', v: fmtPeriod(p.period), sub: '' },
+  { icon: I.users, k: 'Equipo', v: teamLabel(p.teamSize), sub: '' },
+  { icon: I.pulse, k: 'Estado', v: p.status, sub: '', live: !!p.liveUrl },
+  { icon: I.briefcase, k: 'Contexto', v: ctxRest.length ? ctxKind.trim() : p.context, sub: ctxDetail ? cap(ctxDetail) : '' },
 ];
+const hasTech = p.stack.length > 0 || !!p.ai || (p.architecture?.length ?? 0) > 0;
+const techParts = [p.stack.length > 0 && 'stack', (p.architecture?.length ?? 0) > 0 && 'arquitectura', p.ai && 'modelos de IA']
+  .filter(Boolean) as string[];
+const techSummary = cap(techParts.length > 1 ? `${techParts.slice(0, -1).join(', ')} y ${techParts.at(-1)}` : techParts[0] ?? '');
 ---
 <Base title={p.title} description={p.shortDescription} image={ogImage ? url(ogImage) : undefined} type="article" jsonLd={jsonLd}>
-  <article class="container detail">
-    <a class="back" href={url('#todos')}><Icon name="arrowLeft" size={16} /> Todos los proyectos</a>
+  <article class="detail">
+    <!-- ============ Hero ============ -->
+    <header class="hero">
+      <div class="hero-bg" aria-hidden="true">
+        <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+        <span class="hero-grid"></span>
+      </div>
 
-    <header class="d-head">
-      <p class="d-tags">
-        <span class="badge badge-accent">{p.category}</span>
-        {p.isPrivate && <span class="badge"><Icon name="lock" size={12} /> Proyecto privado</span>}
-      </p>
-      <h1 class="d-title display">{p.title}</h1>
-      <p class="lead">{p.shortDescription}</p>
-      <div class="d-actions">
-        {p.liveUrl && <a class="btn btn-primary" href={p.liveUrl} target="_blank" rel="noopener">Ver página <Icon name="external" size={16} /></a>}
-        {!p.liveUrl && <p class="muted small">Proyecto {p.isPrivate ? 'privado' : 'sin página pública'}: abajo muestro cómo funciona con capturas e ilustraciones.</p>}
+      <div class="container hero-copy">
+        <a class="back in" style="--i:0" href={url('#todos')}>
+          <span class="back-ico"><Icon name="arrowLeft" size={16} /></span> Todos los proyectos
+        </a>
+
+        <p class="pills in" style="--i:1">
+          <span class={`badge ${catClass(p.category)}`}>{p.category}</span>
+          {p.liveUrl
+            ? <span class="badge status is-live"><span class="live-dot"></span>En línea</span>
+            : <span class="badge status"><Icon name="lock" size={12} />{p.status}</span>}
+        </p>
+
+        <h1 class="title display">
+          {words.map((w, i) => <><span class="w" style={`--w:${i}`}>{w}</span>{i < words.length - 1 ? ' ' : ''}</>)}
+        </h1>
+        <p class="lead in" style="--i:4">{p.shortDescription}</p>
+
+        <div class="actions in" style="--i:5">
+          {p.liveUrl && (
+            <a class="btn btn-primary" href={p.liveUrl} target="_blank" rel="noopener">
+              Ver página <Icon name="external" size={16} />
+            </a>
+          )}
+          <a class="btn btn-wa" href={waText} target="_blank" rel="noopener">
+            <svg class="wa" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" set:html={WA} />
+            Consultar por WhatsApp
+          </a>
+        </div>
+
+        {!p.liveUrl && (
+          <aside class="notice in" style="--i:6" aria-label="Por qué no tiene página pública">
+            <span class="notice-ico"><Icon name="lock" size={20} /></span>
+            <div class="notice-text">
+              <p class="notice-title">{access ? (ACCESS_LABEL[access.type] ?? 'Sin página pública') : 'Sin página pública'}</p>
+              <p class="notice-note">
+                {access?.note || 'Proyecto sin página pública: abajo muestro cómo funciona con capturas e ilustraciones.'}
+              </p>
+            </div>
+          </aside>
+        )}
+      </div>
+
+      <div class="container">
+        <div class="stage">
+          <div class="frame">
+            <div class="frame-bar" aria-hidden="true">
+              <span class="dots"><i></i><i></i><i></i></span>
+              <span class="frame-url">
+                {host
+                  ? <><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" set:html={I.globe} />{host}</>
+                  : <><Icon name="lock" size={12} />proyecto privado</>}
+              </span>
+              <span class="dots-spacer"></span>
+            </div>
+            <div class="frame-media" style={`view-transition-name: media-${p.slug}`}>
+              <ProjectMedia project={p} eager sizes="(min-width: 1200px) 1130px, 100vw" />
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
-    <div class="d-hero">
-      <ProjectMedia project={p} eager sizes="(min-width: 1160px) 1100px, 100vw" />
-    </div>
+    <div class="container body">
+      <!-- ============ Datos rápidos ============ -->
+      <section class="facts" aria-label="Ficha del proyecto">
+        {facts.map((f, i) => (
+          <div class="fact reveal" style={`--d:${i * 70}ms`}>
+            <span class="fact-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={f.icon} /></span>
+            <p class="fact-k">{f.k}</p>
+            <p class="fact-v">{f.live && <span class="live-dot"></span>}{f.v}</p>
+            {f.sub && <p class="fact-sub">{f.sub}</p>}
+          </div>
+        ))}
+        <div class="fact fact-role reveal" style="--d:280ms">
+          <span class="fact-ico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={I.user} /></span>
+          <div>
+            <p class="fact-k">Mi rol</p>
+            <p class="fact-role-text">{p.role}</p>
+          </div>
+        </div>
+      </section>
 
-    <div class="d-grid">
-      <aside class="d-meta" aria-label="Ficha del proyecto">
-        <dl>
-          {meta.map((m) => <div><dt>{m.k}</dt><dd>{m.v}</dd></div>)}
-        </dl>
-        <h2 class="d-sub">Stack</h2>
-        <ul class="badges">{p.stack.map((s) => <li class="badge">{s}</li>)}</ul>
-      </aside>
+      <!-- ============ Resumen ============ -->
+      <section class="split" aria-labelledby="sec-resumen">
+        <header class="split-head reveal">
+          <p class="eyebrow">Visión general</p>
+          <h2 id="sec-resumen" class="sec-title">Resumen</h2>
+        </header>
+        <p class="summary reveal" style="--d:100ms">{p.longDescription}</p>
+      </section>
 
-      <div class="d-content">
-        <section>
-          <h2 class="d-h">Resumen</h2>
-          <p>{p.longDescription}</p>
+      <!-- ============ Problema / solución ============ -->
+      {(p.problem || p.solution) && (
+        <section class="block" aria-labelledby="sec-ps">
+          <header class="block-head reveal">
+            <p class="eyebrow">El reto</p>
+            <h2 id="sec-ps" class="sec-title">Del problema a la solución</h2>
+          </header>
+          <div class="ps">
+            {p.problem && (
+              <div class="reveal"><div class="ps-card ps-problem">
+                <span class="ps-ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={I.alert} /></span>
+                <h3 class="ps-title">El problema</h3>
+                <p>{p.problem}</p>
+              </div></div>
+            )}
+            {p.problem && p.solution && (
+              <span class="ps-arrow" aria-hidden="true"><Icon name="arrowRight" size={18} /></span>
+            )}
+            {p.solution && (
+              <div class="reveal" style="--d:120ms"><div class="ps-card ps-solution">
+                <span class="ps-ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={I.bulb} /></span>
+                <h3 class="ps-title">La solución</h3>
+                <p>{p.solution}</p>
+              </div></div>
+            )}
+          </div>
         </section>
-        <section>
-          <h2 class="d-h">El problema</h2>
-          <p>{p.problem}</p>
+      )}
+
+      <!-- ============ Cómo funciona ============ -->
+      {p.howItWorks.length > 0 && (
+        <section class="split" aria-labelledby="sec-how">
+          <header class="split-head reveal">
+            <p class="eyebrow">Paso a paso</p>
+            <h2 id="sec-how" class="sec-title">Cómo funciona</h2>
+            <p class="muted split-sub">{p.howItWorks.length} pasos, de principio a fin.</p>
+          </header>
+          <ol class="steps">
+            {p.howItWorks.map((s, i) => (
+              <li class="step reveal" style={`--d:${i * 80}ms`}>
+                <span class="step-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <p class="step-body">{s}</p>
+              </li>
+            ))}
+          </ol>
         </section>
-        <section>
-          <h2 class="d-h">La solución</h2>
-          <p>{p.solution}</p>
-        </section>
-        {p.howItWorks.length > 0 && (
-          <section>
-            <h2 class="d-h">Cómo funciona</h2>
-            <ol class="steps">{p.howItWorks.map((s) => <li>{s}</li>)}</ol>
-          </section>
-        )}
-        {p.ai && (
-          <section>
-            <h2 class="d-h">Inteligencia artificial</h2>
-            <dl class="ai">
-              {p.ai.technique && <div><dt>Técnica</dt><dd>{p.ai.technique}</dd></div>}
-              {p.ai.models.length > 0 && <div><dt>Modelos</dt><dd>{p.ai.models.join(', ')}</dd></div>}
-              {p.ai.datasets.length > 0 && <div><dt>Datos</dt><dd>{p.ai.datasets.join(', ')}</dd></div>}
-              {p.ai.metrics.length > 0 && <div><dt>Métricas</dt><dd>{p.ai.metrics.join(' · ')}</dd></div>}
-            </dl>
-          </section>
-        )}
-        {p.images.length > 0 && (
-          <section>
-            <h2 class="d-h">{p.images.every((i) => i.generated) ? 'Cómo se ve y cómo funciona' : 'Capturas'}</h2>
+      )}
+
+      <!-- ============ Galería ============ -->
+      {p.images.length > 0 && (
+        <section class="block" aria-labelledby="sec-gal">
+          <header class="block-head reveal">
+            <p class="eyebrow">Galería</p>
+            <h2 id="sec-gal" class="sec-title">{p.images.every((i) => i.generated) ? 'Cómo se ve y cómo funciona' : 'Capturas'}</h2>
+            <p class="muted">Toca una imagen para ampliarla.</p>
+          </header>
+          <div class="reveal" style="--d:100ms">
             <Gallery images={p.images} title={p.title} />
-          </section>
-        )}
-        {p.results.length > 0 && (
-          <section>
-            <h2 class="d-h">Resultados</h2>
-            <ul class="results">{p.results.map((r) => <li>{r}</li>)}</ul>
-          </section>
-        )}
-      </div>
-    </div>
+          </div>
+        </section>
+      )}
 
-    <nav class="pager" aria-label="Más proyectos">
-      {prev ? (
-        <a class="pager-link" href={projectUrl(prev)}><span class="muted"><Icon name="arrowLeft" size={14} /> Anterior</span><strong>{prev.title}</strong></a>
-      ) : <span />}
-      {next ? (
-        <a class="pager-link is-next" href={projectUrl(next)}><span class="muted">Siguiente <Icon name="arrowRight" size={14} /></span><strong>{next.title}</strong></a>
-      ) : <span />}
-    </nav>
+      <!-- ============ Resultados ============ -->
+      {p.results.length > 0 && (
+        <section class="block" aria-labelledby="sec-res">
+          <header class="block-head reveal">
+            <p class="eyebrow">Impacto</p>
+            <h2 id="sec-res" class="sec-title">Resultados</h2>
+          </header>
+          <ul class="results">
+            {p.results.map((r, i) => (
+              <li class="reveal" style={`--d:${i * 80}ms`}>
+                <div class="result">
+                  <span class="result-ico"><Icon name="check" size={18} /></span>
+                  <p>{r}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <!-- ============ Detalles técnicos ============ -->
+      {hasTech && (
+        <div class="reveal"><details class="tech">
+          <summary>
+            <span class="tech-ico"><Icon name="code" size={20} /></span>
+            <span class="tech-sum">
+              <strong>Detalles técnicos</strong>
+              <span class="muted">{techSummary}</span>
+            </span>
+            <span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={I.chevron} /></span>
+          </summary>
+          <div class="tech-body">
+            {p.stack.length > 0 && (
+              <div class="tech-block">
+                <h3 class="tech-h">Stack</h3>
+                <ul class="badges">{p.stack.map((s) => <li class="badge mono">{s}</li>)}</ul>
+              </div>
+            )}
+            {(p.architecture?.length ?? 0) > 0 && (
+              <div class="tech-block">
+                <h3 class="tech-h">Arquitectura</h3>
+                <ul class="arch">{p.architecture.map((a) => <li>{a}</li>)}</ul>
+              </div>
+            )}
+            {p.ai && (
+              <div class="tech-block">
+                <h3 class="tech-h">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={I.cpu} />
+                  Inteligencia artificial
+                </h3>
+                <dl class="ai">
+                  {p.ai.technique && <div><dt>Técnica</dt><dd>{p.ai.technique}</dd></div>}
+                  {p.ai.models.length > 0 && <div><dt>Modelos</dt><dd>{p.ai.models.join(', ')}</dd></div>}
+                  {p.ai.datasets.length > 0 && <div><dt>Datos</dt><dd>{p.ai.datasets.join(', ')}</dd></div>}
+                  {p.ai.metrics.length > 0 && <div><dt>Métricas</dt><dd>{p.ai.metrics.join(' · ')}</dd></div>}
+                </dl>
+              </div>
+            )}
+          </div>
+        </details></div>
+      )}
+
+      <!-- ============ CTA ============ -->
+      <section class="cta reveal" aria-labelledby="sec-cta">
+        <div class="cta-bg" aria-hidden="true"><span></span><span></span></div>
+        <p class="eyebrow cta-eyebrow">Hablemos</p>
+        <h2 id="sec-cta" class="cta-title display">¿Te interesa algo así?</h2>
+        <p class="cta-text">Si tienes una idea parecida o quieres saber más de {p.title}, escríbeme y lo conversamos.</p>
+        <div class="cta-actions">
+          <a class="btn btn-wa" href={waText} target="_blank" rel="noopener">
+            <svg class="wa" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" set:html={WA} />
+            Consultar por WhatsApp
+          </a>
+          <a class="btn btn-light" href={mailHref}><Icon name="mail" size={18} /> {profile.email}</a>
+        </div>
+      </section>
+
+      <!-- ============ Anterior / siguiente ============ -->
+      {(prev || next) && (
+        <nav class="pager" aria-label="Más proyectos">
+          {[prev, next].map((q, i) => q ? (
+            <a class:list={['pg', i === 1 && 'is-next']} href={projectUrl(q)}>
+              <span class="pg-media"><ProjectMedia project={q} sizes="200px" /></span>
+              <span class="pg-body">
+                <span class="pg-dir">
+                  {i === 0 ? <><span class="pg-arrow"><Icon name="arrowLeft" size={14} /></span> Anterior</> : <>Siguiente <span class="pg-arrow"><Icon name="arrowRight" size={14} /></span></>}
+                </span>
+                <strong class="pg-title">{q.title}</strong>
+                <span class={`badge ${catClass(q.category)}`}>{q.category}</span>
+              </span>
+            </a>
+          ) : <span />)}
+        </nav>
+      )}
+    </div>
   </article>
 </Base>
 
 <style>
-  .detail { padding-block: var(--s-7) var(--s-9); }
-  .back { display: inline-flex; align-items: center; gap: var(--s-2); font-size: var(--step--1); text-decoration: none; color: var(--muted); min-height: 44px; }
-  .d-head { display: grid; gap: var(--s-4); max-width: 820px; margin-top: var(--s-5); }
-  .d-tags { display: flex; flex-wrap: wrap; gap: var(--s-2); }
-  .d-title { font-size: var(--step-4); line-height: 1; }
-  .d-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); margin-top: var(--s-2); }
-  .small { font-size: var(--step--1); }
-  .d-hero {
-    margin-top: var(--s-7); aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius);
-    border: 1px solid var(--line); background: var(--surface-2);
+  /* ---------- Hero ---------- */
+  .hero { position: relative; isolation: isolate; padding-top: var(--s-6); }
+  .hero-bg {
+    position: absolute; z-index: -1; inset: calc(-1 * var(--nav-h)) 0 auto; height: min(1000px, 130vh);
+    overflow: hidden; pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent);
   }
-  .d-hero :global(img), .d-hero :global(svg) { width: 100%; height: 100%; object-fit: cover; object-position: top; }
-  .d-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--s-7); margin-top: var(--s-8); }
-  .d-meta { grid-column: 1 / span 4; align-self: start; position: sticky; top: 88px; display: grid; gap: var(--s-4); }
-  .d-meta dl { display: grid; gap: var(--s-4); margin: 0; }
-  .d-meta dt, .ai dt { font-size: var(--step--1); color: var(--muted); }
-  .d-meta dd, .ai dd { margin: 2px 0 0; font-size: var(--step--1); line-height: 1.55; }
-  .d-sub { font-size: var(--step--1); color: var(--muted); font-weight: 400; margin-top: var(--s-3); }
-  .d-content { grid-column: 6 / span 7; display: grid; gap: var(--s-7); }
-  .d-content section { display: grid; gap: var(--s-4); }
-  .d-h { font-size: var(--step-1); }
-  .steps { counter-reset: s; list-style: none; display: grid; gap: var(--s-3); }
-  .steps li { counter-increment: s; position: relative; padding-left: 44px; }
-  .steps li::before {
-    content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 999px;
-    display: grid; place-items: center; font-size: 0.8rem; font-weight: 600; background: var(--accent-soft); color: var(--accent);
+  .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.32; will-change: transform; }
+  .b1 { width: min(560px, 90vw); aspect-ratio: 1; background: var(--accent); top: -140px; left: -10%; animation: drift-a 22s ease-in-out infinite alternate; }
+  .b2 { width: min(480px, 80vw); aspect-ratio: 1; background: var(--accent-2); top: 20px; right: -12%; opacity: 0.26; animation: drift-b 26s ease-in-out infinite alternate; }
+  .b3 { width: min(400px, 70vw); aspect-ratio: 1; background: var(--accent-3); top: 340px; left: 38%; opacity: 0.16; animation: drift-c 30s ease-in-out infinite alternate; }
+  @keyframes drift-a { to { transform: translate(18vw, 60px) scale(1.15); } }
+  @keyframes drift-b { to { transform: translate(-14vw, 120px) scale(0.9); } }
+  @keyframes drift-c { to { transform: translate(-20vw, -80px) scale(1.2); } }
+  .hero-grid {
+    position: absolute; inset: 0; opacity: 0.55;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 10%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse 70% 55% at 50% 10%, #000 20%, transparent 75%);
   }
-  .ai { display: grid; gap: var(--s-3); margin: 0; padding: var(--s-5); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
-  .results { list-style: none; display: grid; gap: var(--s-2); }
-  .results li { padding-left: var(--s-5); position: relative; }
-  .results li::before { content: ''; position: absolute; left: 0; top: 0.8em; width: 10px; height: 1px; background: var(--accent); }
-  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-4); margin-top: var(--s-9); padding-top: var(--s-6); border-top: 1px solid var(--line); }
-  .pager-link { display: grid; gap: var(--s-1); padding: var(--s-4); border-radius: var(--radius); text-decoration: none; border: 1px solid transparent; transition: border-color var(--dur) var(--ease); }
-  .pager-link:hover { border-color: var(--line); color: var(--text); }
-  .pager-link span { display: inline-flex; align-items: center; gap: 6px; font-size: var(--step--1); }
-  .pager-link.is-next { text-align: right; justify-items: end; }
+
+  .hero-copy { display: grid; justify-items: start; gap: var(--s-4); }
+  .in { animation: rise 900ms var(--ease) both; animation-delay: calc(var(--i, 0) * 90ms + 40ms); }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); filter: blur(6px); } }
+
+  .back {
+    display: inline-flex; align-items: center; gap: var(--s-2); min-height: 44px; margin-bottom: var(--s-2);
+    font-size: var(--step--1); font-weight: 500; text-decoration: none; color: var(--muted);
+  }
+  .back-ico {
+    display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--line-strong); background: var(--glass);
+    transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .back:hover .back-ico { transform: translateX(-3px); border-color: var(--accent); }
+
+  .pills { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .status { background: var(--glass); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .status.is-live { color: var(--text); font-weight: 600; }
+
+  .title { font-size: var(--step-4); line-height: 0.98; max-width: 16ch; overflow-wrap: anywhere; hyphens: auto; }
+  .w {
+    display: inline-block; animation: word-in 1000ms var(--ease) both;
+    animation-delay: calc(var(--w) * 70ms + 220ms);
+  }
+  @keyframes word-in { from { opacity: 0; transform: translateY(0.45em) rotate(2deg); filter: blur(10px); } }
+  .lead { max-width: 62ch; }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-2); }
+  .wa { width: 18px; height: 18px; }
+  .btn-wa:hover .wa { transform: rotate(-8deg) scale(1.08); }
+
+  .notice {
+    position: relative; display: flex; gap: var(--s-4); align-items: flex-start; max-width: 640px; margin-top: var(--s-3);
+    padding: var(--s-4) var(--s-5); border-radius: var(--radius);
+    background: var(--glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: var(--shadow);
+  }
+  .notice::before {
+    content: ''; position: absolute; inset: 0; padding: 1px; border-radius: inherit; pointer-events: none;
+    background: var(--grad);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    opacity: 0.55;
+  }
+  .notice-ico {
+    flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px;
+    background: var(--grad); color: #fff; box-shadow: 0 8px 20px -8px rgb(90 60 244 / 0.7);
+  }
+  .notice-text { display: grid; gap: 2px; min-width: 0; }
+  .notice-title { font-weight: 650; font-family: var(--font-display); font-size: var(--step-0); }
+  .notice-note { font-size: var(--step--1); color: var(--muted); line-height: 1.55; }
+
+  /* Ventana de navegador */
+  .stage { position: relative; margin-top: var(--s-7); perspective: 1800px; }
+  .stage::before {
+    content: ''; position: absolute; z-index: -1; inset: 12% 8% -6%; border-radius: 50%;
+    background: var(--grad); filter: blur(80px); opacity: 0.28;
+  }
+  .frame {
+    position: relative; overflow: hidden; border-radius: var(--radius-lg);
+    border: 1px solid var(--line-strong); background: var(--surface); box-shadow: var(--shadow-lg);
+    transform-origin: 50% 0; animation: frame-in 1300ms var(--ease) 380ms both;
+  }
+  @keyframes frame-in { from { opacity: 0; transform: translateY(56px) rotateX(10deg) scale(0.96); } }
+  .frame-bar {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--s-3);
+    height: 44px; padding-inline: var(--s-4); border-bottom: 1px solid var(--line); background: var(--surface-2);
+  }
+  .dots { display: flex; gap: 7px; }
+  .dots i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
+  .dots i:nth-child(2) { background: #febc2e; }
+  .dots i:nth-child(3) { background: #28c840; }
+  .frame-url {
+    display: inline-flex; align-items: center; gap: 6px; min-width: 0; max-width: 46vw; padding: 4px 14px; border-radius: 999px;
+    font-family: var(--font-mono); font-size: var(--step--2); color: var(--muted);
+    background: var(--surface); border: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .frame-url :global(svg) { flex: none; }
+  .frame-media { aspect-ratio: 16 / 10; overflow: hidden; background: var(--surface-2); }
+  .frame-media :global(img), .frame-media :global(svg) { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+  /* Parallax sutil de la imagen dentro de la ventana */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .frame-media :global(img) { animation: inner-parallax linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
+    }
+  }
+  @keyframes inner-parallax {
+    from { transform: scale(1.06) translateY(-1.5%); }
+    to { transform: scale(1.06) translateY(2.5%); }
+  }
+
+  /* ---------- Cuerpo ---------- */
+  .body { display: grid; gap: clamp(var(--s-8), 9vw, var(--s-10)); padding-block: var(--s-8) var(--s-9); }
+  .sec-title { font-size: var(--step-3); }
+  .block { display: grid; gap: var(--s-6); }
+  .block-head { display: grid; gap: var(--s-3); max-width: 720px; }
+
+  /* Datos rápidos */
+  .facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-4); }
+  .fact {
+    position: relative; display: grid; align-content: start; gap: 4px; padding: var(--s-5);
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--glass);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: var(--shadow-sm);
+  }
+  .fact-ico {
+    display: grid; place-items: center; width: 38px; height: 38px; margin-bottom: var(--s-3); border-radius: 12px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .fact-k { font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+  .fact-v { display: flex; align-items: center; gap: var(--s-2); font-family: var(--font-display); font-size: var(--step-1); font-weight: 650; line-height: 1.2; letter-spacing: -0.015em; }
+  .fact-v .live-dot { flex: none; }
+  .fact-sub { font-size: var(--step--1); color: var(--muted); line-height: 1.45; }
+  .fact-role { grid-column: 1 / -1; display: flex; gap: var(--s-5); align-items: flex-start; }
+  .fact-role .fact-ico { flex: none; margin: 0; background: var(--grad); color: #fff; }
+  .fact-role > div { display: grid; gap: var(--s-2); }
+  .fact-role-text { color: var(--text); line-height: 1.7; max-width: 92ch; }
+
+  /* Secciones partidas: título a la izquierda, contenido a la derecha */
+  .split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--s-7); align-items: start; }
+  .split-head { display: grid; gap: var(--s-3); position: sticky; top: calc(var(--nav-h) + var(--s-5)); }
+  .split-sub { font-size: var(--step--1); }
+  .summary { font-size: var(--step-1); line-height: 1.65; color: var(--text); }
+
+  /* Problema / solución */
+  .ps { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-5); }
+  .ps-card {
+    --c: var(--accent); position: relative; overflow: hidden; height: 100%; display: grid; align-content: start; gap: var(--s-3);
+    padding: clamp(var(--s-5), 3vw, var(--s-7)); border-radius: var(--radius-lg); border: 1px solid var(--line);
+    background:
+      radial-gradient(120% 80% at 0% 0%, color-mix(in srgb, var(--c) 11%, transparent), transparent 60%),
+      var(--surface);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .ps-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--c) 40%, var(--line)); }
+  .ps-problem { --c: var(--accent-2); }
+  .ps-ico {
+    display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: var(--s-2); border-radius: 14px;
+    color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent);
+  }
+  .ps-title { font-size: var(--step-2); }
+  .ps-card p { color: var(--muted); }
+  .ps-arrow {
+    position: absolute; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--line-strong); color: var(--accent); box-shadow: var(--shadow);
+  }
+
+  /* Línea de tiempo */
+  .steps { position: relative; list-style: none; display: grid; gap: var(--s-4); }
+  .steps::before, .steps::after {
+    content: ''; position: absolute; left: 23px; top: 24px; bottom: 24px; width: 2px; border-radius: 2px;
+  }
+  .steps::before { background: var(--line); }
+  .steps::after { background: linear-gradient(var(--accent), var(--accent-2)); transform-origin: top; }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .steps::after { animation: line-grow linear both; animation-timeline: view(); animation-range: entry 30% cover 65%; }
+    }
+  }
+  @keyframes line-grow { from { transform: scaleY(0); } }
+  .step { position: relative; display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: var(--s-4); align-items: start; }
+  .step-num {
+    position: relative; z-index: 1; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
+    background: var(--grad); color: #fff; font-family: var(--font-mono); font-size: var(--step--1); font-weight: 600;
+    box-shadow: 0 0 0 6px var(--bg), 0 10px 24px -10px rgb(90 60 244 / 0.8);
+  }
+  .step-body {
+    padding: var(--s-3) var(--s-5); min-height: 48px; display: flex; align-items: center;
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+    transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .step:hover .step-body { transform: translateX(4px); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); box-shadow: var(--shadow-sm); }
+
+  /* Resultados */
+  .results { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--s-4); }
+  .result {
+    height: 100%; display: grid; align-content: start; gap: var(--s-4); padding: var(--s-6) var(--s-5);
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow-sm);
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .result:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--ok) 40%, var(--line)); }
+  .result-ico {
+    display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+    color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent);
+  }
+  .result p { line-height: 1.6; }
+
+  /* Detalles técnicos */
+  .tech {
+    border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); overflow: hidden;
+    interpolate-size: allow-keywords; transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .tech[open] { border-color: var(--line-strong); box-shadow: var(--shadow); }
+  .tech summary {
+    display: flex; align-items: center; gap: var(--s-4); min-height: 72px; padding: var(--s-4) var(--s-5);
+    cursor: pointer; list-style: none; user-select: none;
+  }
+  .tech summary::-webkit-details-marker { display: none; }
+  .tech summary:hover .chev { border-color: var(--accent); color: var(--accent); }
+  .tech-ico { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--accent-soft); color: var(--accent); }
+  .tech-sum { display: grid; gap: 2px; flex: 1; min-width: 0; }
+  .tech-sum strong { font-family: var(--font-display); font-size: var(--step-1); font-weight: 650; letter-spacing: -0.015em; }
+  .tech-sum .muted { font-size: var(--step--1); }
+  .chev {
+    flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line-strong);
+    transition: transform 400ms var(--ease-spring), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .tech[open] .chev { transform: rotate(180deg); }
+  .tech::details-content { block-size: 0; overflow: clip; transition: block-size 450ms var(--ease), content-visibility 450ms allow-discrete; }
+  .tech[open]::details-content { block-size: auto; }
+  .tech-body { display: grid; gap: var(--s-6); padding: var(--s-2) var(--s-5) var(--s-6); border-top: 1px solid var(--line); padding-top: var(--s-5); margin-inline: 0; }
+  .tech-block { display: grid; gap: var(--s-3); }
+  .tech-h { display: flex; align-items: center; gap: var(--s-2); font-family: var(--font-mono); font-size: var(--step--2); font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+  .tech .badge.mono { font-size: 0.74rem; background: var(--surface-2); }
+  .arch { list-style: none; display: grid; gap: var(--s-2); }
+  .arch li { position: relative; padding-left: var(--s-5); font-size: var(--step--1); color: var(--muted); }
+  .arch li::before { content: ''; position: absolute; left: 4px; top: 0.7em; width: 7px; height: 7px; border-radius: 2px; background: var(--grad); }
+  .ai { display: grid; gap: var(--s-3); margin: 0; padding: var(--s-5); border-radius: var(--radius); background: var(--surface-2); }
+  .ai dt { font-size: var(--step--2); font-weight: 600; color: var(--accent); }
+  .ai dd { margin: 2px 0 0; font-size: var(--step--1); color: var(--muted); line-height: 1.6; }
+
+  /* CTA */
+  .cta {
+    position: relative; isolation: isolate; overflow: hidden; display: grid; justify-items: center; gap: var(--s-4); text-align: center;
+    padding: clamp(var(--s-7), 7vw, var(--s-9)) var(--s-5); border-radius: var(--radius-lg);
+    background: #0f0d1f; color: #f4f2ff; border: 1px solid var(--line-strong);
+  }
+  .cta-bg span { position: absolute; z-index: -1; width: min(520px, 90vw); aspect-ratio: 1; border-radius: 50%; filter: blur(90px); opacity: 0.5; }
+  .cta-bg span:first-child { background: #5a3cf4; left: -12%; top: -50%; animation: drift-a 20s ease-in-out infinite alternate; }
+  .cta-bg span:last-child { background: #ee5a2f; right: -14%; bottom: -60%; opacity: 0.4; animation: drift-b 24s ease-in-out infinite alternate; }
+  .cta-eyebrow { color: #b9adff; }
+  .cta-title { font-size: var(--step-3); color: #fff; }
+  .cta-text { max-width: 52ch; color: rgb(244 242 255 / 0.75); font-size: var(--step-0); }
+  .cta-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-3); margin-top: var(--s-3); max-width: 100%; }
+  .btn-light { color: #fff; background: rgb(255 255 255 / 0.08); border-color: rgb(255 255 255 / 0.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); max-width: 100%; }
+  .btn-light:hover { color: #fff; background: rgb(255 255 255 / 0.16); border-color: rgb(255 255 255 / 0.4); transform: translateY(-2px); }
+  .btn-light :global(svg) { flex: none; }
+
+  /* Paginador */
+  .pager { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-4); }
+  .pg {
+    display: grid; grid-template-columns: 168px minmax(0, 1fr); gap: var(--s-5); align-items: center;
+    padding: var(--s-3); border-radius: var(--radius-lg); border: 1px solid var(--line); background: var(--surface);
+    text-decoration: none; color: var(--text);
+    transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .pg:hover { color: var(--text); transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: var(--glow); }
+  .pg.is-next { grid-template-columns: minmax(0, 1fr) 168px; text-align: right; }
+  .pg.is-next .pg-media { order: 2; }
+  .pg.is-next .pg-body { justify-items: end; }
+  .pg-media { display: block; aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); }
+  .pg-media :global(img), .pg-media :global(svg) { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 600ms var(--ease); }
+  .pg:hover .pg-media :global(img), .pg:hover .pg-media :global(svg) { transform: scale(1.06); }
+  .pg-body { display: grid; justify-items: start; gap: var(--s-2); min-width: 0; padding-inline: var(--s-2); }
+  .pg-dir { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: var(--step--2); letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+  .pg-arrow { display: inline-grid; transition: transform var(--dur) var(--ease-spring); }
+  .pg:hover .pg-arrow { transform: translateX(4px); }
+  .pg:not(.is-next):hover .pg-arrow { transform: translateX(-4px); }
+  .pg-title { font-family: var(--font-display); font-size: var(--step-1); font-weight: 650; line-height: 1.15; letter-spacing: -0.015em; overflow-wrap: anywhere; }
+
+  /* ---------- Responsive ---------- */
   @media (max-width: 900px) {
-    .d-meta, .d-content { grid-column: 1 / -1; }
-    .d-meta { position: static; }
-    .d-grid { grid-template-columns: minmax(0, 1fr); gap: var(--s-7); }
+    .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .split, .ps, .pager { grid-template-columns: minmax(0, 1fr); }
+    .split { gap: var(--s-5); }
+    .split-head { position: static; }
+    .ps-arrow { display: none; }
   }
   @media (max-width: 560px) {
-    .pager { grid-template-columns: 1fr; }
-    .pager-link.is-next { text-align: left; justify-items: start; }
+    .hero { padding-top: var(--s-4); }
+    .stage { margin-top: var(--s-6); }
+    .frame { border-radius: var(--radius); }
+    .frame-bar { height: 36px; padding-inline: var(--s-3); }
+    .dots i { width: 9px; height: 9px; }
+    .notice { padding: var(--s-4); gap: var(--s-3); }
+    .actions .btn { flex: 1 1 100%; }
+    .fact { padding: var(--s-4); }
+    .fact-role { flex-direction: column; gap: var(--s-3); }
+    .pg, .pg.is-next { grid-template-columns: 104px minmax(0, 1fr); gap: var(--s-3); text-align: left; }
+    .pg.is-next .pg-media { order: 0; }
+    .pg.is-next .pg-body { justify-items: start; }
+    .pg-title { font-size: var(--step-0); }
+    .tech summary { padding: var(--s-3) var(--s-4); gap: var(--s-3); }
+    .tech-body { padding-inline: var(--s-4); }
+    .cta-actions .btn { flex: 1 1 100%; }
+    .btn-light { white-space: normal; text-align: center; overflow-wrap: anywhere; }
+  }
+  @media (max-width: 380px) {
+    .facts { grid-template-columns: minmax(0, 1fr); }
   }
 </style>
