@@ -1,0 +1,23 @@
+---
+import Cover from './Cover.astro';
+import { url, type Project } from '../lib/site';
+interface Props { project: Project; eager?: boolean; sizes?: string }
+const { project, eager = false, sizes = '(min-width: 1024px) 380px, 100vw' } = Astro.props;
+const img = project.images.find((i) => i.kind !== 'mobile') ?? project.images[0];
+const small = img?.src.replace(/\.webp$/, '-720.webp');
+---
+{img ? (
+  <img
+    src={url(img.src)}
+    srcset={`${url(small!)} 720w, ${url(img.src)} ${img.width}w`}
+    sizes={sizes}
+    alt={img.alt}
+    width={img.width}
+    height={img.height}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : undefined}
+    decoding="async"
+  />
+) : (
+  <Cover project={project} />
+)}

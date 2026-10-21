@@ -1,0 +1,335 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ProjectMedia from '../components/ProjectMedia.astro';
+import { CATEGORIES, categoriesOf, fmtPeriod, profile, projects, projectUrl, teamLabel, url } from '../lib/site';
+
+const featured = projects.filter((p) => p.featured);
+const countOf = (key: string) => projects.filter((p) => categoriesOf(p).includes(key as never)).length;
+const categories = CATEGORIES.filter((c) => countOf(c.key) > 0);
+
+const byYear = new Map<string, typeof projects>();
+[...projects]
+  .sort((a, b) => b.period.start.localeCompare(a.period.start))
+  .forEach((p) => {
+    const y = p.period.start.slice(0, 4);
+    byYear.set(y, [...(byYear.get(y) ?? []), p]);
+  });
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  alternateName: profile.shortName,
+  jobTitle: profile.role,
+  email: `mailto:${profile.email}`,
+  address: { '@type': 'PostalAddress', addressCountry: 'PE' },
+  url: new URL(url(), Astro.site).href,
+  sameAs: [profile.links.github, profile.links.linkedin],
+  knowsAbout: profile.skills.flatMap((s) => s.items).slice(0, 20),
+};
+---
+<Base description={`${profile.shortName}: ${profile.tagline}`} jsonLd={jsonLd}>
+  <!-- Hero -->
+  <section class="hero container">
+    <p class="eyebrow">Portafolio · {profile.location}</p>
+    <h1 class="hero-title display">{profile.name}</h1>
+    <p class="hero-role">{profile.role}</p>
+    <p class="lead hero-tagline">{profile.tagline}</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#proyectos">Ver proyectos <Icon name="arrowDown" size={16} /></a>
+      <a class="btn btn-secondary" href="#contacto">Contactar</a>
+      <span class="hero-links">
+        <a class="btn btn-ghost" href={profile.links.github} target="_blank" rel="me noopener"><Icon name="github" size={16} /> GitHub</a>
+        <a class="btn btn-ghost" href={profile.links.linkedin} target="_blank" rel="me noopener"><Icon name="linkedin" size={16} /> LinkedIn</a>
+      </span>
+    </div>
+    <dl class="hero-stats">
+      <div><dt>Proyectos</dt><dd>{projects.length}</dd></div>
+      <div><dt>En equipo</dt><dd>{projects.filter((p) => (p.teamSize ?? 1) > 1).length}</dd></div>
+      <div><dt>Con IA</dt><dd>{projects.filter((p) => p.ai).length}</dd></div>
+      <div><dt>Desde</dt><dd>{[...projects].sort((a, b) => a.period.start.localeCompare(b.period.start))[0]?.period.start.slice(0, 4)}</dd></div>
+    </dl>
+  </section>
+
+  <!-- Destacados -->
+  <section class="section" id="proyectos" aria-labelledby="destacados-title">
+    <div class="container">
+      <header class="section-head">
+        <p class="eyebrow">Selección</p>
+        <h2 id="destacados-title" class="h2 display">Proyectos destacados</h2>
+        <p class="lead">Lo que mejor muestra cómo trabajo: problemas reales, de punta a punta.</p>
+      </header>
+      <div class="featured">
+        {featured.map((p, i) => (
+          <article class:list={['feat reveal', i % 2 === 1 && 'is-alt']}>
+            <a class="feat-media" href={projectUrl(p)} tabindex="-1" aria-hidden="true">
+              <ProjectMedia project={p} eager={i === 0} sizes="(min-width: 1024px) 640px, 100vw" />
+            </a>
+            <div class="feat-body">
+              <p class="feat-meta">
+                <span class="badge badge-accent">{p.category}</span>
+                <span class="muted">{fmtPeriod(p.period)} · {teamLabel(p.teamSize)}</span>
+              </p>
+              <h3 class="feat-title display"><a href={projectUrl(p)}>{p.title}</a></h3>
+              <p class="muted">{p.shortDescription}</p>
+              <ul class="badges" aria-label="Tecnologías">{p.stack.slice(0, 6).map((s) => <li class="badge">{s}</li>)}</ul>
+              <div class="feat-actions">
+                <a class="btn btn-primary" href={projectUrl(p)}>Ver proyecto <Icon name="arrowRight" size={16} /></a>
+                {p.liveUrl && <a class="btn btn-secondary" href={p.liveUrl} target="_blank" rel="noopener">Ver demo <Icon name="external" size={16} /></a>}
+                {p.repoUrl && <a class="btn btn-ghost" href={p.repoUrl} target="_blank" rel="noopener"><Icon name="code" size={16} /> Ver código</a>}
+                {p.isPrivate && <span class="badge"><Icon name="lock" size={12} /> Privado</span>}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Todos -->
+  <section class="section" id="todos" aria-labelledby="todos-title">
+    <div class="container">
+      <header class="section-head">
+        <p class="eyebrow">Archivo</p>
+        <h2 id="todos-title" class="h2 display">Todos los proyectos</h2>
+      </header>
+      <div class="filters" role="toolbar" aria-label="Filtrar proyectos">
+        <div class="chips">
+          <button type="button" class="chip" aria-pressed="true" data-filter="all">Todos <span>{projects.length}</span></button>
+          {categories.map((c) => (
+            <button type="button" class="chip" aria-pressed="false" data-filter={c.key}>
+              {c.label} <span>{countOf(c.key)}</span>
+            </button>
+          ))}
+        </div>
+        <label class="search">
+          <Icon name="search" size={16} />
+          <span class="sr-only">Buscar por tecnología</span>
+          <input type="search" placeholder="Buscar tecnología: Flutter, Python…" data-search-input autocomplete="off" />
+        </label>
+      </div>
+      <p class="sr-only" aria-live="polite" data-results-count></p>
+      <div class="grid" data-grid>
+        {projects.map((p) => <ProjectCard project={p} />)}
+      </div>
+      <p class="empty muted" data-empty hidden>No hay proyectos con ese filtro.</p>
+    </div>
+  </section>
+
+  <!-- Sobre mí -->
+  <section class="section" id="sobre-mi" aria-labelledby="sobre-title">
+    <div class="container grid-12">
+      <header class="about-head">
+        <p class="eyebrow">Sobre mí</p>
+        <h2 id="sobre-title" class="h2 display">Software que se usa.</h2>
+      </header>
+      <div class="about-body reveal">
+        {profile.bio.map((b) => <p>{b}</p>)}
+        <h3 class="about-sub">Me interesa</h3>
+        <ul class="about-list">{profile.interests.map((i) => <li>{i}</li>)}</ul>
+        <h3 class="about-sub">Lo que busco</h3>
+        <p>{profile.lookingFor}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stack -->
+  <section class="section" id="stack" aria-labelledby="stack-title">
+    <div class="container">
+      <header class="section-head">
+        <p class="eyebrow">Herramientas</p>
+        <h2 id="stack-title" class="h2 display">Stack y habilidades</h2>
+      </header>
+      <div class="skills">
+        {profile.skills.map((s) => (
+          <div class="skill-group reveal">
+            <h3>{s.group}</h3>
+            <ul class="badges">{s.items.map((i) => <li class="badge">{i}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Trayectoria -->
+  <section class="section" id="trayectoria" aria-labelledby="tray-title">
+    <div class="container">
+      <header class="section-head">
+        <p class="eyebrow">Trayectoria</p>
+        <h2 id="tray-title" class="h2 display">Línea de tiempo</h2>
+        <p class="lead">Proyectos por año, según el historial de commits.</p>
+      </header>
+      <ol class="timeline">
+        {[...byYear].map(([year, list]) => (
+          <li class="tl-year reveal">
+            <h3 class="tl-label display">{year}</h3>
+            <ul class="tl-items">
+              {list.map((p) => (
+                <li>
+                  <a href={projectUrl(p)}>{p.title}</a>
+                  <span class="muted"> · {p.context.split(':')[0].split(/[.,(]/)[0].trim()}</span>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section class="section contact" id="contacto" aria-labelledby="contacto-title">
+    <div class="container">
+      <p class="eyebrow">Contacto</p>
+      <h2 id="contacto-title" class="contact-title display">¿Conversamos?</h2>
+      <p class="lead">Escríbeme por correo o LinkedIn. Respondo a propuestas de proyectos, prácticas y colaboraciones.</p>
+      <div class="contact-row">
+        <a class="contact-mail" href={`mailto:${profile.email}`}>{profile.email}</a>
+        <button type="button" class="btn btn-secondary" data-copy={profile.email}>
+          <span data-copy-icon><Icon name="copy" size={16} /></span>
+          <span data-copy-label>Copiar correo</span>
+        </button>
+      </div>
+      <div class="contact-links">
+        <a class="btn btn-ghost" href={profile.links.github} target="_blank" rel="me noopener"><Icon name="github" size={16} /> github.com/tamoil-0</a>
+        <a class="btn btn-ghost" href={profile.links.linkedin} target="_blank" rel="me noopener"><Icon name="linkedin" size={16} /> LinkedIn</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-block: clamp(var(--s-8), 12vw, 160px) clamp(var(--s-7), 8vw, var(--s-9)); }
+  .hero-title { font-size: var(--step-4); line-height: 1; margin-top: var(--s-5); max-width: 14ch; }
+  .hero-role { margin-top: var(--s-5); font-size: var(--step-1); font-weight: 500; }
+  .hero-tagline { margin-top: var(--s-3); max-width: 60ch; }
+  .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); margin-top: var(--s-6); }
+  .hero-links { display: inline-flex; gap: var(--s-1); }
+  .hero-stats {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-4);
+    margin: var(--s-8) 0 0; padding-top: var(--s-5); border-top: 1px solid var(--line); max-width: 720px;
+  }
+  .hero-stats dt { font-size: var(--step--1); color: var(--muted); }
+  .hero-stats dd { margin: 0; font-family: var(--font-serif); font-size: var(--step-3); line-height: 1.1; }
+
+  .featured { display: grid; gap: clamp(var(--s-7), 7vw, var(--s-9)); }
+  .feat { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--s-6); align-items: center; }
+  .feat-media {
+    grid-column: 1 / span 7; display: block; aspect-ratio: 16 / 10; overflow: hidden;
+    border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface-2);
+  }
+  .feat-media :global(img), .feat-media :global(svg) { width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform 600ms var(--ease); }
+  .feat:hover .feat-media :global(img), .feat:hover .feat-media :global(svg) { transform: scale(1.025); }
+  .feat-body { grid-column: 8 / span 5; display: grid; gap: var(--s-4); }
+  .feat.is-alt .feat-media { grid-column: 6 / span 7; grid-row: 1; }
+  .feat.is-alt .feat-body { grid-column: 1 / span 5; grid-row: 1; }
+  .feat-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); font-size: var(--step--1); }
+  .feat-title { font-size: var(--step-3); }
+  .feat-title a { text-decoration: none; }
+  .feat-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); margin-top: var(--s-2); }
+
+  .filters { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-4); margin-bottom: var(--s-6); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .chip {
+    display: inline-flex; align-items: center; gap: var(--s-2); min-height: 40px; padding: 0 var(--s-4);
+    border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--text);
+    font: inherit; font-size: var(--step--1); cursor: pointer;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .chip span { color: var(--muted); font-size: 0.8em; }
+  .chip:hover { border-color: var(--text); }
+  .chip[aria-pressed='true'] { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .chip[aria-pressed='true'] span { color: inherit; opacity: 0.7; }
+  .search {
+    display: flex; align-items: center; gap: var(--s-2); min-height: 44px; padding: 0 var(--s-4);
+    border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted);
+    flex: 1 1 260px; max-width: 340px;
+  }
+  .search:focus-within { border-color: var(--accent); }
+  .search input { border: 0; outline: 0; background: transparent; color: var(--text); font: inherit; font-size: var(--step--1); width: 100%; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--s-5); }
+  .empty { padding: var(--s-7) 0; text-align: center; }
+
+  .about-head { grid-column: 1 / span 4; display: grid; gap: var(--s-3); align-content: start; }
+  .about-body { grid-column: 6 / span 7; display: grid; gap: var(--s-4); font-size: var(--step-1); line-height: 1.6; }
+  .about-sub { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-top: var(--s-4); font-weight: 500; }
+  .about-list { list-style: none; display: grid; gap: var(--s-2); }
+  .about-list li { padding-left: var(--s-5); position: relative; }
+  .about-list li::before { content: ''; position: absolute; left: 0; top: 0.8em; width: 10px; height: 1px; background: var(--accent); }
+
+  .skills { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: var(--s-5); }
+  .skill-group { padding: var(--s-5); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); display: grid; gap: var(--s-4); align-content: start; }
+  .skill-group h3 { font-size: var(--step-0); }
+
+  .timeline { list-style: none; display: grid; gap: var(--s-6); border-left: 1px solid var(--line); padding-left: var(--s-6); }
+  .tl-year { position: relative; display: grid; grid-template-columns: 120px 1fr; gap: var(--s-5); }
+  .tl-year::before {
+    content: ''; position: absolute; left: calc(-1 * var(--s-6) - 5px); top: 0.7em;
+    width: 9px; height: 9px; border-radius: 50%; background: var(--bg); border: 2px solid var(--accent);
+  }
+  .tl-label { font-size: var(--step-2); line-height: 1.2; }
+  .tl-items { list-style: none; display: grid; gap: var(--s-2); padding-top: 0.4em; }
+  .tl-items a { font-weight: 500; text-decoration: none; }
+  .tl-items a:hover { text-decoration: underline; }
+
+  .contact { text-align: left; }
+  .contact-title { font-size: var(--step-4); line-height: 1; margin: var(--s-4) 0; }
+  .contact-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4); margin-top: var(--s-6); }
+  .contact-mail { font-size: var(--step-2); font-weight: 500; letter-spacing: -0.02em; word-break: break-all; }
+  .contact-links { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-5); margin-left: calc(-1 * var(--s-3)); }
+
+  @media (max-width: 900px) {
+    .feat, .feat.is-alt { grid-template-columns: minmax(0, 1fr); gap: var(--s-5); }
+    .feat-media, .feat-body, .feat.is-alt .feat-media, .feat.is-alt .feat-body { grid-column: 1; grid-row: auto; }
+    .about-head, .about-body { grid-column: 1 / -1; }
+  }
+  @media (max-width: 560px) {
+    .hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tl-year { grid-template-columns: 1fr; gap: var(--s-2); }
+    .search { max-width: none; }
+  }
+</style>
+
+<script>
+  // Filtros por categoría + búsqueda por tecnología
+  const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-card]');
+  const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+  const empty = document.querySelector<HTMLElement>('[data-empty]');
+  const count = document.querySelector<HTMLElement>('[data-results-count]');
+  let cat = 'all';
+  const apply = () => {
+    const q = (input?.value ?? '').trim().toLowerCase();
+    let shown = 0;
+    cards.forEach((c) => {
+      const ok = (cat === 'all' || (c.dataset.categories ?? '').split('|').includes(cat)) && (!q || (c.dataset.search ?? '').includes(q));
+      if (ok) {
+        if (c.hidden) { c.hidden = false; c.animate?.([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' }); }
+        c.classList.add('is-visible');
+        shown++;
+      } else c.hidden = true;
+    });
+    if (empty) empty.hidden = shown > 0;
+    if (count) count.textContent = `${shown} proyectos`;
+  };
+  chips.forEach((b) => b.addEventListener('click', () => {
+    cat = b.dataset.filter ?? 'all';
+    chips.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    apply();
+  }));
+  input?.addEventListener('input', apply);
+
+  // Copiar correo
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) => b.addEventListener('click', async () => {
+    const label = b.querySelector('[data-copy-label]');
+    try {
+      await navigator.clipboard.writeText(b.dataset.copy ?? '');
+      if (label) label.textContent = '¡Copiado!';
+    } catch {
+      if (label) label.textContent = 'No se pudo copiar';
+    }
+    setTimeout(() => { if (label) label.textContent = 'Copiar correo'; }, 2000);
+  }));
+</script>

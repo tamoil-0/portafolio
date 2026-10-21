@@ -1,0 +1,52 @@
+---
+// Diagrama simple de arquitectura: cada línea "A -> B -> C" se dibuja como un flujo de cajas.
+interface Props { lines: string[] }
+const { lines } = Astro.props;
+const flows = lines
+  .map((l) => l.split(/\s*(?:->|→)\s*/).map((s) => s.trim()).filter(Boolean))
+  .filter((f) => f.length > 0);
+---
+{flows.length > 0 && (
+  <figure class="arch" aria-label="Diagrama de arquitectura">
+    {flows.map((flow) => (
+      <ol class="flow" aria-label={flow.join(' → ')}>
+        {flow.map((node, i) => (
+          <li class="node-wrap">
+            <span class="node">{node}</span>
+            {i < flow.length - 1 && <span class="arrow" aria-hidden="true" />}
+          </li>
+        ))}
+      </ol>
+    ))}
+  </figure>
+)}
+
+<style>
+  .arch {
+    margin: 0; display: grid; gap: var(--s-4); padding: var(--s-5);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    background-color: var(--surface-2);
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) 0; list-style: none; }
+  .node-wrap { display: flex; align-items: center; }
+  .node {
+    padding: var(--s-2) var(--s-4); border-radius: var(--radius-sm);
+    background: var(--surface); border: 1px solid var(--line);
+    font-size: var(--step--1); font-weight: 500; line-height: 1.35;
+  }
+  .arrow { position: relative; width: 34px; height: 2px; margin-inline: 6px; background: var(--accent); }
+  .arrow::after {
+    content: ''; position: absolute; right: -1px; top: -4px;
+    border-left: 7px solid var(--accent); border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+  }
+  @media (max-width: 640px) {
+    .arch { padding: var(--s-4); }
+    .flow { flex-direction: column; align-items: flex-start; gap: 0; }
+    .node-wrap { flex-direction: column; align-items: flex-start; }
+    .node { max-width: 100%; overflow-wrap: anywhere; }
+    .arrow { width: 2px; height: 20px; margin: 4px 0 4px 20px; }
+    .arrow::after { right: auto; top: auto; bottom: -1px; left: -4px; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid var(--accent); border-bottom: 0; }
+  }
+</style>

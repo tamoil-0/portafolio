@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/site';
+---
+<Base title="Página no encontrada" description="La página que buscas no existe.">
+  <section class="container nf">
+    <p class="eyebrow">Error 404</p>
+    <h1 class="display">Esta página no existe.</h1>
+    <a class="btn btn-primary" href={url()}>Volver al inicio</a>
+  </section>
+</Base>
+<style>
+  .nf { min-height: 60vh; display: grid; align-content: center; justify-items: start; gap: var(--s-5); padding-block: var(--s-9); }
+  .nf h1 { font-size: var(--step-4); }
+</style>

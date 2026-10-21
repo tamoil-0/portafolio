@@ -1,0 +1,8 @@
+repos/
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+PROMPT.md
+scripts/_raw/

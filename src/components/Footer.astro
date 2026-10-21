@@ -1,0 +1,23 @@
+---
+import Icon from './Icon.astro';
+import { profile } from '../lib/site';
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="container footer-inner">
+    <p class="muted">© {year} {profile.name}. Hecho con Astro.</p>
+    <ul class="footer-links">
+      <li><a href={profile.links.github} rel="me noopener" target="_blank"><Icon name="github" size={16} label="GitHub" /></a></li>
+      <li><a href={profile.links.linkedin} rel="me noopener" target="_blank"><Icon name="linkedin" size={16} label="LinkedIn" /></a></li>
+      <li><a href={`mailto:${profile.email}`}><Icon name="mail" size={16} label="Correo" /></a></li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .footer { border-top: 1px solid var(--line); padding-block: var(--s-6); font-size: var(--step--1); }
+  .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); flex-wrap: wrap; }
+  .footer-links { display: flex; gap: var(--s-1); list-style: none; }
+  .footer-links a { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px; color: var(--muted); }
+  .footer-links a:hover { color: var(--accent); background: var(--surface-2); }
+</style>

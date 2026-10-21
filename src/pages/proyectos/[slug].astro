@@ -1,0 +1,179 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import ArchDiagram from '../../components/ArchDiagram.astro';
+import Gallery from '../../components/Gallery.astro';
+import ProjectMedia from '../../components/ProjectMedia.astro';
+import { fmtPeriod, profile, projects, projectUrl, teamLabel, url, type Project } from '../../lib/site';
+
+export function getStaticPaths() {
+  return projects.map((p, i) => ({
+    params: { slug: p.slug },
+    props: { project: p, prev: projects[i - 1] ?? null, next: projects[i + 1] ?? null },
+  }));
+}
+interface Props { project: Project; prev: Project | null; next: Project | null }
+const { project: p, prev, next } = Astro.props;
+
+const ogImage = p.images[0]?.src;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: p.title,
+  description: p.shortDescription,
+  abstract: p.longDescription,
+  keywords: p.stack.join(', '),
+  dateCreated: p.period.start,
+  creator: { '@type': 'Person', name: profile.name, url: new URL(url(), Astro.site).href },
+  url: new URL(projectUrl(p), Astro.site).href,
+  ...(p.liveUrl ? { sameAs: [p.liveUrl] } : {}),
+  ...(ogImage ? { image: new URL(url(ogImage), Astro.site).href } : {}),
+};
+const meta = [
+  { k: 'Contexto', v: p.context },
+  { k: 'Mi rol', v: p.role },
+  { k: 'Equipo', v: teamLabel(p.teamSize) },
+  { k: 'Periodo', v: fmtPeriod(p.period) },
+  { k: 'Estado', v: p.status },
+];
+---
+<Base title={p.title} description={p.shortDescription} image={ogImage ? url(ogImage) : undefined} type="article" jsonLd={jsonLd}>
+  <article class="container detail">
+    <a class="back" href={url('#todos')}><Icon name="arrowLeft" size={16} /> Todos los proyectos</a>
+
+    <header class="d-head">
+      <p class="d-tags">
+        <span class="badge badge-accent">{p.category}</span>
+        {p.isPrivate && <span class="badge"><Icon name="lock" size={12} /> Proyecto privado</span>}
+      </p>
+      <h1 class="d-title display">{p.title}</h1>
+      <p class="lead">{p.shortDescription}</p>
+      <div class="d-actions">
+        {p.liveUrl && <a class="btn btn-primary" href={p.liveUrl} target="_blank" rel="noopener">Ver demo <Icon name="external" size={16} /></a>}
+        {p.repoUrl && <a class="btn btn-secondary" href={p.repoUrl} target="_blank" rel="noopener"><Icon name="code" size={16} /> Ver código</a>}
+        {p.isPrivate && <p class="muted small">El código es privado; aquí explico el problema, la solución y cómo funciona.</p>}
+      </div>
+    </header>
+
+    <div class="d-hero">
+      <ProjectMedia project={p} eager sizes="(min-width: 1160px) 1100px, 100vw" />
+    </div>
+
+    <div class="d-grid">
+      <aside class="d-meta" aria-label="Ficha del proyecto">
+        <dl>
+          {meta.map((m) => <div><dt>{m.k}</dt><dd>{m.v}</dd></div>)}
+        </dl>
+        <h2 class="d-sub">Stack</h2>
+        <ul class="badges">{p.stack.map((s) => <li class="badge">{s}</li>)}</ul>
+      </aside>
+
+      <div class="d-content">
+        <section>
+          <h2 class="d-h">Resumen</h2>
+          <p>{p.longDescription}</p>
+        </section>
+        <section>
+          <h2 class="d-h">El problema</h2>
+          <p>{p.problem}</p>
+        </section>
+        <section>
+          <h2 class="d-h">La solución</h2>
+          <p>{p.solution}</p>
+        </section>
+        {p.howItWorks.length > 0 && (
+          <section>
+            <h2 class="d-h">Cómo funciona</h2>
+            <ol class="steps">{p.howItWorks.map((s) => <li>{s}</li>)}</ol>
+          </section>
+        )}
+        {p.architecture.length > 0 && (
+          <section>
+            <h2 class="d-h">Arquitectura</h2>
+            <ArchDiagram lines={p.architecture} />
+          </section>
+        )}
+        {p.ai && (
+          <section>
+            <h2 class="d-h">Inteligencia artificial</h2>
+            <dl class="ai">
+              {p.ai.technique && <div><dt>Técnica</dt><dd>{p.ai.technique}</dd></div>}
+              {p.ai.models.length > 0 && <div><dt>Modelos</dt><dd>{p.ai.models.join(', ')}</dd></div>}
+              {p.ai.datasets.length > 0 && <div><dt>Datos</dt><dd>{p.ai.datasets.join(', ')}</dd></div>}
+              {p.ai.metrics.length > 0 && <div><dt>Métricas</dt><dd>{p.ai.metrics.join(' · ')}</dd></div>}
+            </dl>
+          </section>
+        )}
+        {p.images.length > 0 && (
+          <section>
+            <h2 class="d-h">Capturas</h2>
+            <Gallery images={p.images} title={p.title} />
+          </section>
+        )}
+        {p.results.length > 0 && (
+          <section>
+            <h2 class="d-h">Resultados</h2>
+            <ul class="results">{p.results.map((r) => <li>{r}</li>)}</ul>
+          </section>
+        )}
+      </div>
+    </div>
+
+    <nav class="pager" aria-label="Más proyectos">
+      {prev ? (
+        <a class="pager-link" href={projectUrl(prev)}><span class="muted"><Icon name="arrowLeft" size={14} /> Anterior</span><strong>{prev.title}</strong></a>
+      ) : <span />}
+      {next ? (
+        <a class="pager-link is-next" href={projectUrl(next)}><span class="muted">Siguiente <Icon name="arrowRight" size={14} /></span><strong>{next.title}</strong></a>
+      ) : <span />}
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .detail { padding-block: var(--s-7) var(--s-9); }
+  .back { display: inline-flex; align-items: center; gap: var(--s-2); font-size: var(--step--1); text-decoration: none; color: var(--muted); min-height: 44px; }
+  .d-head { display: grid; gap: var(--s-4); max-width: 820px; margin-top: var(--s-5); }
+  .d-tags { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .d-title { font-size: var(--step-4); line-height: 1; }
+  .d-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); margin-top: var(--s-2); }
+  .small { font-size: var(--step--1); }
+  .d-hero {
+    margin-top: var(--s-7); aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius);
+    border: 1px solid var(--line); background: var(--surface-2);
+  }
+  .d-hero :global(img), .d-hero :global(svg) { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .d-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--s-7); margin-top: var(--s-8); }
+  .d-meta { grid-column: 1 / span 4; align-self: start; position: sticky; top: 88px; display: grid; gap: var(--s-4); }
+  .d-meta dl { display: grid; gap: var(--s-4); margin: 0; }
+  .d-meta dt, .ai dt { font-size: var(--step--1); color: var(--muted); }
+  .d-meta dd, .ai dd { margin: 2px 0 0; font-size: var(--step--1); line-height: 1.55; }
+  .d-sub { font-size: var(--step--1); color: var(--muted); font-weight: 400; margin-top: var(--s-3); }
+  .d-content { grid-column: 6 / span 7; display: grid; gap: var(--s-7); }
+  .d-content section { display: grid; gap: var(--s-4); }
+  .d-h { font-size: var(--step-1); }
+  .steps { counter-reset: s; list-style: none; display: grid; gap: var(--s-3); }
+  .steps li { counter-increment: s; position: relative; padding-left: 44px; }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 999px;
+    display: grid; place-items: center; font-size: 0.8rem; font-weight: 600; background: var(--accent-soft); color: var(--accent);
+  }
+  .ai { display: grid; gap: var(--s-3); margin: 0; padding: var(--s-5); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  .results { list-style: none; display: grid; gap: var(--s-2); }
+  .results li { padding-left: var(--s-5); position: relative; }
+  .results li::before { content: ''; position: absolute; left: 0; top: 0.8em; width: 10px; height: 1px; background: var(--accent); }
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-4); margin-top: var(--s-9); padding-top: var(--s-6); border-top: 1px solid var(--line); }
+  .pager-link { display: grid; gap: var(--s-1); padding: var(--s-4); border-radius: var(--radius); text-decoration: none; border: 1px solid transparent; transition: border-color var(--dur) var(--ease); }
+  .pager-link:hover { border-color: var(--line); color: var(--text); }
+  .pager-link span { display: inline-flex; align-items: center; gap: 6px; font-size: var(--step--1); }
+  .pager-link.is-next { text-align: right; justify-items: end; }
+  @media (max-width: 900px) {
+    .d-meta, .d-content { grid-column: 1 / -1; }
+    .d-meta { position: static; }
+    .d-grid { grid-template-columns: minmax(0, 1fr); gap: var(--s-7); }
+  }
+  @media (max-width: 560px) {
+    .pager { grid-template-columns: 1fr; }
+    .pager-link.is-next { text-align: left; justify-items: start; }
+  }
+</style>

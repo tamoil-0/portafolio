@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tamoil-0.github.io/portafolio/sitemap-index.xml

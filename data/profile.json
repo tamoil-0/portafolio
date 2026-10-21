@@ -1,0 +1,33 @@
+{
+  "name": "Jhon Marco Aracayo Mamani",
+  "shortName": "Jhon Aracayo",
+  "role": "Estudiante de Ingeniería de Sistemas · Desarrollador full-stack",
+  "tagline": "Construyo software útil para casos reales: apps móviles que funcionan sin conexión, backends seguros, sitios web y soluciones con inteligencia artificial aplicada.",
+  "location": "Perú",
+  "email": "jaracayo7@gmail.com",
+  "photo": null,
+  "availability": null,
+  "links": {
+    "github": "https://github.com/tamoil-0",
+    "linkedin": "https://www.linkedin.com/in/jhonmarcoaracayomamani"
+  },
+  "bio": [
+    "Soy estudiante de Ingeniería de Sistemas en Perú. Me gusta llevar una idea hasta algo que la gente pueda usar: una app móvil para trabajo de campo, un backend con autenticación segura o un sitio web para una comunidad.",
+    "Trabajo con Flutter, Next.js, PHP/Laravel y Python, y uso inteligencia artificial cuando realmente aporta: clasificación de imágenes, sistemas de recomendación y análisis de datos. Muchos de mis proyectos los hice en equipo, en hackatones, programas comunitarios y startups."
+  ],
+  "interests": [
+    "Captura y sincronización de datos georreferenciados",
+    "Integración de sistemas y APIs",
+    "Inteligencia artificial aplicada a agricultura, salud e infraestructura",
+    "Apps móviles offline-first"
+  ],
+  "lookingFor": "Estoy abierto a colaborar en proyectos de software y de IA aplicada, y a seguir aprendiendo en equipos que construyan tecnología útil.",
+  "skills": [
+    { "group": "Lenguajes", "items": ["Python", "TypeScript", "JavaScript", "PHP", "Dart", "SQL", "C / C++", "Java"] },
+    { "group": "Frontend y móvil", "items": ["React", "Next.js", "Flutter", "Tailwind CSS", "HTML y CSS", "Diseño responsive"] },
+    { "group": "Backend y APIs", "items": ["Node.js", "Express", "Laravel", "APIs REST", "Autenticación JWT"] },
+    { "group": "IA / ML", "items": ["TensorFlow", "scikit-learn", "Visión por computadora", "Sistemas de recomendación", "NLP"] },
+    { "group": "Datos", "items": ["PostgreSQL", "MySQL / MariaDB", "SQLite", "Pandas", "NumPy", "GDAL"] },
+    { "group": "Herramientas", "items": ["Git y GitHub", "Docker", "Linux", "Vercel", "Postman", "Scrum"] }
+  ]
+}

@@ -1,0 +1,94 @@
+---
+import Icon from './Icon.astro';
+import { url, type ProjectImage } from '../lib/site';
+interface Props { images: ProjectImage[]; title: string }
+const { images, title } = Astro.props;
+---
+{images.length > 0 && (
+  <div class="gallery" data-gallery>
+    <ul class="thumbs">
+      {images.map((img, i) => (
+        <li class:list={['thumb', img.kind === 'mobile' && 'is-mobile']}>
+          <button type="button" data-index={i} aria-label={`Ampliar captura ${i + 1} de ${images.length}: ${img.alt}`}>
+            <img
+              src={url(img.src.replace(/\.webp$/, '-720.webp'))}
+              alt={img.alt}
+              width={img.width}
+              height={img.height}
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+        </li>
+      ))}
+    </ul>
+    <dialog class="lightbox" aria-label={`Galería de ${title}`}>
+      <img alt="" data-lb-img />
+      <p class="lb-caption" data-lb-caption></p>
+      <button class="lb-btn lb-close" type="button" data-lb-close aria-label="Cerrar"><Icon name="close" /></button>
+      {images.length > 1 && (
+        <>
+          <button class="lb-btn lb-prev" type="button" data-lb-prev aria-label="Anterior"><Icon name="arrowLeft" /></button>
+          <button class="lb-btn lb-next" type="button" data-lb-next aria-label="Siguiente"><Icon name="arrowRight" /></button>
+        </>
+      )}
+      <script type="application/json" data-lb-data set:html={JSON.stringify(images.map((i) => ({ src: url(i.src), alt: i.alt })))} />
+    </dialog>
+  </div>
+)}
+
+<style>
+  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--s-4); list-style: none; }
+  .thumb.is-mobile { max-width: 220px; }
+  .thumb button {
+    display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-sm);
+    overflow: hidden; background: var(--surface-2); cursor: zoom-in;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; aspect-ratio: 16 / 10; transition: transform 400ms var(--ease); }
+  .thumb.is-mobile img { aspect-ratio: 390 / 844; }
+  .thumb button:hover img { transform: scale(1.03); }
+  .lightbox {
+    width: min(1200px, 94vw); max-height: 92vh; padding: var(--s-4); border: 0; border-radius: var(--radius);
+    background: var(--surface); color: var(--text); overflow: visible;
+  }
+  .lightbox::backdrop { background: rgb(0 0 0 / 0.75); }
+  .lightbox img { width: 100%; max-height: 78vh; object-fit: contain; border-radius: var(--radius-sm); }
+  .lb-caption { margin-top: var(--s-3); font-size: var(--step--1); color: var(--muted); text-align: center; }
+  .lb-btn {
+    position: absolute; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer;
+  }
+  .lb-btn:hover { border-color: var(--text); }
+  .lb-close { top: -16px; right: -16px; }
+  .lb-prev { left: -16px; top: 45%; }
+  .lb-next { right: -16px; top: 45%; }
+  @media (max-width: 640px) {
+    .lb-close { right: 4px; top: 4px; }
+    .lb-prev { left: 4px; } .lb-next { right: 4px; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((g) => {
+    const dlg = g.querySelector('dialog')!;
+    const img = dlg.querySelector<HTMLImageElement>('[data-lb-img]')!;
+    const cap = dlg.querySelector<HTMLElement>('[data-lb-caption]')!;
+    const data: { src: string; alt: string }[] = JSON.parse(dlg.querySelector('[data-lb-data]')!.textContent || '[]');
+    let i = 0;
+    const show = (n: number) => {
+      i = (n + data.length) % data.length;
+      img.src = data[i].src; img.alt = data[i].alt; cap.textContent = `${i + 1} / ${data.length} · ${data[i].alt}`;
+    };
+    g.querySelectorAll<HTMLButtonElement>('[data-index]').forEach((b) =>
+      b.addEventListener('click', () => { show(Number(b.dataset.index)); dlg.showModal(); }),
+    );
+    dlg.querySelector('[data-lb-close]')?.addEventListener('click', () => dlg.close());
+    dlg.querySelector('[data-lb-prev]')?.addEventListener('click', () => show(i - 1));
+    dlg.querySelector('[data-lb-next]')?.addEventListener('click', () => show(i + 1));
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(i - 1);
+      if (e.key === 'ArrowRight') show(i + 1);
+    });
+  });
+</script>

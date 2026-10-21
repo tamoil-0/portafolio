@@ -1,0 +1,48 @@
+---
+// Portada SVG minimalista para proyectos sin capturas (p. ej. privados):
+// título + flujo simplificado de la arquitectura. Usa los tokens del tema.
+import { parseArchitecture, type Project } from '../lib/site';
+interface Props { project: Project; headingLevel?: boolean }
+const { project } = Astro.props;
+const clip = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s);
+const { nodes } = parseArchitecture(project.architecture ?? []);
+const flow = nodes.slice(0, 4);
+const boxW = 168, gap = 30;
+const totalW = flow.length * boxW + Math.max(0, flow.length - 1) * gap;
+const x0 = (800 - totalW) / 2;
+const id = `cv-${project.slug}`;
+---
+<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby={`${id}-t`} class="cover">
+  <title id={`${id}-t`}>{`Ilustración de ${project.title}: ${flow.join(', ') || project.category}`}</title>
+  <defs>
+    <pattern id={`${id}-grid`} width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" style="stroke: var(--line)" stroke-width="1" />
+    </pattern>
+    <marker id={`${id}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 10 5 0 10z" style="fill: var(--accent)" />
+    </marker>
+  </defs>
+  <rect width="800" height="500" style="fill: var(--surface-2)" />
+  <rect width="800" height="500" fill={`url(#${id}-grid)`} opacity="0.7" />
+  <text x="48" y="70" style="fill: var(--accent); font: 600 15px var(--font-sans); letter-spacing: .12em">
+    {project.category.toUpperCase()}{project.isPrivate ? ' · PRIVADO' : ''}
+  </text>
+  <text x="48" y="128" style="fill: var(--text); font: 400 50px var(--font-serif)">{clip(project.title, 26)}</text>
+  {flow.map((n, i) => {
+    const x = x0 + i * (boxW + gap);
+    return (
+      <g>
+        <rect x={x} y="290" width={boxW} height="64" rx="12" style="fill: var(--surface); stroke: var(--line)" />
+        <text x={x + boxW / 2} y="328" text-anchor="middle" style="fill: var(--text); font: 500 14px var(--font-sans)">{clip(n, 19)}</text>
+        {i < flow.length - 1 && (
+          <line x1={x + boxW + 4} y1="322" x2={x + boxW + gap - 4} y2="322" style="stroke: var(--accent)" stroke-width="2" marker-end={`url(#${id}-arrow)`} />
+        )}
+      </g>
+    );
+  })}
+  <text x="48" y="452" style="fill: var(--muted); font: 400 15px var(--font-sans)">{clip(project.stack.slice(0, 4).join(' · '), 70)}</text>
+</svg>
+
+<style>
+  .cover { width: 100%; height: 100%; object-fit: cover; }
+</style>

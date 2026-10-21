@@ -1,0 +1,90 @@
+---
+import Icon from './Icon.astro';
+import { profile, url } from '../lib/site';
+const links = [
+  { href: url('#proyectos'), label: 'Proyectos' },
+  { href: url('#sobre-mi'), label: 'Sobre mí' },
+  { href: url('#stack'), label: 'Stack' },
+  { href: url('#contacto'), label: 'Contacto' },
+];
+---
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href={url()} aria-label={`${profile.shortName}, inicio`}>
+      <span class="brand-mark" aria-hidden="true">JA</span>
+      <span class="brand-name">{profile.shortName}</span>
+    </a>
+    <nav aria-label="Principal">
+      <ul class="nav-links">
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Cambiar tema claro u oscuro" data-theme-toggle>
+      <span class="i-sun"><Icon name="sun" /></span>
+      <span class="i-moon"><Icon name="moon" /></span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: saturate(160%) blur(12px);
+    -webkit-backdrop-filter: saturate(160%) blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur) var(--ease);
+  }
+  .nav.is-scrolled { border-bottom-color: var(--line); }
+  .nav-inner { display: flex; align-items: center; gap: var(--s-5); height: 64px; }
+  .brand { display: inline-flex; align-items: center; gap: var(--s-3); text-decoration: none; font-weight: 600; margin-right: auto; }
+  .brand:hover { color: var(--text); }
+  .brand-mark {
+    display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px;
+    background: var(--text); color: var(--bg); font-size: 0.75rem; letter-spacing: 0.02em;
+    transition: background var(--dur) var(--ease);
+  }
+  .brand:hover .brand-mark { background: var(--accent); color: var(--on-accent); }
+  .nav-links { display: flex; gap: var(--s-1); list-style: none; }
+  .nav-links a {
+    display: inline-flex; align-items: center; min-height: 40px; padding: 0 var(--s-3);
+    border-radius: 999px; text-decoration: none; font-size: var(--step--1); color: var(--muted);
+    transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface-2); }
+  .theme-toggle {
+    display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer;
+    transition: border-color var(--dur) var(--ease);
+  }
+  .theme-toggle:hover { border-color: var(--text); }
+  .i-moon { display: none; }
+  :global(:root[data-theme='dark']) .i-sun { display: none; }
+  :global(:root[data-theme='dark']) .i-moon { display: block; }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .i-sun { display: none; }
+    :global(:root:not([data-theme='light'])) .i-moon { display: block; }
+  }
+  @media (max-width: 720px) {
+    .brand-name { display: none; }
+    .nav-inner { gap: var(--s-2); }
+    .nav-links a { padding: 0 var(--s-2); }
+  }
+  @media (max-width: 520px) {
+    .nav-links li:nth-child(2), .nav-links li:nth-child(3) { display: none; }
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const nav = document.querySelector('.nav');
+  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+    const current = root.dataset.theme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch {}
+  });
+  const onScroll = () => nav?.classList.toggle('is-scrolled', scrollY > 8);
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
