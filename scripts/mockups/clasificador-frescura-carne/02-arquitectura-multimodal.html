@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Arquitectura del modelo multimodal: la foto segmentada pasa en 6 canales RGB más CIELAB por una EfficientNet-B0, los datos de laboratorio pasan por un MLP, y ambos vectores se fusionan para predecir fresco, semifresco o no apto</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --acc2: #6C5CE7; --acc2-soft: #efedff; --ok2: #00B894; --warn2: #E17055; --bad2: #D63031; }
+    .stage { flex-direction: column; gap: 20px; align-items: stretch; }
+    .wrap { display: grid; grid-template-columns: 1fr 40px 360px; gap: 0; align-items: stretch; }
+    .branches { display: flex; flex-direction: column; gap: 18px; }
+    .branch { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 16px 20px 18px; }
+    .bh { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .bh b { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .bh .pill { margin-left: auto; }
+    .flowrow { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 30px; }
+    .nd { position: relative; background: #faf9f7; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+    .nd b { font-size: 15.5px; }
+    .nd small { font-size: 13px; color: var(--muted); line-height: 1.42; }
+    .nd:not(:last-child)::after { content: '→'; position: absolute; right: -23px; top: 50%; transform: translateY(-50%); color: var(--accent); font-weight: 700; font-size: 19px; }
+    .nd.net { background: var(--acc2-soft); border-color: #c9c2f5; }
+    .nd.vec { background: #1b1a19; color: #f4f2ef; border-color: #1b1a19; }
+    .nd.vec small { color: #bdb6ae; }
+    .chans { display: flex; gap: 4px; margin-top: 4px; }
+    .chans i { width: 18px; height: 18px; border-radius: 4px; display: block; }
+    .vars { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
+    .vars span { font-size: 12px; font-weight: 600; background: #fff; border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; }
+    .join { display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 26px; font-weight: 700; }
+    .fusion { background: var(--surface); border: 2px solid var(--acc2); border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+    .fusion h3 { font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--acc2); }
+    .ly { border-radius: 12px; padding: 10px 14px; background: var(--acc2-soft); border: 1px solid #c9c2f5; font-size: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .ly small { font-size: 12.5px; font-weight: 500; color: var(--muted); }
+    .ly.drop { background: #fff; border-style: dashed; }
+    .dn { text-align: center; color: var(--accent); font-weight: 700; line-height: 1; }
+    .classes { display: grid; gap: 7px; margin-top: 2px; }
+    .cl { display: flex; align-items: center; gap: 10px; font-size: 14.5px; font-weight: 600; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: #faf9f7; }
+    .cl i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+    .train { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .tc { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+    .tc .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-size: 16px; flex: none; }
+    .tc b { font-size: 15px; display: block; }
+    .tc small { font-size: 13px; color: var(--muted); line-height: 1.42; display: block; margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Modelo · Fusión tardía</p>
+        <h1 class="title">Dos redes, una decisión</h1>
+        <p class="subtitle">La imagen y las mediciones se procesan por separado y se combinan al final para clasificar.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="wrap">
+        <div class="branches">
+          <section class="branch">
+            <div class="bh"><b>Rama visual</b><span class="pill">OpenCV · PyTorch / torchvision</span></div>
+            <div class="flowrow">
+              <div class="nd"><b>Foto de la muestra</b><small>Imagen obligatoria (JPG, PNG, BMP)</small></div>
+              <div class="nd"><b>Segmentación</b><small>Otsu en S y V (HSV), morfología, componente mayor y recorte +12 px</small></div>
+              <div class="nd"><b>RGB + CIELAB</b><small>6 canales a 320×320, fondo neutro</small>
+                <div class="chans"><i style="background:#e05252"></i><i style="background:#4caf50"></i><i style="background:#3f7fd6"></i><i style="background:#9a9a9a"></i><i style="background:#d46aa0"></i><i style="background:#d9b13b"></i></div></div>
+              <div class="nd net"><b>EfficientNet-B0</b><small>Preentrenada en ImageNet; 1.ª conv. ampliada a 6 canales</small></div>
+              <div class="nd vec"><b>1280 rasgos</b><small>Vector visual</small></div>
+            </div>
+          </section>
+          <section class="branch">
+            <div class="bh"><b>Rama de laboratorio</b><span class="pill">Datos opcionales</span></div>
+            <div class="flowrow">
+              <div class="nd" style="grid-column: span 2"><b>Mediciones</b>
+                <div class="vars"><span>temp</span><span>día</span><span>pH</span><span>L*</span><span>a*</span><span>b*</span></div>
+                <small>Si faltan: L*, a*, b* se estiman desde el recorte; temp, día y pH usan la media del dataset</small></div>
+              <div class="nd"><b>Estandarización</b><small>(x − media) / desv., guardadas en meta.json</small></div>
+              <div class="nd net"><b>MLP</b><small>6 → 64 → 64, ReLU y Dropout</small></div>
+              <div class="nd vec"><b>64 rasgos</b><small>Vector tabular</small></div>
+            </div>
+          </section>
+        </div>
+        <div class="join">→</div>
+        <aside class="fusion">
+          <h3>Fusión y clasificación</h3>
+          <div class="ly">Concatenar<small>1280 + 64</small></div>
+          <div class="dn">↓</div>
+          <div class="ly">Lineal 256<small>ReLU</small></div>
+          <div class="ly drop">Dropout<small>0.25</small></div>
+          <div class="ly">Lineal 3<small>softmax</small></div>
+          <div class="dn">↓</div>
+          <div class="classes">
+            <div class="cl"><i style="background:var(--ok2)"></i>FRESCO</div>
+            <div class="cl"><i style="background:var(--warn2)"></i>SEMIFRESCO</div>
+            <div class="cl"><i style="background:var(--bad2)"></i>NO_APTO</div>
+          </div>
+        </aside>
+      </div>
+      <div class="train">
+        <div class="tc"><span class="ic">⚖</span><div><b>Focal Loss + pesos</b><small>Compensa el desbalance entre las tres clases</small></div></div>
+        <div class="tc"><span class="ic">⧉</span><div><b>GroupShuffleSplit</b><small>Partición por temperatura-día para evitar fuga de información</small></div></div>
+        <div class="tc"><span class="ic">◎</span><div><b>Grad-CAM</b><small>Se engancha al último bloque convolucional de la rama visual</small></div></div>
+        <div class="tc"><span class="ic">↺</span><div><b>Versión previa</b><small>ResNet18 congelada + MLP, con imágenes RGB a 224×224</small></div></div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Arquitectura de OmniFace por capas: panel web React, app Flutter y cámaras se conectan a una API FastAPI con REST y WebSocket, que usa InsightFace, FAISS, MediaPipe, Keras y GPEN, guarda en MySQL y envía avisos push con Firebase</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #3a3a8c; --accent-soft: #e9e9f8; }
+    .stage { align-items: stretch; }
+    .arch { gap: 0; align-content: center; }
+    .lane { grid-template-columns: 170px 1fr; padding: 14px 0; border-bottom: 1px dashed var(--line); }
+    .lane:last-child { border-bottom: 0; }
+    .lane-row { gap: 14px; flex-wrap: nowrap; }
+    .node { min-width: 0; flex: 1; }
+    .node.fix { flex: none; }
+    .proto { font-size: 12px; font-weight: 600; color: var(--accent); text-align: center; white-space: nowrap; display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
+    .proto b { font-size: 20px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .chips span { font-size: 12px; font-weight: 500; background: rgba(255,255,255,.12); border-radius: 6px; padding: 3px 8px; color: #e7e3de; }
+    .node.dark { flex: 2.2; }
+    .down { display: grid; grid-template-columns: 170px 1fr; gap: 20px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Arquitectura · Python + React + Flutter</p>
+        <h1 class="title">Un backend, tres clientes</h1>
+        <p class="subtitle">La API concentra la IA, los datos y los avisos; panel, cámaras y app solo consumen.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="arch">
+        <div class="lane">
+          <div class="lane-name">Clientes</div>
+          <div class="lane-row">
+            <div class="node">Panel web<small>React · Vite · Tailwind · 11 páginas</small></div>
+            <div class="node">Cámaras<small>Captura con OpenCV, 1 a 3 en paralelo</small></div>
+            <div class="node">App móvil<small>Flutter · apoderado y estudiante</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Transporte</div>
+          <div class="lane-row" style="justify-content: space-around">
+            <div class="proto"><b>↕</b>REST + JWT</div>
+            <div class="proto"><b>↕</b>WebSocket · cuadros + rostros</div>
+            <div class="proto"><b>↕</b>REST · foto multipart</div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">API</div>
+          <div class="lane-row">
+            <div class="node dark">FastAPI
+              <small>Routers separados por dominio</small>
+              <div class="chips"><span>auth</span><span>personas</span><span>departamentos</span><span>clientes</span><span>asistencias</span><span>salidas</span><span>dispositivos</span><span>notificaciones</span><span>recon (WS)</span></div>
+            </div>
+            <div class="node accent">Sesión de reconocimiento<small>Hilo de inferencia por usuario, modo asistencia, normal o salida</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Modelos de IA</div>
+          <div class="lane-row">
+            <div class="node">InsightFace<small>antelopev2 · embeddings</small></div>
+            <div class="node">FAISS<small>Búsqueda por similitud</small></div>
+            <div class="node">MediaPipe<small>Enmallado facial</small></div>
+            <div class="node">Keras<small>Emoción · 7 clases</small></div>
+            <div class="node">GPEN · ONNX<small>Restauración de fotos</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Datos</div>
+          <div class="lane-row">
+            <div class="node">MySQL<small>personas, clientes, asistencias, salidas, dispositivos</small></div>
+            <div class="node">Archivos<small>Fotos originales, mejoradas y capturas</small></div>
+            <div class="node">Índices<small>faiss.index + nombres por usuario</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Avisos push</div>
+          <div class="lane-row">
+            <div class="node">Trigger<small>al insertar asistencia</small></div><span class="arrow">→</span>
+            <div class="node">Cola<small>notificacion_cola</small></div><span class="arrow">→</span>
+            <div class="node">Worker Python<small>cola cada 5 s</small></div><span class="arrow">→</span>
+            <div class="node accent">Firebase · FCM<small>token del dispositivo</small></div><span class="arrow">→</span>
+            <div class="node">App Flutter<small>«Asistencia Registrada»</small></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

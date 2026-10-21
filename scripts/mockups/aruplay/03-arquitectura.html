@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Arquitectura de AruPlay: app Flutter con pantallas, view models y servicios de cámara, audio y HTTP, conectada a un servicio externo de detección y traducción que no está en el repositorio; a la derecha, el ciclo de detección en vivo cada 400 milisegundos</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #d35f00; --accent-soft: #fff1e3; }
+    .stage { align-items: center; gap: 30px; }
+    .left { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+    .arch { gap: 22px; }
+    .lane { grid-template-columns: 130px 1fr; }
+    .node { min-width: 0; font-size: 17px; padding: 16px 18px; flex: 1 1 auto; }
+    .node small { font-size: 13.5px; }
+    .lane-row { gap: 12px; }
+    .vsep { display: grid; grid-template-columns: 130px 1fr; gap: 20px; }
+    .vsep span { color: var(--accent); font-size: 16px; font-weight: 700; padding-left: 20px; }
+    .ext { border: 2px dashed #d9a26c; background: #fffaf4; }
+    .ext small code { font-size: 12px; }
+    .right { width: 440px; flex: none; padding: 26px; display: flex; flex-direction: column; }
+    .right h4 { font-size: 18px; } .right > p { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
+    .seq { list-style: none; margin-top: 26px; display: flex; flex-direction: column; gap: 26px; justify-content: flex-start; }
+    .seq li { display: grid; grid-template-columns: 34px 1fr; gap: 14px; position: relative; padding-bottom: 6px; }
+    .seq li:not(:last-child)::before { content: ''; position: absolute; left: 16px; top: 36px; bottom: -28px; width: 2px; background: var(--line); }
+    .seq .n { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-weight: 700; display: grid; place-items: center; font-size: 14px; z-index: 1; }
+    .seq .n.ext { background: #fff; border: 2px dashed #d9a26c; }
+    .seq b { font-size: 16px; display: block; } .seq span { font-size: 14px; color: var(--muted); line-height: 1.4; display: block; margin-top: 2px; }
+    code { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; background: var(--surface-2); padding: 1px 5px; border-radius: 5px; color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Arquitectura · App Flutter</p>
+        <h1 class="title">Una app, un servicio de visión aparte</h1>
+        <p class="subtitle">Juegos y contenido corren en el teléfono; la detección se delega a una API REST externa.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+
+    <main class="stage">
+      <div class="left">
+        <div class="arch">
+          <div class="lane"><span class="lane-name">Pantallas</span><div class="lane-row">
+            <div class="node">Inicio<small>palabra del día</small></div>
+            <div class="node">Juega<small>mapa · 4 niveles</small></div>
+            <div class="node accent">Detecta en vivo<small>cámara + resultados</small></div>
+            <div class="node">Conecta · Inspírate<small>comunidad y cultura</small></div>
+            <div class="node">Perfil<small>logros y ajustes</small></div>
+          </div></div>
+          <div class="lane"><span class="lane-name">Minijuegos</span><div class="lane-row">
+            <div class="node">Pupiletras<small>7×7 y 9×9</small></div>
+            <div class="node">Memoria<small>6 parejas</small></div>
+            <div class="node">Matachola<small>duelo · 11 preguntas</small></div>
+          </div></div>
+          <div class="lane"><span class="lane-name">Estado</span><div class="lane-row">
+            <div class="node">UsuarioViewModel<small>alias y avatar · ChangeNotifier</small></div>
+            <div class="node">DetectaViewModel<small>resultados de detección</small></div>
+            <div class="node">Estado local<small>puntos, vidas y tiempo por juego</small></div>
+          </div></div>
+          <div class="lane"><span class="lane-name">Servicios</span><div class="lane-row">
+            <div class="node dark">ApiService<small>http · JSON · timeouts</small></div>
+            <div class="node dark">camera<small>captura de fotogramas</small></div>
+            <div class="node dark">audioplayers<small>audios locales en assets</small></div>
+            <div class="node dark">ApiConfig<small>servidor y puerto configurables</small></div>
+          </div></div>
+          <div class="vsep"><i></i><span>↓ HTTP · imagen en base64</span></div>
+          <div class="lane"><span class="lane-name">Externo</span><div class="lane-row">
+            <div class="node ext" style="flex:1">Servicio de detección y traducción<small>Backend del equipo, no incluido en este repositorio · <code>/api/detect</code> <code>/api/translate</code> <code>/api/pronunciation</code> <code>/api/health</code></small></div>
+          </div></div>
+        </div>
+      </div>
+
+      <aside class="card right">
+        <h4>Ciclo de detección en vivo</h4>
+        <p>Así funciona <code>detecta_live.dart</code> mientras la cámara está abierta.</p>
+        <ol class="seq">
+          <li><span class="n">1</span><div><b>Temporizador de 400 ms</b><span>Si no hay un fotograma en proceso, captura uno nuevo.</span></div></li>
+          <li><span class="n">2</span><div><b>Envía la imagen</b><span>ApiService la codifica en base64 y hace POST a <code>/api/detect</code>.</span></div></li>
+          <li><span class="n ext">3</span><div><b>El servicio responde</b><span>Objeto en español y en aymara, fonética, confianza, recuadro y nombre de audio.</span></div></li>
+          <li><span class="n">4</span><div><b>Muestra los 2 mejores</b><span>Ordena por confianza y dibuja el recuadro sobre la vista de cámara.</span></div></li>
+          <li><span class="n">5</span><div><b>Escucha la palabra</b><span>Al tocar, reproduce la pronunciación desde los audios de la app.</span></div></li>
+        </ol>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>

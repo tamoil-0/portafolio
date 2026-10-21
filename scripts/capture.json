@@ -1,0 +1,10 @@
+{
+  "_comentario": "Configuración opcional por proyecto para npm run screenshots. allowPrivate: el repo es privado pero la página es pública. blur: selectores CSS que se difuminan (personas, nombres). maxStops: cuántas capturas de escritorio bajando por la página.",
+  "friding": { "allowPrivate": true, "maxStops": 3, "blur": ["[class*=avatar] img", "[class*=participant] img", "[class*=user] img", "[class*=participant]", "[class*=avatar]"] },
+  "agendia": { "allowPrivate": true, "maxStops": 3 },
+  "impact-regional-fellowship-web": { "allowPrivate": true, "maxStops": 3, "blur": ["[class*=fellow] img", "[class*=mentor] img", "[class*=ponente] img", "[class*=speaker] img"] },
+  "irf-fondos-donaciones": { "allowPrivate": true, "maxStops": 3, "blur": ["[class*=donor]", "[class*=donante]"] },
+  "rowan": { "allowPrivate": true, "maxStops": 3, "blur": ["[class*=team] img", "[class*=equipo] img", "[class*=mentor] img"] },
+  "allprocar": { "allowPrivate": true, "maxStops": 2 },
+  "clasico-irf": { "maxStops": 2 }
+}

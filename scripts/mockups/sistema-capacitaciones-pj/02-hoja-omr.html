@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Hoja de respuestas OMR recreada: hoja marcada por un participante, la misma hoja leída con aciertos y errores coloreados, y el resultado con la nota calculada</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    .stage { gap: 0; justify-content: space-between; align-items: flex-start; }
+    .colw { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .paper { background: #fff; box-shadow: 0 24px 50px rgba(0,0,0,.14), 0 3px 10px rgba(0,0,0,.06); border-radius: 4px; }
+    .scan { background: #fbfaf7; box-shadow: 0 24px 50px rgba(0,0,0,.14), 0 3px 10px rgba(0,0,0,.06); border-radius: 10px; padding: 14px; border: 1px solid var(--line); }
+    .cap { font-size: 15px; font-weight: 600; }
+    .cap span { color: var(--accent); margin-right: 6px; }
+    .legend { display: flex; gap: 14px; font-size: 12.5px; color: var(--muted); margin-top: 10px; justify-content: center; }
+    .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 2.5px solid; margin-right: 5px; vertical-align: -2px; }
+    .gap { width: 60px; align-self: center; display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: -40px; }
+    .gap b { font-size: 26px; color: var(--accent); line-height: 1; }
+    .gap small { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; text-align: center; line-height: 1.3; }
+    /* Resultado: misma estructura que el PDF "hoja completa" (ReportLab, paleta azul) */
+    .res { width: 372px; height: 636px; background: #fff; border-radius: 6px; box-shadow: 0 24px 50px rgba(0,0,0,.14), 0 3px 10px rgba(0,0,0,.06); overflow: hidden; display: flex; flex-direction: column; font-size: 12px; }
+    .res-h { background: #1565C0; color: #fff; padding: 14px 18px 12px; border-bottom: 4px solid #0D47A1; display: flex; justify-content: space-between; align-items: flex-start; }
+    .res-h strong { font-size: 13px; line-height: 1.25; display: block; letter-spacing: .02em; }
+    .res-h small { color: #BBDEFB; font-size: 10.5px; }
+    .res-h .d { text-align: right; font-size: 10.5px; line-height: 1.4; }
+    .res-b { padding: 12px 18px 12px; display: flex; flex-direction: column; gap: 9px; flex: 1; }
+    .sec { background: #2C3E50; color: #fff; font-weight: 700; font-size: 11px; padding: 5px 10px; letter-spacing: .04em; }
+    .datos { border: 2px solid #0D47A1; background: #F8F9FA; padding: 8px 10px; display: grid; grid-template-columns: 70px 1fr; row-gap: 4px; color: #2C3E50; margin-top: -10px; }
+    .datos b { font-weight: 700; }
+    .ok { background: #27AE60; color: #fff; text-align: center; border-radius: 6px; padding: 10px 6px 9px; }
+    .ok .t { font-size: 20px; font-weight: 800; letter-spacing: .04em; }
+    .ok .p { font-size: 15px; font-weight: 700; margin-top: 2px; }
+    .ok .q { font-size: 11.5px; opacity: .9; }
+    .sts { background: #ECF0F1; border-radius: 6px; display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; padding: 6px 0; }
+    .sts div b { display: block; font-size: 17px; }
+    .sts div span { font-size: 10.5px; color: #2C3E50; }
+    .det { font-weight: 700; color: #2C3E50; font-size: 11px; }
+    table { width: 100%; border-collapse: collapse; font-size: 11.5px; margin-top: -4px; }
+    th { background: #34495E; color: #fff; font-size: 10.5px; padding: 4px 0; }
+    td { text-align: center; padding: 3.5px 0; border-bottom: 1px solid #DEE2E6; font-weight: 600; color: #2C3E50; }
+    tr.c td { background: #D5F4E6; } tr.x td { background: #FADBD8; } tr.b td { background: #F8F9FA; }
+    td.g { color: #27AE60; } td.r { color: #E74C3C; } td.bl { color: #3498DB; } td.gr { color: #95A5A6; font-weight: 500; }
+    .more { text-align: center; color: #95A5A6; font-size: 11px; }
+    .foot { margin-top: auto; border-top: 2px solid #1565C0; padding-top: 6px; text-align: center; color: #2C3E50; font-size: 10.5px; font-weight: 700; }
+    .foot span { display: block; font-weight: 400; color: #999; font-size: 9.5px; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">OMR · Hoja de respuestas</p>
+        <h1 class="title">De la hoja marcada a la nota</h1>
+        <p class="subtitle">30 preguntas (A–D) y DNI de 8 dígitos, leídos con OpenCV a partir de 6 cuadrados de referencia.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+    <main class="stage">
+      <div class="colw">
+        <svg id="sheet" class="paper" width="438" height="620" viewBox="0 0 210 297"></svg>
+        <p class="cap"><span>1</span>Hoja marcada y escaneada en PDF</p>
+      </div>
+      <div class="gap"><b>→</b><small>Poppler<br>300 dpi</small></div>
+      <div class="colw">
+        <div class="scan">
+          <svg id="read" width="400" height="527" viewBox="12 40 186 245"></svg>
+          <div class="legend"><span><i style="border-color:#16a34a"></i>Correcta</span><span><i style="border-color:#dc2626"></i>Incorrecta / doble</span><span><i style="border-color:#2563eb"></i>Sin marcar</span></div>
+        </div>
+        <p class="cap"><span>2</span>Recorte leído por OpenCV</p>
+      </div>
+      <div class="gap"><b>→</b><small>Clave<br>+ puntaje</small></div>
+      <div class="colw">
+        <div class="res">
+          <div class="res-h"><div><strong>SISTEMA DE ASISTENCIA Y<br>CALIFICACIÓN DE EXÁMENES</strong><small>Evaluación y Calificación Automática</small></div><div class="d"><b>Fecha de Calificación</b><br>14/11/2025<br>10:42:18</div></div>
+          <div class="res-b">
+            <div class="sec">DATOS DEL POSTULANTE</div>
+            <div class="datos"><b>DNI:</b><span>74581203</span><b>Nombres:</b><span>Ana Quispe Mamani</span><b>Evento:</b><span>Examen · Gestión documental</span></div>
+            <div class="ok"><div class="t">✓ APROBADO</div><div class="p">44.0 / 60.0 pts</div><div class="q">Porcentaje: 73.3%</div></div>
+            <div class="sts"><div><b style="color:#27AE60">22</b><span>✓ Correctas</span></div><div><b style="color:#E74C3C">6</b><span>✗ Incorrectas</span></div><div><b style="color:#3498DB">1</b><span>○ Sin marcar</span></div></div>
+            <div class="det">DETALLE DE RESPUESTAS:</div>
+            <table id="tbl"><thead><tr><th>Nº</th><th>Marcó</th><th>Correcta</th><th>Pts</th><th>Estado</th></tr></thead><tbody></tbody></table>
+            <div class="more">… hasta la pregunta 30 · 1 doble marca (inválida)</div>
+            <div class="foot">Sistema de Asistencia y Calificación de Exámenes<span>Documento generado automáticamente</span></div>
+          </div>
+        </div>
+        <p class="cap"><span>3</span>PDF de resultado por participante</p>
+      </div>
+    </main>
+  </div>
+<script>
+  // Clave y respuestas FICTICIAS. Geometría tomada de omr_sobre_recorte() (fracciones del recorte).
+  const KEY  = 'ABDCBADCCABDDBCAACBDBCADABCDBA';
+  const MARK = 'ABDABADCDABDABCAACADBCCDABCABA'; // difiere en 4, 9, 13, 19, 23, 28
+  const BLANK = 25, MULTI = 11; // 25 sin marcar, 11 con doble marca (B y C)
+  const DNI = '74581203';
+  const L = ['A','B','C','D'];
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 186, H = 245, OX = 12, OY = 40;
+  function el(svg, tag, a, txt) { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; }
+  function marked(q) { if (q === BLANK) return []; if (q === MULTI) return [1, 2]; return [L.indexOf(MARK[q-1])]; }
+  // Posiciones de preguntas: 1–8, 16–23, 24–30 arriba; 9–15 abajo (columna 1)
+  const colX = [OX + .13*W, OX + .13*W + .53*W/3, OX + .13*W + 2*.53*W/3];
+  const shiftX = [-1.3, 6.5, 15];
+  const rowTop = (.585 - .12) * H / 10;
+  const Q = {};
+  for (let i = 0; i < 8; i++) {
+    const y = OY + .12*H + (i + .5)*rowTop - 5;
+    Q[1+i] = [0, y]; Q[16+i] = [1, y]; if (i < 7) Q[24+i] = [2, y];
+  }
+  for (let i = 0; i < 7; i++) Q[9+i] = [0, OY + .56*H + 3.6 + i*7.2 - 2];
+  const bx = (c, k) => colX[c] + 3.4 + shiftX[c] + k*5.5;
+  const dniX = (c) => OX + .55*W + (c + .5) * (.385*W/8);
+  const dniY = (d) => OY + .575*H + (d + .5) * (.42*H/10) - 2.3;
+
+  function draw(svg, read) {
+    if (!read) {
+      el(svg, 'rect', { x: 0, y: 0, width: 210, height: 297, fill: '#fff' });
+      el(svg, 'text', { x: 12, y: 17, 'font-size': 7, 'font-weight': 800, fill: '#111', 'letter-spacing': .4 }, 'HOJA DE RESPUESTAS');
+      el(svg, 'text', { x: 12, y: 22.5, 'font-size': 3.1, fill: '#666' }, 'Rellene por completo un solo círculo por pregunta.');
+      const f = [['Apellidos y nombres', 'Ana Quispe Mamani', 12, 32, 92], ['Fecha', '14/11/2025', 112, 32, 50]];
+      for (const [lab, val, x, y, w] of f) {
+        el(svg, 'text', { x, y: y - 5.2, 'font-size': 2.6, fill: '#777' }, lab);
+        el(svg, 'line', { x1: x, y1: y + 1.2, x2: x + w, y2: y + 1.2, stroke: '#bbb', 'stroke-width': .3 });
+        el(svg, 'text', { x: x + 1, y, 'font-size': 3.6, fill: '#1f3a8a', 'font-style': 'italic' }, val);
+      }
+      // código de hoja
+      const qr = el(svg, 'g', {});
+      for (let r = 0; r < 7; r++) for (let c = 0; c < 7; c++) if ((r*3 + c*5 + r*c) % 3 !== 0 || r === 0 || c === 0 || r === 6 || c === 6) el(qr, 'rect', { x: 177 + c*2.6, y: 8 + r*2.6, width: 2.6, height: 2.6, fill: '#111' });
+      // instrucciones
+      el(svg, 'rect', { x: 147, y: 62, width: 46, height: 46, rx: 2, fill: '#f6f6f6', stroke: '#ddd', 'stroke-width': .3 });
+      el(svg, 'text', { x: 150, y: 68, 'font-size': 2.8, 'font-weight': 700, fill: '#333' }, 'MARCA CORRECTA');
+      el(svg, 'circle', { cx: 153, cy: 73.5, r: 2.1, fill: '#222' });
+      el(svg, 'text', { x: 157, y: 74.5, 'font-size': 2.6, fill: '#555' }, 'círculo lleno');
+      el(svg, 'text', { x: 150, y: 82, 'font-size': 2.8, 'font-weight': 700, fill: '#333' }, 'NO VÁLIDAS');
+      ['✓', '✗', '•'].forEach((s, i) => { el(svg, 'circle', { cx: 153 + i*7, cy: 87.5, r: 2.1, fill: 'none', stroke: '#999', 'stroke-width': .3 }); el(svg, 'text', { x: 153 + i*7, y: 88.6, 'font-size': 3, 'text-anchor': 'middle', fill: '#444' }, s); });
+      el(svg, 'text', { x: 150, y: 97, 'font-size': 2.5, fill: '#666' }, 'Use lápiz 2B y no');
+      el(svg, 'text', { x: 150, y: 100.5, 'font-size': 2.5, fill: '#666' }, 'doble la hoja.');
+      // DNI escrito
+      el(svg, 'text', { x: 60, y: 186, 'font-size': 3.4, 'font-weight': 700, fill: '#333' }, 'DNI');
+      el(svg, 'text', { x: 60, y: 191, 'font-size': 2.5, fill: '#777' }, 'Escriba y marque');
+      el(svg, 'text', { x: 60, y: 194.5, 'font-size': 2.5, fill: '#777' }, 'sus 8 dígitos →');
+      el(svg, 'line', { x1: 40, y1: 262, x2: 104, y2: 262, stroke: '#bbb', 'stroke-width': .3 });
+      el(svg, 'text', { x: 40, y: 266, 'font-size': 2.5, fill: '#777' }, 'Firma del participante');
+      // 6 cuadrados de referencia (2 columnas x 3 filas)
+      for (const [x, y] of [[12,40],[191,40],[12,157],[191,157],[12,278],[191,278]]) el(svg, 'rect', { x, y, width: 7, height: 7, fill: '#000' });
+    } else {
+      el(svg, 'rect', { x: 12, y: 40, width: 186, height: 245, fill: '#fff' });
+      for (const [x, y] of [[12,40],[191,40],[12,157],[191,157],[12,278],[191,278]]) el(svg, 'rect', { x, y, width: 7, height: 7, fill: '#000', opacity: .9 });
+    }
+    // casillas del DNI escrito
+    for (let c = 0; c < 8; c++) {
+      el(svg, 'rect', { x: dniX(c) - 3.6, y: OY + .575*H - 9.5, width: 7.2, height: 6.5, fill: 'none', stroke: '#aaa', 'stroke-width': .3 });
+      el(svg, 'text', { x: dniX(c), y: OY + .575*H - 4.6, 'font-size': 4.2, 'text-anchor': 'middle', fill: '#1f3a8a', 'font-style': 'italic' }, DNI[c]);
+    }
+    // preguntas
+    for (let q = 1; q <= 30; q++) {
+      const [c, y] = Q[q]; const m = marked(q);
+      el(svg, 'text', { x: colX[c] - 3 + shiftX[c], y: y + 1.1, 'font-size': 3.4, 'font-weight': 700, 'text-anchor': 'end', fill: read ? '#dc2626' : '#333' }, q);
+      for (let k = 0; k < 4; k++) {
+        const x = bx(c, k), on = m.includes(k);
+        el(svg, 'circle', { cx: x, cy: y, r: 2.1, fill: on ? '#262626' : '#fff', stroke: on ? '#262626' : '#9a9a9a', 'stroke-width': .28 });
+        if (!on) el(svg, 'text', { x, y: y + .95, 'font-size': 2.4, 'text-anchor': 'middle', fill: '#9a9a9a' }, L[k]);
+        if (read) {
+          let col = '#2563eb', sw = .32;
+          if (on) { sw = .75; col = (m.length > 1 || L[k] !== KEY[q-1]) ? '#dc2626' : '#16a34a'; }
+          el(svg, 'circle', { cx: x, cy: y, r: 2.9, fill: 'none', stroke: col, 'stroke-width': sw });
+        }
+      }
+    }
+    // DNI 8 columnas x dígitos 0–9
+    for (let c = 0; c < 8; c++) for (let d = 0; d < 10; d++) {
+      const x = dniX(c), y = dniY(d), on = +DNI[c] === d;
+      el(svg, 'circle', { cx: x, cy: y, r: 2.1, fill: on ? '#262626' : '#fff', stroke: on ? '#262626' : '#9a9a9a', 'stroke-width': .28 });
+      if (!on) el(svg, 'text', { x, y: y + .95, 'font-size': 2.4, 'text-anchor': 'middle', fill: '#9a9a9a' }, d);
+      if (read) el(svg, 'circle', { cx: x, cy: y, r: 2.9, fill: 'none', stroke: on ? '#16a34a' : '#dc2626', 'stroke-width': on ? .75 : .22, opacity: on ? 1 : .55 });
+    }
+    if (read) {
+      el(svg, 'rect', { x: 64, y: 186, width: 42, height: 12, rx: 2, fill: '#0f172a' });
+      el(svg, 'text', { x: 85, y: 191, 'font-size': 3, 'text-anchor': 'middle', fill: '#94a3b8' }, 'DNI leído');
+      el(svg, 'text', { x: 85, y: 196, 'font-size': 4.2, 'font-weight': 700, 'text-anchor': 'middle', fill: '#4ade80', 'letter-spacing': .6 }, DNI);
+    }
+  }
+  draw(document.getElementById('sheet'), false);
+  draw(document.getElementById('read'), true);
+  // Tabla de detalle (primeras 10 preguntas), 2 pts por pregunta (valor por defecto)
+  const tb = document.querySelector('#tbl tbody');
+  for (let q = 1; q <= 8; q++) {
+    const m = marked(q), txt = m.length === 1 ? L[m[0]] : '-';
+    const st = m.length === 0 ? 'b' : m.length > 1 ? 'm' : (txt === KEY[q-1] ? 'c' : 'x');
+    const tr = document.createElement('tr'); tr.className = st === 'm' ? 'x' : st;
+    tr.innerHTML = `<td>${q}</td><td>${txt}</td><td class="g">${KEY[q-1]}</td><td class="${st === 'c' ? 'g' : 'gr'}">${st === 'c' ? '2.0' : '0'}</td><td class="${st === 'c' ? 'g' : st === 'b' ? 'bl' : 'r'}">${st === 'c' ? '✓' : st === 'b' ? '○' : st === 'm' ? '✗✗' : '✗'}</td>`;
+    tb.appendChild(tr);
+  }
+</script>
+</body>
+</html>

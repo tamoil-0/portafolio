@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Flujo de Huella Joven: el joven se registra, se inscribe en una oportunidad, registra su actividad con evidencias, un validador la aprueba u observa con notificación automática y la huella suma horas y beneficiarios validados; incluye los estados de una actividad y lo que puede hacer cada rol</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #0F7B5F; --accent-soft: #E3F4EE; }
+    .stage { flex-direction: column; align-items: stretch; gap: 26px; }
+    .step { padding: 22px 20px; gap: 9px; }
+    .step h3 { font-size: 19px; } .step p { font-size: 14.5px; line-height: 1.45; }
+    .step code, .card code { font-family: ui-monospace, Consolas, monospace; font-size: 12px; background: var(--surface-2); padding: 2px 6px; border-radius: 5px; color: var(--text); align-self: flex-start; }
+    .step code { margin-top: auto; }
+    .step.hl { border-color: var(--accent); background: var(--accent-soft); }
+    .who { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+    .lower { display: grid; grid-template-columns: 1.25fr 1fr; gap: 26px; flex: 1; min-height: 0; }
+    .lower .card { display: flex; flex-direction: column; }
+    .notif { margin-top: auto; display: flex; gap: 12px; align-items: center; background: var(--accent-soft); border: 1px solid #bfe3d4; border-left: 4px solid var(--accent); border-radius: 12px; padding: 12px 14px; }
+    .notif .i { width: 34px; height: 34px; border-radius: 50%; background: #fff; display: grid; place-items: center; color: var(--accent); font-weight: 800; flex: none; }
+    .notif b { font-size: 14px; display: block; } .notif span { font-size: 13px; color: var(--muted); }
+    .card h4 { font-size: 18px; } .card > p { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
+    .states { display: grid; grid-template-columns: auto 28px auto 28px auto 40px auto; align-items: center; margin: auto 0; row-gap: 14px; }
+    .st { border-radius: 12px; padding: 12px 14px; font-weight: 700; font-size: 15px; text-align: center; border: 1.5px solid; }
+    .st small { display: block; font-weight: 400; font-size: 12px; margin-top: 2px; }
+    .s0 { background: #f1efec; border-color: #d6d1cb; color: #3d3a37; }
+    .s1 { background: #fff4dc; border-color: #f0cf85; color: #8a5a00; }
+    .s2 { background: #e8f0fe; border-color: #a9c1f2; color: #1d4ed8; }
+    .ok { background: #e3f4ea; border-color: #92d0ab; color: #1f7a4d; }
+    .ob { background: #fbf0dc; border-color: #e6c27a; color: #9a5d08; }
+    .rj { background: #fde8e6; border-color: #f0a8a1; color: #b42318; }
+    .ar { text-align: center; color: var(--muted); font-weight: 700; font-size: 18px; }
+    .branch { display: flex; flex-direction: column; gap: 10px; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .legend div { background: var(--bg); border-radius: 12px; padding: 12px 14px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+    .legend b { color: var(--text); display: block; font-size: 14px; margin-bottom: 2px; }
+    .roles { display: flex; flex-direction: column; gap: 14px; margin: 22px 0; }
+    .role { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .role:last-child { border-bottom: 0; padding-bottom: 0; }
+    .role b { font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+    .role b i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .role span { font-size: 13.5px; color: var(--muted); line-height: 1.4; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Cómo funciona · Validación</p>
+        <h1 class="title">De la inscripción a la huella</h1>
+        <p class="subtitle">Solo las actividades aprobadas por un validador suman horas y beneficiarios.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+
+    <main class="stage">
+      <div class="flow">
+        <div class="step"><span class="who">Joven</span><h3>Se registra</h3><p>Crea su cuenta y recibe un JWT con su rol; completa un diagnóstico inicial.</p><code>POST /auth/register</code></div>
+        <div class="step"><span class="who">Joven</span><h3>Se inscribe</h3><p>Elige una oportunidad por rubro. Si los cupos se agotaron, la API responde 409.</p><code>POST /opportunities/:id/enroll</code></div>
+        <div class="step"><span class="who">Joven</span><h3>Registra lo que hizo</h3><p>Rubro, horas, beneficiarios, rol, reflexión y evidencias, validados con Zod.</p><code>POST /activities</code></div>
+        <div class="step"><span class="who">Validador</span><h3>Aprueba u observa</h3><p>Valida, observa o rechaza con comentario; el joven recibe una notificación.</p><code>POST /activities/:id/validate</code></div>
+        <div class="step hl"><span class="who">Joven</span><h3>Su huella crece</h3><p>Suma horas y beneficiarios de lo validado, en total y por rubro.</p><code>GET /activities/impact/summary</code></div>
+      </div>
+
+      <div class="lower">
+        <div class="card">
+          <h4>Estados de una actividad</h4>
+          <p>El joven la guarda y la envía; el resultado lo registra un validador o un admin.</p>
+          <div class="states">
+            <div class="st s0">borrador<small>en edición</small></div><span class="ar">→</span>
+            <div class="st s1">pendiente<small>por defecto</small></div><span class="ar">→</span>
+            <div class="st s2">enviada<small>a revisión</small></div><span class="ar">→</span>
+            <div class="branch">
+              <div class="st ok">validada<small>suma a la huella</small></div>
+              <div class="st ob">observada<small>con comentario</small></div>
+              <div class="st rj">rechazada<small>no suma</small></div>
+            </div>
+          </div>
+          <div class="legend">
+            <div><b>Una transacción</b>Cambia el estado, guarda la validación (quién y comentario) y crea la notificación.</div>
+            <div><b>Cerrada u observada</b>Validada o rechazada queda cerrada (solo un admin la edita); una observada se corrige y se reenvía.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>Qué puede hacer cada rol</h4>
+          <p>El rol viaja en el JWT y se comprueba en cada ruta.</p>
+          <div class="roles">
+            <div class="role"><b><i style="background:#0F7B5F"></i>Joven</b><span>Registra actividades, se inscribe o cancela, se une a grupos y escribe mensajes.</span></div>
+            <div class="role"><b><i style="background:#1d4ed8"></i>Validador</b><span>Revisa actividades y las marca validada, observada o rechazada.</span></div>
+            <div class="role"><b><i style="background:#e8890c"></i>Organización</b><span>Publica, edita y elimina oportunidades con cupos y roles.</span></div>
+            <div class="role"><b><i style="background:#3d3a37"></i>Admin</b><span>Todo lo anterior, incluida la edición de actividades cerradas.</span></div>
+          </div>
+          <div class="notif"><span class="i">🔔</span><div><b>Actividad validada</b><span>Tu actividad fue marcada como validada. · notificación que crea la API</span></div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

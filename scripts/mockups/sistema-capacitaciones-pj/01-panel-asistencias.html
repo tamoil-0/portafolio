@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Panel web de asistencias de una capacitación: estadísticas de entradas y salidas, lista de inscritos y registro por DNI</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    /* Paleta real del tema Vuetify (frontend/src/main.js + DefaultLayout.vue) */
+    .vx { --primary: #1565C0; --secondary: #0D47A1; --info: #1E88E5; --success: #27ae60; --warning: #f39c12; --error: #D32F2F; --bgv: #F8F9FA; --ink: #202124; --sub: #5f6368; }
+    .browser { width: 1456px; height: 700px; }
+    .vx { zoom: .78; width: 1867px; height: 846px; background: var(--bgv); display: flex; flex-direction: column; font-family: 'Inter', sans-serif; color: var(--ink); }
+    .vbar { height: 64px; flex: none; background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%); display: flex; align-items: center; gap: 18px; padding: 0 22px; color: #fff; box-shadow: 0 2px 8px rgba(13,71,161,.35); }
+    .vbar .ib { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.14); }
+    .vbar .logo { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.95); display: grid; place-items: center; }
+    .vbar h2 { font-size: 23px; font-weight: 700; letter-spacing: -.2px; flex: 1; }
+    .vmain { flex: 1; padding: 26px 40px; display: flex; flex-direction: column; gap: 18px; min-height: 0; }
+    .phead { display: flex; align-items: center; justify-content: space-between; }
+    .phead .l { display: flex; align-items: center; gap: 18px; }
+    .badge { width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #0D47A1 0%, #1E88E5 100%); display: grid; place-items: center; box-shadow: 0 6px 14px rgba(13,71,161,.3); }
+    .phead h1 { font-size: 30px; font-weight: 700; letter-spacing: -.5px; }
+    .phead p { font-size: 15px; color: var(--sub); font-weight: 500; margin-top: 2px; }
+    .evt { display: inline-flex; align-items: center; gap: 8px; margin-left: 14px; font-size: 13px; font-weight: 600; color: var(--primary); background: #e3edf9; padding: 4px 12px; border-radius: 999px; vertical-align: middle; }
+    .vbtn { border-radius: 12px; font-weight: 600; font-size: 16px; padding: 14px 24px; display: inline-flex; align-items: center; gap: 10px; color: #fff; background: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .vcard { background: #fff; border-radius: 16px; border: 1px solid rgba(0,0,0,.05); box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+    .tools { display: grid; grid-template-columns: 5fr 2fr 5fr; gap: 16px; }
+    .tools .vcard { padding: 16px; display: flex; gap: 12px; align-items: center; }
+    .fld { border: 1px solid #b9bec6; border-radius: 6px; height: 46px; padding: 0 12px; display: flex; align-items: center; gap: 8px; font-size: 15px; color: #6b7076; flex: 1; position: relative; background: #fff; }
+    .fld b { position: absolute; top: -9px; left: 10px; background: #fff; padding: 0 4px; font-size: 11.5px; font-weight: 500; color: #6b7076; }
+    .fld.sm { flex: .55; }
+    .xls { flex-direction: column !important; justify-content: center; gap: 2px !important; text-align: center; }
+    .xls strong { font-size: 14px; color: var(--success); }
+    .xls small { font-size: 12px; color: #8a8f96; }
+    .gbtn { background: var(--success); color: #fff; border-radius: 12px; font-weight: 600; font-size: 15px; height: 46px; padding: 0 18px; display: flex; align-items: center; gap: 8px; }
+    .stats { overflow: hidden; }
+    .stats-h { background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%); color: #fff; padding: 12px 20px; font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+    .stats-b { padding: 16px 20px 18px; display: grid; grid-template-columns: repeat(4, 1fr) 1.5fr; gap: 14px; align-items: stretch; }
+    .st { border-radius: 12px; border: 1px solid #eceff3; border-top: 4px solid; text-align: center; padding: 10px 6px 8px; }
+    .st .n { font-size: 30px; font-weight: 700; line-height: 1.1; }
+    .st .c { font-size: 12.5px; color: #616161; }
+    .pct { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding-left: 8px; }
+    .pct div:first-child { font-size: 15px; font-weight: 700; }
+    .pbar { height: 25px; border-radius: 6px; background: #d9eedf; overflow: hidden; }
+    .pbar i { display: flex; align-items: center; justify-content: center; height: 100%; width: 80%; background: var(--success); color: #fff; font-weight: 700; font-size: 13px; font-style: normal; }
+    .lower { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; flex: 1; min-height: 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+    th { text-align: left; font-weight: 600; color: #3c4043; padding: 11px 14px; border-bottom: 1px solid #e3e6ea; font-size: 13.5px; }
+    td { padding: 9px 14px; border-bottom: 1px solid #eef0f2; }
+    td.c, th.c { text-align: center; }
+    tr.in td { background: #c8facd; }
+    .tb { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; margin: 0 2px; }
+    .tb.p { background: #e3edf9; } .tb.e { background: #fbe4e4; }
+    .attend { padding: 20px 22px; display: flex; flex-direction: column; gap: 13px; }
+    .attend h3 { text-align: center; font-size: 20px; font-weight: 600; }
+    .seg { display: flex; border-radius: 10px; overflow: hidden; }
+    .seg span { flex: 1; text-align: center; padding: 11px 0; font-weight: 600; font-size: 15px; background: #e0e0e0; color: #424242; }
+    .seg span.on { background: var(--primary); color: #fff; }
+    .dni { border: 2px solid var(--primary); border-radius: 6px; height: 54px; display: flex; align-items: center; padding: 0 14px; font-size: 20px; font-weight: 600; letter-spacing: 2px; position: relative; }
+    .dni b { position: absolute; top: -10px; left: 10px; background: #fff; padding: 0 4px; font-size: 12px; font-weight: 600; color: var(--primary); letter-spacing: 0; }
+    .dni .caret { width: 2px; height: 26px; background: var(--primary); margin-left: 3px; }
+    .reg { background: var(--success); color: #fff; text-align: center; border-radius: 12px; padding: 14px; font-weight: 600; font-size: 17px; display: flex; justify-content: center; gap: 10px; align-items: center; }
+    .toast { border-radius: 10px; background: #e8f6ee; border-left: 4px solid var(--success); padding: 10px 12px; font-size: 13.5px; color: #1d5e3a; line-height: 1.4; }
+    .toast strong { display: block; font-size: 14px; }
+    .tiny { font-size: 12.5px; color: #8a8f96; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Web · Control de asistencias</p>
+        <h1 class="title">Entrada y salida por DNI, en vivo</h1>
+        <p class="subtitle">Panel Vue + Vuetify: estadísticas, inscritos importados desde Excel y registro rápido por DNI.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+    <main class="stage">
+      <div class="browser">
+        <div class="browser-bar"><i></i><i></i><i></i><span>localhost/asistentes/12</span></div>
+        <div class="browser-body">
+          <div class="vx">
+            <div class="vbar">
+              <div class="ib"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z" fill="#fff"/></svg></div>
+              <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="#1565C0"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6z" fill="#1565C0"/></svg></div>
+              <h2>Sistema de Asistencia y Calificación de Exámenes</h2>
+              <div class="ib"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" fill="#fff"/></svg></div>
+            </div>
+            <div class="vmain">
+              <div class="phead">
+                <div class="l">
+                  <div class="badge"><svg width="30" height="30" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2" fill="#fff"/><circle cx="16.5" cy="9" r="2.6" fill="#fff" opacity=".8"/><path d="M2.5 19c0-3.4 3-5.2 6.5-5.2s6.5 1.8 6.5 5.2z" fill="#fff"/><path d="M15.5 13.6c3 .1 6 1.6 6 4.9h-4.6c0-2-.5-3.6-1.4-4.9z" fill="#fff" opacity=".8"/></svg></div>
+                  <div>
+                    <h1>Asistentes <span class="evt">Curso · Gestión documental y archivo</span></h1>
+                    <p>Gestión de asistentes al evento</p>
+                  </div>
+                </div>
+                <div class="vbtn"><svg width="18" height="18" viewBox="0 0 24 24"><circle cx="10" cy="8" r="4" fill="#fff"/><path d="M2 20c0-4 4-6 8-6s8 2 8 6z" fill="#fff"/><path d="M19 7v3h3v2h-3v3h-2v-3h-3v-2h3V7z" fill="#fff"/></svg>Nuevo Asistente</div>
+              </div>
+
+              <div class="tools">
+                <div class="vcard">
+                  <div class="fld"><b>Buscar persona</b><svg width="18" height="18" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6" stroke="#6b7076" stroke-width="2" fill="none"/><path d="M15 15l5 5" stroke="#6b7076" stroke-width="2"/></svg>Nombre o Apellidos</div>
+                  <div class="fld sm"><b>Filtrar por estado</b>Todos</div>
+                  <div class="fld sm"><b>Items por página</b>10</div>
+                </div>
+                <div class="vcard xls">
+                  <svg width="34" height="34" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="#27ae60"/><path d="M8 7l3.2 5L8 17h2.3l2-3.4 2 3.4h2.3l-3.2-5 3.2-5h-2.3l-2 3.4-2-3.4z" fill="#fff"/></svg>
+                  <strong>Exportar Excel</strong><small>120 registros</small>
+                </div>
+                <div class="vcard">
+                  <div class="fld"><b>Seleccionar archivo Excel</b>inscritos_curso.xlsx</div>
+                  <div class="gbtn"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 20h14v-2H5zm7-16l-6 6h4v6h4v-6h4z" fill="#fff"/></svg>Importar</div>
+                </div>
+              </div>
+
+              <div class="vcard stats">
+                <div class="stats-h"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 16v-5M12 16V8M16 16v-3" stroke="#fff" stroke-width="2"/></svg>Estadísticas de Asistencias</div>
+                <div class="stats-b">
+                  <div class="st" style="border-top-color:#2196f3"><div class="n" style="color:#1565C0">120</div><div class="c">Total Inscritos</div></div>
+                  <div class="st" style="border-top-color:#4caf50"><div class="n" style="color:#27ae60">96</div><div class="c">Con Entradas</div></div>
+                  <div class="st" style="border-top-color:#ff9800"><div class="n" style="color:#f39c12">81</div><div class="c">Con Salidas</div></div>
+                  <div class="st" style="border-top-color:#9e9e9e"><div class="n" style="color:#9e9e9e">24</div><div class="c">Sin Registros</div></div>
+                  <div class="pct"><div>Porcentaje de Asistencia: 80%</div><div class="pbar"><i>80%</i></div></div>
+                </div>
+              </div>
+
+              <div class="lower">
+                <div class="vcard" style="overflow:hidden">
+                  <table>
+                    <thead><tr><th class="c">N°</th><th>DNI</th><th>Nombres</th><th>Apellido Paterno</th><th>Apellido Materno</th><th class="c">Acciones</th></tr></thead>
+                    <tbody>
+                      <tr class="in"><td class="c">1</td><td>70418235</td><td>Ana</td><td>Quispe</td><td>Mamani</td><td class="c"><span class="tb p"><svg width="15" height="15" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="#1565C0" stroke-width="2"/><path d="M9 9h6M9 13h4" stroke="#1565C0" stroke-width="2"/></svg></span><span class="tb e"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7zM9 4h6v2H9z" fill="none" stroke="#D32F2F" stroke-width="2"/></svg></span></td></tr>
+                      <tr class="in"><td class="c">2</td><td>71562904</td><td>Luis</td><td>Mamani</td><td>Condori</td><td class="c"><span class="tb p"><svg width="15" height="15" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="#1565C0" stroke-width="2"/><path d="M9 9h6M9 13h4" stroke="#1565C0" stroke-width="2"/></svg></span><span class="tb e"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7zM9 4h6v2H9z" fill="none" stroke="#D32F2F" stroke-width="2"/></svg></span></td></tr>
+                      <tr><td class="c">3</td><td>72093817</td><td>Rosa</td><td>Huanca</td><td>Ticona</td><td class="c"><span class="tb p"><svg width="15" height="15" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="#1565C0" stroke-width="2"/><path d="M9 9h6M9 13h4" stroke="#1565C0" stroke-width="2"/></svg></span><span class="tb e"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7zM9 4h6v2H9z" fill="none" stroke="#D32F2F" stroke-width="2"/></svg></span></td></tr>
+                      <tr class="in"><td class="c">4</td><td>70831146</td><td>Carlos</td><td>Apaza</td><td>Flores</td><td class="c"><span class="tb p"><svg width="15" height="15" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="#1565C0" stroke-width="2"/><path d="M9 9h6M9 13h4" stroke="#1565C0" stroke-width="2"/></svg></span><span class="tb e"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7zM9 4h6v2H9z" fill="none" stroke="#D32F2F" stroke-width="2"/></svg></span></td></tr>
+                      <tr class="in"><td class="c">5</td><td>73305581</td><td>María</td><td>Choque</td><td>Larico</td><td class="c"><span class="tb p"><svg width="15" height="15" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="#1565C0" stroke-width="2"/><path d="M9 9h6M9 13h4" stroke="#1565C0" stroke-width="2"/></svg></span><span class="tb e"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7zM9 4h6v2H9z" fill="none" stroke="#D32F2F" stroke-width="2"/></svg></span></td></tr>
+                      <tr><td class="c">6</td><td>71248093</td><td>Jorge</td><td>Ccama</td><td>Pari</td><td class="c"><span class="tb p"><svg width="15" height="15" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="#1565C0" stroke-width="2"/><path d="M9 9h6M9 13h4" stroke="#1565C0" stroke-width="2"/></svg></span><span class="tb e"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7zM9 4h6v2H9z" fill="none" stroke="#D32F2F" stroke-width="2"/></svg></span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="vcard attend">
+                  <h3>Tomar asistencia</h3>
+                  <div class="seg"><span class="on">Entrada</span><span>Salida</span></div>
+                  <div class="dni"><b>Ingrese DNI</b>7083114<span class="caret"></span></div>
+                  <div class="reg"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#fff"/><path d="M7.5 12.2l3 3 6-6" stroke="#27ae60" stroke-width="2.4" fill="none"/></svg>Registrar</div>
+                  <div class="toast"><strong>Asistencia (Entrada) registrada con éxito</strong>La fila del inscrito se marca en verde</div>
+                  <div class="tiny">Se actualiza cada 5 s · bloquea duplicados en 30 s</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

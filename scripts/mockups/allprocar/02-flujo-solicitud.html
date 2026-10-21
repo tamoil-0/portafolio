@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Flujo de nueva solicitud de servicio en Allprocar: elegir el síntoma, precisar el problema, indicar gravedad y turno, y los pasos siguientes del diseño de referencia hasta la búsqueda de talleres, la cotización y el seguimiento</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #0089a8; --accent-soft: #e0f6fb; }
+    .stage { gap: 64px; justify-content: center; }
+    .phone { --s: .74; }
+    .ap { --neon: #00d1ff; --card: #121212; --grey: #9ca3af; --line2: #2b3447; background: #000; color: #fff; font-size: 11.5px; }
+    .ap .statusbar { color: #fff; }
+    .hd { padding: 4px 14px 8px; display: flex; flex-direction: column; gap: 6px; }
+    .hd .row { gap: 10px; } .hd b { font-size: 14px; } .hd small { display: block; font-size: 9px; color: var(--neon); font-weight: 700; letter-spacing: .06em; }
+    .progress { height: 4px; border-radius: 99px; background: #1f2937; } .progress i { display: block; height: 100%; border-radius: 99px; background: var(--neon); }
+    .body { flex: 1; padding: 6px 14px 14px; display: flex; flex-direction: column; gap: 9px; overflow: hidden; }
+    .mode { background: var(--card); border-radius: 12px; padding: 4px; display: flex; gap: 4px; }
+    .mode span { flex: 1; text-align: center; padding: 7px 4px; border-radius: 9px; font-weight: 700; color: #86a4cd; font-size: 11px; }
+    .mode span.on { background: var(--neon); color: #000; }
+    .big { font-size: 22px; font-weight: 800; line-height: 1.1; } .muted2 { color: var(--grey); font-size: 11px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .sym { background: var(--card); border-radius: 13px; border: 1px solid; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; font-weight: 600; font-size: 11px; }
+    .sym i { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 14px; }
+    .opt { background: var(--card); border: 1px solid var(--line2); border-radius: 12px; padding: 9px 10px; display: flex; gap: 9px; align-items: center; }
+    .opt.on { border-color: var(--neon); background: #071a20; }
+    .opt i { width: 28px; height: 28px; border-radius: 8px; background: #1f2938; display: grid; place-items: center; font-style: normal; flex: none; }
+    .opt b { display: block; font-size: 11.5px; } .opt small { color: var(--grey); font-size: 10px; line-height: 1.3; display: block; }
+    .sev { border: 1px solid var(--line2); border-radius: 11px; padding: 9px 11px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+    .sev.on { border-color: var(--neon); } .sev.on::after { content: ''; width: 11px; height: 11px; border-radius: 50%; background: var(--neon); }
+    .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .chips span { border: 1px solid var(--line2); background: var(--card); border-radius: 10px; padding: 7px; text-align: center; font-weight: 600; }
+    .chips span.on { border-color: var(--neon); background: #113e4b; }
+    .tog { background: var(--card); border: 1px solid var(--line2); border-radius: 12px; padding: 9px 10px; display: flex; gap: 9px; align-items: center; }
+    .tog b { display: block; font-size: 11.5px; } .tog small { color: var(--grey); font-size: 10px; }
+    .sw { margin-left: auto; width: 34px; height: 20px; border-radius: 99px; background: var(--neon); position: relative; flex: none; } .sw::after { content: ''; position: absolute; right: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
+    .btn { margin-top: auto; background: var(--neon); color: #000; font-weight: 800; text-align: center; border-radius: 12px; padding: 11px; font-size: 13px; }
+    .phone-label small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .phones { display: flex; gap: 30px; }
+    /* Columna: pasos siguientes */
+    .next { width: 360px; flex: none; align-self: center; }
+    .next h4 { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .next p.lead { font-size: 14px; color: var(--muted); margin-bottom: 16px; line-height: 1.45; }
+    .tl { position: relative; display: grid; gap: 14px; padding-left: 30px; }
+    .tl::before { content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
+    .tl div { position: relative; }
+    .tl div::before { content: ''; position: absolute; left: -26px; top: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid var(--accent); }
+    .tl div.done::before { background: var(--accent); }
+    .tl b { display: block; font-size: 16px; } .tl span { font-size: 13.5px; color: var(--muted); }
+    .src { margin-top: 18px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill.app { background: var(--accent-soft); color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Cómo funciona · Solicitud de servicio</p>
+        <h1 class="title">De «algo suena raro» a un turno</h1>
+        <p class="subtitle">Un asistente en 5 pasos traduce el problema del conductor en una solicitud clara para el taller.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+    <main class="stage">
+      <div class="phones">
+        <!-- Paso 1 -->
+        <div class="phone-wrap">
+          <div class="phone"><div class="screen ap">
+            <div class="statusbar"><span>10:05</span><span>▴ ▮</span></div>
+            <div class="hd"><div class="row"><span>←</span><div><b>Nueva Solicitud</b><small>PASO 1 DE 5: DEFINICIÓN</small></div></div><div class="progress"><i style="width:20%"></i></div></div>
+            <div class="body">
+              <div class="mode"><span class="on">Diagnosticar Falla</span><span>Servicio Específico</span></div>
+              <div class="big">¿Cuál es el síntoma?</div>
+              <div class="muted2">Seleccioná lo que notás en tu vehículo.</div>
+              <div class="grid2">
+                <div class="sym" style="border-color:#6a2028b3"><i style="background:#6a202833;color:#ff6b78">⚠</i>Motor / Falla</div>
+                <div class="sym" style="border-color:#1c3f74b3"><i style="background:#1c3f7433;color:#7aa7ff">🔊</i>Ruidos</div>
+                <div class="sym" style="border-color:#3a3a3ab3"><i style="background:#3a3a3a55;color:#ccc">◎</i>Frenos / Ruedas</div>
+                <div class="sym" style="border-color:#5d5414b3"><i style="background:#5d541433;color:#f6c400">ϟ</i>Electricidad</div>
+                <div class="sym" style="border-color:#4a2b71b3"><i style="background:#4a2b7133;color:#c09bff">💧</i>Fluidos / Pérdidas</div>
+                <div class="sym" style="border-color:#0e5061b3"><i style="background:#0e506133;color:#5fd3ea">❄</i>Climatización</div>
+                <div class="sym" style="border-color:#145241b3"><i style="background:#14524133;color:#6ee7a1">⌕</i>Otro / Diagnóstico</div>
+              </div>
+            </div>
+          </div></div>
+          <p class="phone-label">1 · Definición<small>Síntoma o servicio del catálogo</small></p>
+        </div>
+        <!-- Paso 2 -->
+        <div class="phone-wrap">
+          <div class="phone"><div class="screen ap">
+            <div class="statusbar"><span>10:06</span><span>▴ ▮</span></div>
+            <div class="hd"><div class="row"><span>←</span><div><b>Nueva Solicitud</b><small>PASO 2 DE 5: DETALLE</small></div></div><div class="progress"><i style="width:40%"></i></div></div>
+            <div class="body">
+              <div class="big">Seamos más específicos</div>
+              <div class="muted2">Seleccioná lo que mejor describe tu problema.</div>
+              <div class="opt on"><i>⏻</i><div><b>No arranca</b><small>El motor gira pero no enciende o no hace nada.</small></div></div>
+              <div class="opt"><i>⏱</i><div><b>Sin fuerza</b><small>Acelero pero el auto no responde como antes.</small></div></div>
+              <div class="opt"><i>≋</i><div><b>Humo en escape</b><small>Sale humo blanco, negro o azulado.</small></div></div>
+              <div class="opt"><i>🌡</i><div><b>Temperatura alta</b><small>La aguja sube o sale vapor.</small></div></div>
+              <div class="opt"><i>⚙</i><div><b>Luz Check Engine</b><small>Se prendió una luz amarilla en el tablero.</small></div></div>
+            </div>
+          </div></div>
+          <p class="phone-label">2 · Detalle<small>Precisión del problema</small></p>
+        </div>
+        <!-- Paso 3 -->
+        <div class="phone-wrap">
+          <div class="phone"><div class="screen ap">
+            <div class="statusbar"><span>10:07</span><span>▴ ▮</span></div>
+            <div class="hd"><div class="row"><span>←</span><div><b>Nueva Solicitud</b><small>PASO 3 DE 5: DATOS</small></div></div><div class="progress"><i style="width:60%"></i></div></div>
+            <div class="body">
+              <b style="font-size:14px">Gravedad del problema</b>
+              <div class="sev">Baja (Puedo circular)</div>
+              <div class="sev on">Media (Atención pronto)</div>
+              <div class="sev">Alta (Urgente/Grúa)</div>
+              <b style="font-size:14px;margin-top:2px">Preferencia de Turno</b>
+              <div class="muted2" style="margin-top:-5px">¿Cuándo te gustaría realizar el trabajo?</div>
+              <div class="chips"><span class="on">Lo antes posible</span><span>Mañana</span><span>Esta semana</span><span>A coordinar</span></div>
+              <div class="tog"><div><b>¿Mecánica a Domicilio?</b><small>Servicios compatibles solamente</small></div><span class="sw"></span></div>
+              <div class="btn">Continuar</div>
+            </div>
+          </div></div>
+          <p class="phone-label">3 · Datos<small>Gravedad, turno y domicilio</small></p>
+        </div>
+      </div>
+
+      <div class="next card">
+        <h4>Y después</h4>
+        <p class="lead">El diseño de referencia completa el recorrido hasta la entrega del vehículo.</p>
+        <div class="tl">
+          <div class="done"><b>Definición · Detalle · Datos</b><span>Implementados en la app Flutter</span></div>
+          <div><b>4 · Evidencia</b><span>Fotos o video del problema</span></div>
+          <div><b>5 · Resumen</b><span>Revisión y envío de la solicitud</span></div>
+          <div><b>Búsqueda de talleres</b><span>Talleres cercanos reciben el pedido</span></div>
+          <div><b>Cotización</b><span>El cliente revisa y aprueba el presupuesto</span></div>
+          <div><b>Seguimiento y entrega</b><span>Orden de trabajo, avance y reseña</span></div>
+        </div>
+        <div class="src"><span class="pill app">App Flutter</span><span class="pill">Prototipo web de diseño</span></div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

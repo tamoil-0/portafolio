@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Despliegue del recomendador como prototipo: imagen Docker para Hugging Face Spaces y Render, índice FAISS de 36 756 vectores de 1024 dimensiones, arranque no bloqueante con /health, reconstrucción del índice desde PostgreSQL y actualización programada</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --p: #0077b6; --p2: #00b4d8; --psoft: #e8f4f8; }
+    .stage { gap: 24px; align-items: stretch; }
+    .left { width: 470px; flex: none; display: flex; flex-direction: column; gap: 20px; justify-content: center; }
+    .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 24px 26px; }
+    .kpi small { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .kpi .big { font-family: 'Serif', Georgia, serif; font-size: 82px; line-height: 1; margin-top: 10px; letter-spacing: -1px; }
+    .kpi p { font-size: 16px; color: var(--muted); margin-top: 8px; }
+    .kpi p b { color: var(--text); }
+    .health { background: #1b1a19; color: #e6e1db; border-radius: 20px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+    .health h4 { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #bdb6ae; }
+    .tl { display: flex; flex-direction: column; gap: 10px; }
+    .ev { display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: start; }
+    .ev .t { font-size: 12px; font-weight: 700; color: #bdb6ae; padding-top: 6px; }
+    .ev pre { font-family: Consolas, monospace; font-size: 12.5px; line-height: 1.5; background: #2a2826; border-radius: 10px; padding: 8px 12px; white-space: pre; }
+    .k { color: #7cc4e8; } .f { color: #f7a35c; } .tr { color: #c3e88d; } .n { color: #f7a35c; }
+    .grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; align-content: center; gap: 20px; }
+    .card { min-height: 290px; }
+    .card { display: flex; flex-direction: column; gap: 10px; padding: 22px 24px; }
+    .ch { display: flex; align-items: center; gap: 12px; }
+    .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--psoft); color: var(--p); flex: none; }
+    .ic svg { width: 21px; height: 21px; }
+    .card h3 { font-size: 19px; }
+    .card h3 small { display: block; font-size: 12.5px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+    .card ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .card li { font-size: 14.5px; color: var(--muted); line-height: 1.45; padding-left: 16px; position: relative; }
+    .card li::before { content: ''; position: absolute; left: 2px; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: var(--p2); }
+    code { font-family: Consolas, monospace; font-size: 12.5px; background: var(--surface-2); padding: 1px 6px; border-radius: 5px; color: var(--text); }
+    .targets { display: flex; gap: 10px; margin-top: auto; }
+    .tg { flex: 1; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: #faf9f7; }
+    .tg b { font-size: 14px; display: block; }
+    .tg small { font-size: 12px; color: var(--muted); }
+    .steps { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+    .steps span { font-size: 12.5px; font-weight: 600; padding: 5px 10px; border-radius: 999px; background: var(--psoft); color: #005a8d; }
+    .steps i { color: var(--accent); font-style: normal; font-weight: 700; }
+    .note.proto { background: #fbf0dc; color: var(--warn); border-color: #f1d9a8; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Despliegue · Docker y Hugging Face</p>
+        <h1 class="title">Un servicio que arranca aunque el modelo tarde</h1>
+        <p class="subtitle">Prototipo en Docker: responde desde el primer segundo y rehace su índice si falta.</p>
+      </div>
+      <span class="note">Diagrama · cifra real de la documentación</span>
+    </header>
+    <main class="stage">
+      <aside class="left">
+        <div class="kpi">
+          <small>Índice FAISS cargado</small>
+          <div class="big">36 756</div>
+          <p>vectores de <b>1024 dimensiones</b>, uno por documento de UNAP y UNSA</p>
+        </div>
+        <div class="health">
+          <h4>GET /health durante el arranque</h4>
+          <div class="tl">
+            <div class="ev"><span class="t">Segundo 0</span><pre>{ <span class="k">"ok"</span>: <span class="tr">true</span>, <span class="k">"ready"</span>: <span class="f">false</span>,
+  <span class="k">"index_count"</span>: <span class="n">0</span> }</pre></div>
+            <div class="ev"><span class="t">Modelo listo</span><pre>{ <span class="k">"ok"</span>: <span class="tr">true</span>, <span class="k">"ready"</span>: <span class="tr">true</span>,
+  <span class="k">"model"</span>: <span class="tr">"BAAI/bge-m3"</span>,
+  <span class="k">"device"</span>: <span class="tr">"cpu"</span>, <span class="k">"index_count"</span>: <span class="n">36756</span> }</pre></div>
+            <div class="ev"><span class="t">Si algo falla</span><pre>{ <span class="k">"ok"</span>: <span class="tr">true</span>, <span class="k">"ready"</span>: <span class="f">false</span>,
+  <span class="k">"error"</span>: <span class="tr">"FAISS index not found: …"</span> }</pre></div>
+          </div>
+        </div>
+      </aside>
+      <section class="grid">
+        <div class="card">
+          <div class="ch"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="4" height="4"/><rect x="8" y="11" width="4" height="4"/><rect x="13" y="11" width="4" height="4"/><rect x="8" y="6" width="4" height="4"/><path d="M2 15c0 3 3 5 9 5 7 0 10-4 11-8"/></svg></span><h3>Imagen Docker<small>python:3.10-slim · uvicorn</small></h3></div>
+          <ul><li>Copia la API y los archivos del índice</li><li>El build falla si <code>faiss.index</code> es solo un puntero de Git LFS</li><li>Caché de modelos de Hugging Face en <code>/data</code></li></ul>
+          <div class="targets"><div class="tg"><b>Hugging Face Spaces</b><small>SDK Docker</small></div><div class="tg"><b>Render</b><small>Servicio web + PostgreSQL</small></div></div>
+        </div>
+        <div class="card">
+          <div class="ch"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><h3>Arranque no bloqueante<small>startup en un hilo aparte</small></h3></div>
+          <ul><li>La API acepta peticiones mientras carga bge-m3 y el índice</li><li><code>/health</code> informa <code>ready</code>, vectores cargados y el error si lo hubo</li><li>Mientras no está listo, <code>/recommend</code> responde con un error claro en vez de colgarse</li></ul>
+        </div>
+        <div class="card">
+          <div class="ch"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></span><h3>Índice que se reconstruye<small>si falta faiss.index</small></h3></div>
+          <ul><li>Lee los embeddings guardados en PostgreSQL</li><li>Normaliza los vectores y arma un IndexFlatIP nuevo</li><li>Sin volver a ejecutar el modelo sobre 36 mil textos</li></ul>
+        </div>
+        <div class="card">
+          <div class="ch"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></span><h3>Actualización programada<small>repositorio de despliegue</small></h3></div>
+          <ul><li>Un flujo semanal de GitHub Actions, también ejecutable a mano</li><li>Publica el índice nuevo y el Space se reconstruye</li></ul>
+          <div class="steps"><span>Cosecha</span><i>→</i><span>Vectores</span><i>→</i><span>Publicar en HF</span><i>→</i><span>Rebuild</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

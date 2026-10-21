@@ -9,6 +9,8 @@ export interface ProjectImage {
   width: number;
   height: number;
   kind?: 'desktop' | 'mobile';
+  /** Ilustración generada (recreación basada en el código), no una captura real. */
+  generated?: boolean;
 }
 
 export interface Project {
@@ -54,6 +56,19 @@ export const CATEGORIES: { key: Category; label: string }[] = [
   { key: 'Postulación', label: 'Postulaciones' },
   { key: 'Otro', label: 'Otros' },
 ];
+
+/** Nombres canónicos de tecnologías, para agrupar variantes ("React 19", "Next.js 16", "Flutter (Riverpod)"). */
+const TECH: [RegExp, string][] = [
+  [/flutter/i, 'Flutter'], [/\bdart\b/i, 'Dart'], [/next\.?js/i, 'Next.js'], [/\breact\b(?! native)/i, 'React'],
+  [/typescript/i, 'TypeScript'], [/javascript/i, 'JavaScript'], [/\bpython\b/i, 'Python'], [/fastapi/i, 'FastAPI'],
+  [/laravel/i, 'Laravel'], [/\bphp\b/i, 'PHP'], [/node(\.js)?\b|express/i, 'Node.js'], [/tailwind/i, 'Tailwind CSS'],
+  [/tensorflow|keras/i, 'TensorFlow'], [/pytorch|torch/i, 'PyTorch'], [/opencv/i, 'OpenCV'], [/supabase/i, 'Supabase'],
+  [/postgres/i, 'PostgreSQL'], [/mysql|mariadb/i, 'MySQL / MariaDB'], [/sqlite/i, 'SQLite'], [/docker/i, 'Docker'],
+  [/firebase/i, 'Firebase'], [/gemini|gpt|openai|groq|responses api/i, 'APIs de LLM'], [/vite\b/i, 'Vite'],
+  [/faiss/i, 'FAISS'], [/streamlit/i, 'Streamlit'], [/go\b.*graphql|graphql/i, 'GraphQL'],
+];
+export const techsOf = (p: Pick<Project, 'stack'>) =>
+  [...new Set(p.stack.flatMap((s) => TECH.filter(([re]) => re.test(s)).map(([, name]) => name)))];
 
 /** Categoría principal + las etiquetas que coinciden con una categoría (para los filtros). */
 export const categoriesOf = (p: Pick<Project, 'category' | 'tags'>) =>

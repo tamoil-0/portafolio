@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Arquitectura de Mine Loading Analytics: entradas de video e IMU, módulos Python de análisis, modelos operacionales, coach con YOLOv8, reportes JSON y dashboards en Streamlit</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    .arch { gap: 18px; }
+    .lane { grid-template-columns: 170px 1fr; }
+    .lane-row { flex-wrap: nowrap; }
+    .node { flex: 1; min-width: 0; }
+    .node code { font-family: ui-monospace, Consolas, monospace; font-size: 14.5px; font-weight: 600; }
+    .conn { display: grid; grid-template-columns: 170px 1fr; gap: 20px; margin: -6px 0; }
+    .conn div { color: var(--accent); font-weight: 700; font-size: 18px; padding-left: 40px; display: flex; gap: 10px; align-items: center; }
+    .conn small { font-size: 12.5px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Arquitectura · Python</p>
+        <h1 class="title">Módulos simples, reportes en JSON</h1>
+        <p class="subtitle">Cada etapa es un script que escribe en metrics_output/; los dashboards solo leen esos reportes.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="arch">
+        <div class="lane">
+          <div class="lane-name">Entradas</div>
+          <div class="lane-row">
+            <div class="node dark">Video de la pala<small>Cámaras izquierda y derecha · mp4 · 15 fps</small></div>
+            <div class="node dark">Sensor IMU<small>Acelerómetro, giroscopio y cuaternión · .npy · 15 Hz</small></div>
+          </div>
+        </div>
+                <div class="lane">
+          <div class="lane-name">Detección</div>
+          <div class="lane-row">
+            <div class="node accent"><code>video_cycle_analyzer.py</code><small>Paladas por actividad en la zona del balde → ciclos</small></div>
+            <div class="node accent"><code>imu_fusion.py</code><small>Picos de giro, alineación con el video, salud mecánica</small></div>
+            <div class="node"><code>imu_video_metrics.py</code><small>Eventos automáticos y timeline</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Análisis</div>
+          <div class="lane-row">
+            <div class="node"><code>productivity_analysis.py</code><small>KPIs, cadencia, mejor y peor ciclo</small></div>
+            <div class="node"><code>projection_model.py</code><small>Turno → día → semana → año</small></div>
+            <div class="node"><code>operational_solutions.py</code><small>Layouts y colas M/D/1</small></div>
+            <div class="node"><code>simulator.py</code><small>Eventos discretos, 5 escenarios</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Coach</div>
+          <div class="lane-row">
+            <div class="node accent"><code>operator_coach.py</code><small>4 tipos de alerta, volumen por palada, coaching score, video con HUD</small></div>
+            <div class="node"><code>smart_coach.py</code><small>Vista en vivo con Tkinter · YOLOv8s (Ultralytics) para pala y camión</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Reportes</div>
+          <div class="lane-row">
+            <div class="node">metrics_output/<small>Ciclos, productividad, coach y soluciones · JSON/CSV</small></div>
+            <div class="node"><code>build_report.py</code><small>reporte_final.json consolidado</small></div>
+            <div class="node">INFORME_TECNICO.md<small>Recomendaciones priorizadas y plan</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Presentación</div>
+          <div class="lane-row">
+            <div class="node dark"><span>Streamlit · <code>dashboard.py</code></span><small>10 pestañas con Plotly: resumen, ciclos, cadencia, proyecciones, simulador, coach…</small></div>
+            <div class="node dark"><span>Streamlit · <code>app.py</code></span><small>Coach en vivo y reporte de carga</small></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <!-- <title> = texto alternativo (alt) de la imagen. Descríbela para alguien que no la ve. -->
+  <title>Ejemplo: app móvil con tres pantallas del flujo principal</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    /* Estilos propios de la app recreada (colores reales tomados del tema del código) */
+    .app { --brand: #0f766e; }
+    .app-top { background: var(--brand); color: #fff; padding: 14px 18px 18px; }
+    .app-top h4 { font-size: 18px; }
+    .app-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; background: #f6f7f7; flex: 1; }
+    .item { background: #fff; border-radius: 12px; padding: 12px; border: 1px solid #e5e7eb; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Móvil · Flujo principal</p>
+        <h1 class="title">Del registro a la sincronización</h1>
+        <p class="subtitle">Una frase que explica qué se ve en la lámina y por qué importa.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+    <main class="stage">
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen app">
+          <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+          <div class="app-top"><h4>Inicio</h4></div>
+          <div class="app-body"><div class="item">Elemento de ejemplo</div></div>
+        </div></div>
+        <p class="phone-label">1 · Inicio</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

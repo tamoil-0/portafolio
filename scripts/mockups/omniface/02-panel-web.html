@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Panel web de administración de OmniFace en modo asistencia: dos cámaras reconocen rostros en vivo con nombre, emoción y similitud, y debajo se listan las asistencias del día con su estado</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #3a3a8c; --accent-soft: #e9e9f8; }
+    .browser { width: 1456px; height: 700px; }
+    .app { display: flex; height: 100%; font-size: 13px; }
+    /* Sidebar */
+    .side { width: 226px; flex: none; background: linear-gradient(180deg, #0f172a, #0a1120); color: #fff; display: flex; flex-direction: column; justify-content: space-between; padding: 12px 10px; position: relative; }
+    .side::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, #7fb3ff, #a0c4ff); }
+    .brand { display: flex; align-items: center; gap: 9px; padding: 6px 8px 12px; font-size: 21px; font-weight: 700; }
+    .brand b { background: linear-gradient(90deg, #7fb3ff, #a0c4ff); -webkit-background-clip: text; color: transparent; }
+    .mark { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg, #7fb3ff, #a0c4ff); display: grid; place-items: center; }
+    .me { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.05); border-radius: 12px; padding: 9px 10px; margin-bottom: 10px; }
+    .me .av { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(127,179,255,.5); background: #3b2f5e; position: relative; display: grid; place-items: center; }
+    .me .av::after { content: ''; position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px; border-radius: 50%; background: #4ade80; border: 1px solid #fff; }
+    .me small { display: block; font-size: 10.5px; color: rgba(255,255,255,.6); } .me span { color: #a0c4ff; font-weight: 600; font-size: 12.5px; }
+    .nav { display: grid; gap: 1px; }
+    .nav div { display: flex; align-items: center; gap: 11px; padding: 7.5px 10px; border-radius: 10px; color: rgba(255,255,255,.88); font-size: 12.5px; font-weight: 500; }
+    .nav svg { flex: none; color: #a0c4ff; }
+    .nav .on { background: rgba(255,255,255,.1); border-left: 3px solid #7fb3ff; }
+    .nav .on svg { color: #7fb3ff; } .nav .on em { margin-left: auto; color: #7fb3ff; font-style: normal; font-size: 11px; }
+    .nav .badge { margin-left: auto; width: 17px; height: 17px; border-radius: 50%; background: #ef4444; font-size: 10px; display: grid; place-items: center; font-weight: 700; }
+    .srv { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 10px; background: linear-gradient(90deg, rgba(20,83,45,.35), rgba(22,101,52,.2)); }
+    .srv small { display: block; font-size: 10px; color: rgba(255,255,255,.75); } .srv b { font-size: 10.5px; color: #4ade80; }
+    .srv i { font-style: normal; font-size: 10px; color: #4ade80; background: rgba(74,222,128,.2); border-radius: 999px; padding: 2px 8px; }
+    /* Main */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; background: #fff; }
+    .top { height: 54px; flex: none; background: linear-gradient(90deg, #0f172a, #1e2c4a); color: #fff; display: flex; align-items: center; gap: 14px; padding: 0 22px; }
+    .top h2 { font-size: 17px; font-weight: 600; flex: 1; display: flex; gap: 9px; align-items: center; }
+    .bell { position: relative; } .bell i { position: absolute; top: -6px; right: -7px; width: 15px; height: 15px; border-radius: 50%; background: #ef4444; font-size: 9px; font-style: normal; display: grid; place-items: center; font-weight: 700; }
+    .admin { display: flex; align-items: center; gap: 8px; font-size: 12px; } .admin span { width: 28px; height: 28px; border-radius: 50%; background: #3b2f5e; border: 2px solid rgba(127,179,255,.5); }
+    .content { flex: 1; padding: 14px 18px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+    .ctrl { background: #1f2937; border: 1px solid rgba(55,65,81,.5); border-radius: 12px; padding: 9px 14px; display: flex; align-items: center; gap: 14px; color: #fff; }
+    .ctrl h3 { font-size: 14px; font-weight: 600; display: flex; gap: 7px; align-items: center; }
+    .sel { background: #374151; border: 1px solid #4b5563; border-radius: 8px; padding: 5px 10px; font-size: 12px; display: flex; gap: 8px; align-items: center; }
+    .ctrl .sp { flex: 1; }
+    .b { border-radius: 8px; padding: 6px 13px; font-size: 12px; font-weight: 600; display: flex; gap: 6px; align-items: center; }
+    .cams { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cam { position: relative; height: 340px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(55,65,81,.5); background: #111827; }
+    .cam svg.feed { position: absolute; inset: 0; }
+    .ctl { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; }
+    .ctl span { border-radius: 6px; padding: 4px 9px; font-size: 11px; font-weight: 600; color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.3); }
+    .metrics { position: absolute; left: 10px; bottom: 10px; display: flex; gap: 6px; }
+    .metrics span { background: rgba(17,24,39,.8); border: 1px solid #374151; color: #fff; border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 500; }
+    .metrics b { color: #34d399; }
+    .tag { position: absolute; width: 112px; padding: 6px; border-radius: 8px; background: rgba(17,24,39,.9); color: #fff; border: 1px solid #4b5563; font-size: 11px; box-shadow: 0 6px 14px rgba(0,0,0,.35); }
+    .tag.reg { border: 2px solid #34d399; }
+    .tag.unk { background: rgba(127,29,29,.9); border-color: #b91c1c; color: #fee2e2; }
+    .tag .ph { height: 44px; border-radius: 6px; border: 1px solid #4b5563; margin-bottom: 4px; overflow: hidden; background: #e5e7eb; }
+    .tag p { font-weight: 600; font-size: 12px; white-space: nowrap; }
+    .tag .em { color: #e5e7eb; margin-top: 1px; } .tag .em::before { content: '☺ '; color: #fbbf24; }
+    .tag .cf { height: 5px; border-radius: 99px; background: #374151; margin-top: 4px; } .tag .cf i { display: block; height: 100%; border-radius: 99px; }
+    /* Asistencias del día */
+    .today { flex: 1; background: linear-gradient(135deg, #fff, #f5f9ff); border: 1px solid rgba(145,186,255,.3); border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+    .today-h { display: flex; align-items: center; gap: 10px; }
+    .today-h .ic { background: #1e2c4a; border-radius: 8px; width: 30px; height: 30px; display: grid; place-items: center; }
+    .today-h h4 { font-size: 18px; color: #1e2c4a; font-weight: 700; flex: 1; }
+    .search { width: 230px; border: 1px solid rgba(145,186,255,.5); border-radius: 8px; padding: 6px 10px; color: #9ca3af; font-size: 12px; background: #fff; }
+    .row5 { display: flex; gap: 12px; }
+    .ac { width: 222px; flex: none; border: 1px solid rgba(145,186,255,.3); border-radius: 11px; background: #fff; padding: 8px; display: flex; gap: 10px; align-items: center; box-shadow: 0 3px 8px rgba(30,44,74,.07); position: relative; }
+    .ac .ph { width: 58px; height: 58px; border-radius: 8px; overflow: hidden; flex: none; border: 1px solid rgba(145,186,255,.2); }
+    .ac b { display: block; color: #1e2c4a; font-size: 12.5px; white-space: nowrap; } .ac small { display: block; color: rgba(59,47,94,.8); font-size: 11px; }
+    .ac .ft { display: flex; gap: 6px; align-items: center; margin-top: 4px; font-size: 11px; color: rgba(59,47,94,.7); }
+    .ac .ft em { font-style: normal; background: rgba(30,44,74,.1); color: #1e2c4a; padding: 1px 6px; border-radius: 4px; font-size: 10px; }
+    .st { position: absolute; top: -7px; right: -6px; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; box-shadow: 0 2px 4px rgba(0,0,0,.12); }
+    .st.t { background: #dcfce7; color: #166534; } .st.l { background: #fef3c7; color: #92400e; }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <symbol id="p" viewBox="0 0 120 120"><path d="M14 120c4-30 22-44 46-44s42 14 46 44z" fill="var(--shirt,#28324d)"/><rect x="51" y="62" width="18" height="20" rx="6" fill="var(--skin2,#a87a5d)"/><ellipse cx="60" cy="48" rx="24" ry="30" fill="var(--skin,#c99a7a)"/><path d="M35 44c-1-22 11-30 25-30s27 8 25 30c-4-11-12-16-25-16s-21 5-25 16z" fill="var(--hair,#1d1a1c)"/><ellipse cx="51" cy="49" rx="2.6" ry="1.8" fill="#2a1f1c"/><ellipse cx="69" cy="49" rx="2.6" ry="1.8" fill="#2a1f1c"/><path d="M54 64c4 2.6 8 2.6 12 0" stroke="#6e4535" stroke-width="1.6" fill="none" stroke-linecap="round"/></symbol>
+      <symbol id="mesh" viewBox="0 0 48 60"><g fill="none" stroke="#cfd8dc" stroke-opacity=".55" stroke-width=".6"><ellipse cx="24" cy="30" rx="22" ry="28"/><ellipse cx="24" cy="30" rx="15" ry="22"/><ellipse cx="24" cy="30" rx="7" ry="14"/><path d="M2 22h44M3 34h42M8 46h32M24 2v56"/></g><g fill="none" stroke="#30ff30" stroke-opacity=".8" stroke-width=".8"><ellipse cx="15" cy="26" rx="5" ry="2.6"/><ellipse cx="33" cy="26" rx="5" ry="2.6"/><path d="M17 44q7 4 14 0"/></g></symbol>
+    </defs>
+  </svg>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Web · Panel de administración</p>
+        <h1 class="title">Reconocimiento en vivo, desde el panel</h1>
+        <p class="subtitle">En modo asistencia, cada rostro conocido se marca una vez al día con su foto y su estado.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+    <main class="stage">
+      <div class="browser">
+        <div class="browser-bar"><i></i><i></i><i></i><span>omniface · Panel administrador</span></div>
+        <div class="browser-body app">
+          <aside class="side">
+            <div>
+              <div class="brand"><span class="mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.2"><circle cx="12" cy="10" r="5"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span><b>Omniface</b></div>
+              <div class="me"><span class="av"></span><div><small>Bienvenido</small><span>Colegio Ejemplo|</span></div></div>
+              <nav class="nav">
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z"/></svg>Inicio</div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="8" r="4"/><circle cx="17" cy="9" r="3"/><path d="M1 20c1-4 4-6 8-6s7 2 8 6zM15 14c3 0 6 2 7 6h-4"/></svg>Gestión de Personas</div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="8" r="4"/><circle cx="17" cy="9" r="3"/><path d="M1 20c1-4 4-6 8-6s7 2 8 6zM15 14c3 0 6 2 7 6h-4"/></svg>Gestión de Clientes</div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Generar Modelo</div>
+                <div class="on"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1zm8 3a4 4 0 100 8 4 4 0 000-8z"/></svg>Reconocimiento Facial<em>›</em></div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 12a9 9 0 103-6.7L3 8M3 3v5h5M12 8v4l3 2"/></svg>Historial</div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 12a9 9 0 103-6.7L3 8M3 3v5h5M12 8v4l3 2"/></svg>Historial Salidas</div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4 20V10h4v10zm6 0V4h4v16zm6 0v-7h4v7z"/></svg>Dashboard Estadístico</div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19.4 13a7.5 7.5 0 000-2l2-1.6-2-3.4-2.4 1a7 7 0 00-1.7-1L15 3.5h-4l-.4 2.5a7 7 0 00-1.7 1l-2.4-1-2 3.4L6.6 11a7.5 7.5 0 000 2l-2 1.6 2 3.4 2.4-1a7 7 0 001.7 1l.4 2.5h4l.4-2.5a7 7 0 001.7-1l2.4 1 2-3.4zM12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"/></svg>Configuración</div>
+                <div><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 002.5-2.5h-5A2.5 2.5 0 0012 22zm7-6V11a7 7 0 00-5-6.7V3.5a2 2 0 00-4 0v.8A7 7 0 005 11v5l-2 2v1h18v-1z"/></svg>Notificaciones<span class="badge">2</span></div>
+              </nav>
+            </div>
+            <div class="srv"><div><small>Servidor</small><b>OPERATIVO</b></div><i>LIVE</i></div>
+          </aside>
+          <section class="main">
+            <div class="top">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+              <h2><svg width="17" height="17" viewBox="0 0 24 24" fill="#a0c4ff"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1zm8 3a4 4 0 100 8 4 4 0 000-8z"/></svg>Reconocimiento Facial</h2>
+              <span class="bell"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 22a2.5 2.5 0 002.5-2.5h-5A2.5 2.5 0 0012 22zm7-6V11a7 7 0 00-5-6.7V3.5a2 2 0 00-4 0v.8A7 7 0 005 11v5l-2 2v1h18v-1z"/></svg><i>2</i></span>
+              <span class="admin"><span></span>Administrador</span>
+            </div>
+            <div class="content">
+              <div class="ctrl">
+                <h3><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.4"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>Panel de Control</h3>
+                <span class="sel">▦ 2 Cámaras ▾</span>
+                <span class="sel">◉ Modo Asistencia ▾</span>
+                <span class="sp"></span>
+                <span class="b" style="background:rgba(37,99,235,.9)">⟳ Recargar Modelo</span>
+                <span class="b" style="background:rgba(5,150,105,.9)">⟳ Recargar Cámaras</span>
+              </div>
+              <div class="cams">
+                <!-- Cámara 1 -->
+                <div class="cam">
+                  <svg class="feed" viewBox="0 0 596 296" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+                    <rect width="596" height="296" fill="#3b4256"/>
+                    <rect x="0" y="0" width="596" height="150" fill="#4a5168"/>
+                    <rect x="380" y="20" width="150" height="190" fill="#596079" rx="4"/><rect x="392" y="32" width="126" height="166" fill="#6b7290"/>
+                    <rect x="0" y="230" width="596" height="66" fill="#2e3446"/>
+                    <svg x="70" y="60" width="200" height="200" style="--skin:#c8977a;--hair:#1b1718;--shirt:#1f3a5f"><use href="#p"/></svg>
+                    <svg x="300" y="78" width="170" height="170" style="--skin:#b9876a;--skin2:#9c6e53;--hair:#2b1f19;--shirt:#3f3f46"><use href="#p"/></svg>
+                    <!-- mallas y esquinas -->
+                    <svg x="130" y="77" width="80" height="100"><use href="#mesh"/></svg>
+                    <svg x="351" y="93" width="68" height="85"><use href="#mesh"/></svg>
+                    <g fill="none" stroke="#00ff64" stroke-width="3" stroke-linecap="round">
+                      <path d="M126 102v-26h26M188 76h26v26M214 152v26h-26M152 178h-26v-26"/>
+                      <path d="M347 115v-24h22M403 91h22v24M425 157v24h-22M369 181h-22v-24"/>
+                    </g>
+                  </svg>
+                  <div class="ctl"><span style="background:#9ca3af">▶ Iniciar</span><span style="background:#f59e0b">❚❚ Pausar</span><span style="background:#dc2626">■ Detener</span></div>
+                  <div class="tag reg" style="left:222px;top:40px"><div class="ph"><svg width="100" height="44" viewBox="0 18 120 60"><use href="#p" style="--skin:#c8977a;--hair:#1b1718;--shirt:#1f3a5f"/></svg></div><p><span style="color:#34d399">✔</span> luis quispe</p><div class="em">Happy</div><div class="cf"><i style="width:82%;background:#34d399"></i></div></div>
+                  <div class="tag" style="left:432px;top:60px"><div class="ph"><svg width="100" height="44" viewBox="0 18 120 60"><use href="#p" style="--skin:#b9876a;--skin2:#9c6e53;--hair:#2b1f19;--shirt:#3f3f46"/></svg></div><p>ana mamani</p><div class="em">Neutral</div><div class="cf"><i style="width:68%;background:#fbbf24"></i></div></div>
+                  <div class="metrics"><span><b>●</b> Rostros: 2</span><span><b style="color:#60a5fa">◷</b> 14.6 FPS</span></div>
+                </div>
+                <!-- Cámara 2 -->
+                <div class="cam">
+                  <svg class="feed" viewBox="0 0 596 296" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+                    <rect width="596" height="296" fill="#363c4f"/>
+                    <rect x="40" y="0" width="120" height="296" fill="#40475d"/><rect x="440" y="0" width="156" height="296" fill="#2f3546"/>
+                    <rect x="0" y="236" width="596" height="60" fill="#2a2f3f"/>
+                    <svg x="110" y="70" width="190" height="190" style="--skin:#d0a083;--hair:#3a2a20;--shirt:#14532d"><use href="#p"/></svg>
+                    <svg x="350" y="96" width="150" height="150" style="--skin:#a97c62;--skin2:#8f664f;--hair:#111;--shirt:#7c2d12"><use href="#p"/></svg>
+                    <svg x="167" y="86" width="76" height="96"><use href="#mesh"/></svg>
+                    <svg x="395" y="110" width="60" height="75"><use href="#mesh"/></svg>
+                    <g fill="none" stroke-width="3" stroke-linecap="round">
+                      <path stroke="#00ff64" d="M163 110v-26h24M223 84h24v26M247 158v26h-24M187 184h-24v-26"/>
+                      <path stroke="#ff5050" d="M391 128v-20h20M439 108h20v20M459 168v20h-20M411 188h-20v-20"/>
+                    </g>
+                  </svg>
+                  <div class="tag reg" style="left:256px;top:44px"><div class="ph"><svg width="100" height="44" viewBox="0 18 120 60"><use href="#p" style="--skin:#d0a083;--hair:#3a2a20;--shirt:#14532d"/></svg></div><p><span style="color:#34d399">✔</span> carlos condori</p><div class="em">Neutral</div><div class="cf"><i style="width:76%;background:#34d399"></i></div></div>
+                  <div class="tag unk" style="left:466px;top:92px"><p>Desconocido</p><div class="em">Surprise</div><div class="cf"><i style="width:34%;background:#f87171"></i></div></div>
+                  <div class="metrics"><span><b>●</b> Rostros: 2</span><span><b style="color:#60a5fa">◷</b> 13.9 FPS</span></div>
+                </div>
+              </div>
+              <div class="today">
+                <div class="today-h"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><circle cx="9" cy="8" r="4"/><path d="M1 21c1-4 4-6 8-6 1.3 0 2.5.2 3.5.6A6 6 0 0012 21z"/><circle cx="18" cy="17" r="5" fill="none" stroke="#fff" stroke-width="2"/><path d="M18 15v2.3l1.5 1" stroke="#fff" stroke-width="1.6" fill="none"/></svg></span><h4>Asistencias del Día</h4><span class="search">⌕  Buscar por nombre...</span></div>
+                <div class="row5">
+                  <div class="ac"><span class="st t">Temprano</span><span class="ph"><svg width="58" height="58" viewBox="10 10 100 100"><rect x="0" y="0" width="120" height="120" fill="#e8eefc"/><use href="#p" style="--skin:#c8977a;--hair:#1b1718;--shirt:#1f3a5f"/></svg></span><div><b>Luis Quispe</b><small>3.° B Secundaria</small><div class="ft">07:52:10 <em>Conocido</em></div></div></div>
+                  <div class="ac"><span class="st t">Temprano</span><span class="ph"><svg width="58" height="58" viewBox="10 10 100 100"><rect width="120" height="120" fill="#e8eefc"/><use href="#p" style="--skin:#d0a083;--hair:#3a2a20;--shirt:#14532d"/></svg></span><div><b>Carlos Condori</b><small>3.° B Secundaria</small><div class="ft">07:49:31 <em>Conocido</em></div></div></div>
+                  <div class="ac"><span class="st t">Temprano</span><span class="ph"><svg width="58" height="58" viewBox="10 10 100 100"><rect width="120" height="120" fill="#e8eefc"/><use href="#p" style="--skin:#b9876a;--skin2:#9c6e53;--hair:#2b1f19;--shirt:#3f3f46"/></svg></span><div><b>Ana Mamani</b><small>3.° A Secundaria</small><div class="ft">07:47:05 <em>Conocido</em></div></div></div>
+                  <div class="ac"><span class="st l">Tarde</span><span class="ph"><svg width="58" height="58" viewBox="10 10 100 100"><rect width="120" height="120" fill="#e8eefc"/><use href="#p" style="--skin:#c49377;--hair:#4a3426;--shirt:#6d28d9"/></svg></span><div><b>Sofía Apaza</b><small>3.° A Secundaria</small><div class="ft">08:14:22 <em>Conocido</em></div></div></div>
+                  <div class="ac"><span class="st t">Temprano</span><span class="ph"><svg width="58" height="58" viewBox="10 10 100 100"><rect width="120" height="120" fill="#e8eefc"/><use href="#p" style="--skin:#a97c62;--skin2:#8f664f;--hair:#111;--shirt:#0f766e"/></svg></span><div><b>Diego Huanca</b><small>3.° B Secundaria</small><div class="ft">07:44:58 <em>Conocido</em></div></div></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Cómo funciona la búsqueda semántica: el texto se convierte en un vector de 1024 dimensiones con BAAI/bge-m3, FAISS encuentra las tesis más cercanas por similitud coseno y PostgreSQL añade sus datos y el tema; ejemplo ilustrativo</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --p: #0077b6; --p2: #00b4d8; --psoft: #e8f4f8; }
+    .stage { flex-direction: column; gap: 22px; align-items: stretch; }
+    .flow { gap: 34px; }
+    .step { padding: 20px 20px; gap: 10px; }
+    .step:not(:last-child)::after { right: -27px; }
+    .vis { height: 190px; border-radius: 12px; background: #faf9f7; border: 1px solid var(--line); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .quote { font-size: 14px; line-height: 1.5; color: var(--text); padding: 14px 16px; font-style: italic; }
+    .vec { display: grid; grid-template-columns: repeat(32, 1fr); gap: 2px; width: 88%; }
+    .vec i { display: block; height: 14px; border-radius: 2px; background: #0077b6; }
+    .vlab { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 11.5px; color: var(--muted); font-family: Consolas, monospace; }
+    .tag { position: absolute; top: 8px; right: 8px; font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #92400e; background: #fef3c7; border: 1px solid #fcd34d; padding: 2px 7px; border-radius: 999px; }
+    .res { width: 100%; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .r { display: grid; grid-template-columns: 1fr 52px; gap: 8px; align-items: center; font-size: 11.5px; }
+    .r span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .r b { display: flex; align-items: center; gap: 4px; justify-content: flex-end; font-size: 11px; }
+    .u { font-size: 8.5px; font-weight: 800; color: #fff; padding: 1px 5px; border-radius: 4px; letter-spacing: .5px; }
+    .unap { background: linear-gradient(135deg, #0077b6, #00b4d8); }
+    .unsa { background: linear-gradient(135deg, #5D101D, #8B1A1A); }
+    .topic { margin-top: 2px; font-size: 11px; font-weight: 600; background: var(--psoft); color: #005a8d; border-radius: 7px; padding: 4px 8px; align-self: flex-start; }
+    .bottom { display: grid; grid-template-columns: 1.15fr 1fr; gap: 22px; }
+    .code { background: #1b1a19; color: #e6e1db; border-radius: 18px; padding: 18px 22px; font-family: Consolas, monospace; font-size: 13px; line-height: 1.6; white-space: pre; overflow: hidden; }
+    .code .k { color: #7cc4e8; } .code .s { color: #c3e88d; } .code .n { color: #f7a35c; } .code .c { color: #8a837c; }
+    .code .h { color: #bdb6ae; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .why { display: flex; flex-direction: column; gap: 14px; }
+    .why h4 { font-size: 17px; }
+    .cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cmpc { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: #faf9f7; }
+    .cmpc small { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .cmpc p { font-size: 14px; margin-top: 6px; line-height: 1.45; }
+    .cmpc.good { background: var(--psoft); border-color: #a9d6ea; }
+    .cmpc.good small { color: #005a8d; }
+    .facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+    .vec i { opacity: var(--o); }
+    .facts .pill { font-size: 12.5px; padding: 5px 11px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">IA · Búsqueda semántica</p>
+        <h1 class="title">Del texto a las tesis más parecidas</h1>
+        <p class="subtitle">Cada consulta se convierte en un vector y se compara con 36 756 documentos ya indexados.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="flow">
+        <div class="step">
+          <div class="step-n">1</div><h3>Texto de entrada</h3>
+          <div class="vis"><div class="quote">“Detección de plagas en cultivos de quinua con redes neuronales…”</div></div>
+          <p>Una idea escrita o el resumen de la tesis abierta.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div><h3>Embedding bge-m3</h3>
+          <div class="vis">
+            <div class="vec" id="vec"></div>
+            <span class="vlab">[0.021, −0.047, 0.013, … ] · 1024-d</span>
+          </div>
+          <p>El modelo multilingüe lo resume en 1024 números, normalizados.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div><h3>Vecinos en FAISS</h3>
+          <div class="vis">
+            <span class="tag">Ilustrativo</span>
+            <svg width="100%" height="190" viewBox="0 -20 260 190">
+              <g fill="#c9c3bc"><circle cx="30" cy="30" r="3.5"/><circle cx="58" cy="112" r="3.5"/><circle cx="84" cy="48" r="3.5"/><circle cx="40" cy="80" r="3.5"/><circle cx="210" cy="30" r="3.5"/><circle cx="230" cy="96" r="3.5"/><circle cx="196" cy="126" r="3.5"/><circle cx="110" cy="128" r="3.5"/><circle cx="240" cy="60" r="3.5"/><circle cx="20" cy="132" r="3.5"/><circle cx="70" cy="18" r="3.5"/><circle cx="180" cy="70" r="3.5"/></g>
+              <circle cx="140" cy="76" r="40" fill="#00b4d8" opacity=".1" stroke="#00b4d8" stroke-dasharray="4 4"/>
+              <g stroke="#0077b6" stroke-width="1.5" opacity=".6"><line x1="140" y1="76" x2="122" y2="58"/><line x1="140" y1="76" x2="160" y2="94"/><line x1="140" y1="76" x2="156" y2="52"/></g>
+              <g fill="#0077b6"><circle cx="122" cy="58" r="5"/><circle cx="160" cy="94" r="5"/><circle cx="156" cy="52" r="5"/></g>
+              <path d="M140 66l3 6.5 7 .8-5.2 4.8 1.4 7-6.2-3.5-6.2 3.5 1.4-7-5.2-4.8 7-.8z" fill="#E17055"/>
+            </svg>
+          </div>
+          <p>IndexFlatIP: producto interno = similitud coseno. Devuelve los k más cercanos.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div><h3>Resultados + tema</h3>
+          <div class="vis">
+            <div class="res">
+              <div class="r"><span>Enfermedades foliares en papa nativa</span><b><i class="u unap">UNAP</i>0.81</b></div>
+              <div class="r"><span>Visión artificial en cultivos andinos</span><b><i class="u unsa">UNSA</i>0.77</b></div>
+              <div class="r"><span>Plagas de quinua y sistemas de riego</span><b><i class="u unap">UNAP</i>0.72</b></div>
+              <span class="topic">Tema inferido: cultivos · imágenes · redes</span>
+            </div>
+          </div>
+          <p>PostgreSQL añade título, universidad y tema; se suman tesis del mismo tema.</p>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="code"><span class="h">POST /recommend · respuesta (títulos de ejemplo)</span>
+{
+  <span class="k">"model_name"</span>: <span class="s">"BAAI/bge-m3"</span>, <span class="k">"k"</span>: <span class="n">10</span>,
+  <span class="k">"inferred_topic"</span>: { <span class="k">"cluster_id"</span>: <span class="n">12</span>, <span class="k">"label"</span>: <span class="s">"cultivos · imágenes · redes"</span> },
+  <span class="k">"results"</span>: [
+    { <span class="k">"title"</span>: <span class="s">"Clasificación de enfermedades foliares en papa…"</span>,
+      <span class="k">"university"</span>: <span class="s">"UNAP"</span>, <span class="k">"score"</span>: <span class="n">0.81</span>, <span class="k">"cluster_id"</span>: <span class="n">12</span> },
+    <span class="c">… 9 resultados más</span>
+  ],
+  <span class="k">"same_topic"</span>: [ <span class="c">… hasta 10 tesis del mismo tema</span> ]
+}</div>
+        <div class="card why">
+          <h4>Por qué no basta con buscar palabras</h4>
+          <div class="cmp">
+            <div class="cmpc"><small>Búsqueda por palabras</small><p>“plagas quinua” no encuentra una tesis sobre <b>enfermedades foliares en papa</b>: no comparten términos.</p></div>
+            <div class="cmpc good"><small>Búsqueda semántica</small><p>Ambas hablan de <b>sanidad de cultivos con imágenes</b>, así que sus vectores quedan cerca.</p></div>
+          </div>
+          <div class="facts">
+            <span class="pill">FastAPI</span><span class="pill">sentence-transformers</span><span class="pill">FAISS IndexFlatIP</span><span class="pill">PostgreSQL</span><span class="pill">GPU opcional (CUDA)</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script>
+    // Vector ilustrativo: 128 celdas con tonos de la paleta de la extensión (valores fijos, no aleatorios)
+    const v = document.getElementById('vec');
+    for (let i = 0; i < 128; i++) { const c = document.createElement('i'); const t = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1; c.style.setProperty('--o', (0.18 + 0.82 * t).toFixed(2)); v.appendChild(c); }
+  </script>
+</body>
+</html>

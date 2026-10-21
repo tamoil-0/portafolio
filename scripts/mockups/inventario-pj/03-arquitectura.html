@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Arquitectura de InventarioPJ: app Flutter con escáner, servicio de API y token guardado, conectada a una API REST Spring Boot con Spring Security y JWT, JPA sobre MySQL, reportes Excel con Apache POI y documentación Swagger</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #a30000; --accent-soft: #fbe9e9; }
+    .stage { align-items: stretch; }
+    .arch { gap: 0; align-content: center; }
+    .lane { grid-template-columns: 180px 1fr; padding: 16px 0; border-bottom: 1px dashed var(--line); }
+    .lane:last-child { border-bottom: 0; }
+    .lane-row { flex-wrap: nowrap; gap: 14px; }
+    .node { flex: 1; min-width: 0; }
+    .proto { flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: var(--accent); }
+    .proto b { display: block; font-size: 20px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .chips span { font-size: 12px; font-weight: 500; background: rgba(255,255,255,.12); border-radius: 6px; padding: 3px 8px; color: #e7e3de; }
+    .node.dark { flex: 2.4; }
+    .who { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+    .node.dark .who { color: #f3b4b4; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Arquitectura · Flutter + Spring Boot</p>
+        <h1 class="title">App de campo, API central</h1>
+        <p class="subtitle">La app móvil escanea y consulta; la API valida, persiste y genera los reportes.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="arch">
+        <div class="lane">
+          <div class="lane-name">App móvil</div>
+          <div class="lane-row">
+            <div class="node accent"><span class="who">Mi parte</span>Login y menú principal<small>Sesión, bienvenida y opciones por rol</small></div>
+            <div class="node accent"><span class="who">Mi parte</span>Escáner<small>mobile_scanner · QR, barras y linterna</small></div>
+            <div class="node"><span class="who" style="color:var(--muted)">Equipo</span>Inventariado y movimientos<small>Bloques, detalle, responsables</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Capa de datos</div>
+          <div class="lane-row">
+            <div class="node accent"><span class="who">Mi parte</span>ApiService<small>http · cabecera Bearer</small></div>
+            <div class="node">Servicios de dominio<small>Auth, equipos, inventario, movimientos, responsables</small></div>
+            <div class="node accent"><span class="who">Mi parte</span>TokenStorage<small>shared_preferences · token</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Transporte</div>
+          <div class="lane-row"><div class="proto"><b>↕</b>REST · JSON · token JWT en cada petición</div></div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">API</div>
+          <div class="lane-row">
+            <div class="node dark"><span class="who">Otro integrante</span>Spring Boot 3.4 · Java 21
+              <small>Controladores REST por recurso</small>
+              <div class="chips"><span>auth</span><span>bloques</span><span>categorías</span><span>equipos</span><span>inventario</span><span>responsables</span><span>movimientos</span><span>resumen</span></div>
+            </div>
+            <div class="node">Spring Security<small>Filtro JWT (jjwt) y roles</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Servicios y datos</div>
+          <div class="lane-row">
+            <div class="node">Spring Data JPA<small>Entidades y repositorios</small></div><span class="arrow">→</span>
+            <div class="node">MySQL<small>Equipos, ubicaciones, inventario</small></div>
+            <div class="node">Apache POI<small>Exporta movimientos a Excel con plantilla</small></div>
+            <div class="node">Swagger UI<small>springdoc-openapi</small></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

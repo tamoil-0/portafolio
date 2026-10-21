@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Flujo de inventariado en InventarioPJ: iniciar sesión, elegir el bloque de inventario, escanear el código del equipo, revisar su ficha y registrarlo, con las respuestas posibles y el registro de movimientos</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #a30000; --accent-soft: #fbe9e9; }
+    .stage { flex-direction: column; align-items: stretch; gap: 26px; }
+    .flow { gap: 26px; }
+    .step { padding: 0; gap: 0; }
+    .step:not(:last-child)::after { right: -22px; }
+    .vis { height: 172px; border-bottom: 1px solid var(--line); border-radius: 18px 18px 0 0; background: #faf6f5; display: grid; place-items: center; }
+    .txt { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 9px; }
+    .txt .row { gap: 10px; }
+    .step-n { width: 32px; height: 32px; font-size: 15px; }
+    .step h3 { font-size: 19px; }
+    .step p { font-size: 14.5px; }
+    .tag { font-size: 12px; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 3px 10px; align-self: flex-start; }
+    .mini { width: 190px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,.06); overflow: hidden; font-size: 11.5px; }
+    .mini .hd { background: #a30000; color: #fff; font-weight: 700; padding: 6px 10px; font-size: 11.5px; }
+    .mini .bd { padding: 8px 10px; display: grid; gap: 5px; }
+    .mini .it { border: 1px solid #eee; border-radius: 7px; padding: 5px 7px; display: flex; justify-content: space-between; align-items: center; }
+    .ok { color: #2e7d32; } .ko { color: #c62828; }
+    .bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+    .card h4 { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+    .outs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .out { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+    .out b { font-size: 15px; display: flex; gap: 7px; align-items: center; } .out span { font-size: 13px; color: var(--muted); line-height: 1.4; }
+    .types { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; font-size: 13.5px; color: var(--muted); }
+    .fields div::before { content: '▸ '; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Cómo funciona · Inventario anual</p>
+        <h1 class="title">Del código de barras al registro</h1>
+        <p class="subtitle">Cada equipo se identifica por su código patrimonial dentro de un bloque de inventario.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="flow">
+        <div class="step">
+          <div class="vis"><div class="mini"><div class="hd">Acceso al sistema</div><div class="bd"><div class="it">DNI <b>12345678</b></div><div class="it">Contraseña <b>••••••</b></div><div class="it" style="background:#a30000;color:#fff;justify-content:center;font-weight:700">INICIAR SESIÓN</div></div></div></div>
+          <div class="txt"><div class="row"><span class="step-n">1</span><h3>Iniciar sesión</h3></div><p>La API valida DNI y contraseña y devuelve un token JWT con los roles del usuario.</p><span class="tag">JWT · rol</span></div>
+        </div>
+        <div class="step">
+          <div class="vis"><div class="mini"><div class="hd">Bloques de Inventario</div><div class="bd"><div class="it">Inventario 2025 <b class="ok">●</b></div><div class="it">Almacén central <b class="ok">●</b></div><div class="it">Inventario 2024 <b class="ko">●</b></div></div></div></div>
+          <div class="txt"><div class="row"><span class="step-n">2</span><h3>Elegir el bloque</h3></div><p>Lista de bloques con búsqueda y filtro Activo / Inactivo, fechas de inicio y fin.</p><span class="tag">Bloque de inventario</span></div>
+        </div>
+        <div class="step">
+          <div class="vis">
+            <svg width="170" height="120" viewBox="0 0 170 120"><rect x="20" y="10" width="130" height="100" rx="14" fill="#1b1918"/><rect x="45" y="36" width="80" height="44" rx="4" fill="#f2f2ef"/><g fill="#111"><rect x="51" y="42" width="2" height="28"/><rect x="55" y="42" width="1" height="28"/><rect x="58" y="42" width="3" height="28"/><rect x="63" y="42" width="1" height="28"/><rect x="66" y="42" width="2" height="28"/><rect x="70" y="42" width="4" height="28"/><rect x="76" y="42" width="1" height="28"/><rect x="79" y="42" width="2" height="28"/><rect x="83" y="42" width="3" height="28"/><rect x="88" y="42" width="1" height="28"/><rect x="91" y="42" width="2" height="28"/><rect x="95" y="42" width="4" height="28"/><rect x="101" y="42" width="1" height="28"/><rect x="104" y="42" width="3" height="28"/><rect x="109" y="42" width="2" height="28"/><rect x="113" y="42" width="1" height="28"/><rect x="116" y="42" width="3" height="28"/></g><line x1="38" y1="58" x2="132" y2="58" stroke="#ff3030" stroke-width="2"/><g fill="none" stroke="#a30000" stroke-width="4"><path d="M34 34v-12h12M124 22h12v12M136 84v12h-12M46 96H34V84"/></g></svg>
+          </div>
+          <div class="txt"><div class="row"><span class="step-n">3</span><h3>Escanear</h3></div><p>La cámara lee el QR o código de barras; también se puede escribir el código a mano.</p><span class="tag">mobile_scanner · linterna</span></div>
+        </div>
+        <div class="step">
+          <div class="vis"><div class="mini"><div class="hd">Detalle del Equipo</div><div class="bd"><div class="it">Cód. <b>740899500123</b></div><div class="it">Estado <b class="ok">BUENO</b></div><div class="it">Responsable <b>Ana Quispe</b></div></div></div></div>
+          <div class="txt"><div class="row"><span class="step-n">4</span><h3>Consultar la ficha</h3></div><p>La app pide el equipo por código: descripción, marca, estado, responsable y ubicación.</p><span class="tag">REST · Bearer token</span></div>
+        </div>
+        <div class="step">
+          <div class="vis"><div class="mini"><div class="hd">Inventariar</div><div class="bd"><div class="it" style="color:#757575">Observación: equipo completo</div><div class="it" style="background:#a30000;color:#fff;justify-content:center;font-weight:700">✓ INVENTARIAR</div><div class="it ok" style="justify-content:center;font-weight:700">Registro Exitoso</div></div></div></div>
+          <div class="txt"><div class="row"><span class="step-n">5</span><h3>Registrar</h3></div><p>Se envía el código, la observación y el usuario; el backend lo guarda en MySQL.</p><span class="tag">Spring Boot · JPA</span></div>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <div class="card">
+          <h4>Respuestas al inventariar</h4>
+          <div class="outs">
+            <div class="out"><b><span class="ok">●</span>Registro Exitoso</b><span>Equipo inventariado correctamente.</span></div>
+            <div class="out"><b><span style="color:#ef6c00">●</span>Ya inventariado</b><span>El equipo ya está registrado en este bloque.</span></div>
+            <div class="out"><b><span class="ko">●</span>No encontrado</b><span>No existe un equipo con ese código.</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h4>Movimiento de equipos</h4>
+          <div class="types"><span class="pill">Asignación</span><span class="pill">Transferencia</span><span class="pill">Devolución</span><span class="pill">Baja</span></div>
+          <div class="fields"><div>Código patrimonial</div><div>DNI del nuevo responsable</div><div>Código de ubicación</div><div>Motivo y observaciones</div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

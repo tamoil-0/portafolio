@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Diagrama del modelo de DermApp: MobileNetV2 preentrenada y congelada con una cabeza densa de 10 clases, entrenada en Keras y exportada a TensorFlow.js para clasificar la imagen dentro del navegador sin enviarla a un servidor</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --lime: #A8D32C; --lime-dark: #6f9a12; --lime-soft: #f3f9e2; --green: #2F8F4E; }
+    .stage { flex-direction: column; gap: 22px; align-items: stretch; }
+    .zone { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px 26px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    .zone-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .zn { width: 30px; height: 30px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-weight: 700; display: grid; place-items: center; font-size: 14px; }
+    .zone-head h3 { font-size: 19px; }
+    .zone-head span.t { font-size: 14px; color: var(--muted); }
+    .chips { display: grid; grid-template-columns: repeat(5, 1fr); gap: 34px; }
+    .chip { position: relative; border: 1px solid var(--line); background: #faf9f7; border-radius: 14px; padding: 12px 14px; }
+    .chip b { font-size: 15px; display: block; }
+    .chip small { font-size: 13px; color: var(--muted); line-height: 1.45; display: block; margin-top: 3px; }
+    .chip:not(:last-child)::after { content: '→'; position: absolute; right: -26px; top: 50%; transform: translateY(-50%); color: var(--accent); font-weight: 700; font-size: 20px; }
+    .chip.out { border-color: var(--accent); background: var(--accent-soft); }
+    .browser-zone { border: 2px dashed #c9c3bc; background: #fff; position: relative; flex: 1; display: flex; flex-direction: column; }
+    .lock { margin-left: auto; display: flex; align-items: center; gap: 8px; background: #e3f3ea; color: var(--ok); font-weight: 700; font-size: 14px; padding: 7px 14px; border-radius: 999px; }
+    .lock svg { width: 16px; height: 16px; }
+    .net { flex: 1; display: grid; grid-template-columns: 170px 40px 330px 40px 140px 40px 150px 40px 1fr; align-items: center; }
+    .arr { color: var(--accent); font-weight: 700; font-size: 22px; text-align: center; }
+    .blk { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+    .blk .lbl { font-size: 15px; font-weight: 600; }
+    .blk .sub { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+    .img-in { width: 132px; height: 132px; border-radius: 14px; overflow: hidden; position: relative; box-shadow: 0 10px 22px rgba(0,0,0,.12); }
+    .img-in .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.35) 1px, transparent 1px); background-size: 16.5px 16.5px; }
+    .src { display: flex; gap: 6px; }
+    .src span { font-size: 11.5px; font-weight: 600; background: var(--surface-2); color: var(--muted); padding: 3px 9px; border-radius: 999px; }
+    .cnn { position: relative; width: 330px; height: 210px; border-radius: 16px; background: #f6f5f2; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .slab { border-radius: 6px; background: linear-gradient(180deg, #c7cfd8, #9aa6b3); box-shadow: 4px 4px 0 rgba(0,0,0,.06); }
+    .cnn .frozen { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: #1b1a19; color: #f4f2ef; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 999px; white-space: nowrap; }
+    .vec { width: 22px; height: 170px; border-radius: 8px; background: repeating-linear-gradient(180deg, #2F8F4E 0 5px, #8DD4A8 5px 10px); opacity: .9; }
+    .head { display: flex; flex-direction: column; gap: 10px; width: 150px; }
+    .layer { border-radius: 12px; padding: 10px 12px; text-align: center; font-size: 14px; font-weight: 600; background: var(--lime-soft); border: 1px solid var(--lime); color: #3d5a0a; }
+    .layer small { display: block; font-size: 11.5px; font-weight: 500; color: #5d7a20; }
+    .layer.drop { background: #fff; border-style: dashed; }
+    .out { background: #faf9f7; border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+    .out-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+    .out-h b { font-size: 14px; }
+    .ej { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #92400e; background: #fef3c7; border: 1px solid #fcd34d; padding: 2px 8px; border-radius: 999px; }
+    .cls { display: grid; grid-template-columns: 165px 1fr 40px; gap: 10px; align-items: center; font-size: 12.5px; }
+    .cls em { font-style: normal; font-weight: 700; color: var(--muted); text-align: right; font-size: 12px; }
+    .cls .b { height: 7px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+    .cls .b i { display: block; height: 100%; background: var(--lime); border-radius: 999px; }
+    .cls span { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cls.top span { font-weight: 700; }
+    .foot { display: flex; gap: 12px; margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .foot .pill { font-size: 13px; padding: 6px 12px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Modelo · Transfer learning</p>
+        <h1 class="title">Una red preentrenada, ajustada a 10 clases</h1>
+        <p class="subtitle">Se entrena una sola vez en Python y se exporta a TensorFlow.js para clasificar en el navegador.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <section class="zone">
+        <div class="zone-head"><span class="zn">1</span><h3>Entrenamiento</h3><span class="t">· Python + TensorFlow/Keras, en GPU</span></div>
+        <div class="chips">
+          <div class="chip"><b>Dataset por clase</b><small>Imágenes en 10 carpetas, una por tipo de lesión</small></div>
+          <div class="chip"><b>Split 80 / 20</b><small>tf.data: 224×224, píxeles ÷255, caché y prefetch</small></div>
+          <div class="chip"><b>MobileNetV2 + cabeza</b><small>Base ImageNet congelada; solo se entrena la cabeza</small></div>
+          <div class="chip"><b>Adam 1e-4</b><small>EarlyStopping y mejor modelo según val. accuracy</small></div>
+          <div class="chip out"><b>Exportación a TF.js</b><small>.h5 → model.json + shards de pesos</small></div>
+        </div>
+      </section>
+
+      <section class="zone browser-zone">
+        <div class="zone-head"><span class="zn">2</span><h3>Inferencia en el navegador</h3><span class="t">· React + TensorFlow.js (backend WebGL)</span>
+          <span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>La imagen no sale del dispositivo</span>
+        </div>
+        <div class="net">
+          <div class="blk">
+            <div class="img-in">
+              <svg width="132" height="132"><defs><radialGradient id="g" r="50%"><stop offset="0" stop-color="#c98a7a"/><stop offset=".65" stop-color="#d8a08f" stop-opacity=".75"/><stop offset="1" stop-color="#e5c3ad" stop-opacity="0"/></radialGradient></defs><rect width="132" height="132" fill="#e9d0bb"/><ellipse cx="66" cy="66" rx="44" ry="34" fill="url(#g)"/></svg>
+              <div class="grid"></div>
+            </div>
+            <div class="lbl">Imagen 224×224×3</div>
+            <div class="src"><span>Subida</span><span>Webcam</span></div>
+          </div>
+          <div class="arr">→</div>
+          <div class="blk">
+            <div class="cnn">
+              <span class="frozen">❄ Congelada · pesos ImageNet</span>
+              <div class="slab" style="width: 16px; height: 150px;"></div>
+              <div class="slab" style="width: 22px; height: 126px;"></div>
+              <div class="slab" style="width: 28px; height: 104px;"></div>
+              <div class="slab" style="width: 34px; height: 84px;"></div>
+              <div class="slab" style="width: 40px; height: 66px;"></div>
+              <div class="slab" style="width: 46px; height: 50px;"></div>
+              <div class="slab" style="width: 52px; height: 36px;"></div>
+            </div>
+            <div class="lbl">MobileNetV2</div>
+            <div class="sub">Extrae bordes, texturas y formas de la lesión</div>
+          </div>
+          <div class="arr">→</div>
+          <div class="blk">
+            <div class="vec"></div>
+            <div class="lbl">Global Avg Pooling</div>
+            <div class="sub">Vector de rasgos</div>
+          </div>
+          <div class="arr">→</div>
+          <div class="blk">
+            <div class="head">
+              <div class="layer">Dense 256<small>ReLU</small></div>
+              <div class="layer drop">Dropout 0.3<small>regularización</small></div>
+              <div class="layer">Dense 10<small>softmax</small></div>
+            </div>
+            <div class="lbl">Cabeza entrenada</div>
+          </div>
+          <div class="arr">→</div>
+          <div class="out">
+            <div class="out-h"><b>Probabilidad por clase</b><span class="ej">Ejemplo</span></div>
+            <div class="cls top"><span>Eccema</span><div class="b"><i style="width: 78%"></i></div><em>78%</em></div>
+            <div class="cls"><span>Dermatitis atópica</span><div class="b"><i style="width: 13%"></i></div><em>13%</em></div>
+            <div class="cls"><span>Psoriasis / Liquen plano</span><div class="b"><i style="width: 5%"></i></div><em>5%</em></div>
+            <div class="cls"><span>Tiña / Candidiasis</span><div class="b"><i style="width: 2%"></i></div><em>2%</em></div>
+            <div class="cls"><span>Melanoma</span><div class="b"><i style="width: 1%"></i></div><em>1%</em></div>
+            <div class="cls"><span style="color: var(--muted)">+ 5 clases más</span><div class="b"><i style="width: 1%"></i></div><em>1%</em></div>
+          </div>
+        </div>
+        <div class="foot">
+          <span class="pill">model.json se descarga una vez y se guarda en caché local 7 días</span>
+          <span class="pill">Calentamiento con un tensor vacío al cargar</span>
+          <span class="pill">La app muestra el top-3 y lo guarda en el historial</span>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

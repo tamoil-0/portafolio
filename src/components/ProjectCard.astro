@@ -1,16 +1,23 @@
 ---
 import Icon from './Icon.astro';
 import ProjectMedia from './ProjectMedia.astro';
-import { categoriesOf, fmtPeriod, projectUrl, type Project } from '../lib/site';
+import { categoriesOf, fmtPeriod, projectUrl, techsOf, type Project } from '../lib/site';
 interface Props { project: Project }
 const { project: p } = Astro.props;
-const searchText = [p.title, p.shortDescription, ...p.stack, ...p.tags].join(' ').toLowerCase();
+const techs = techsOf(p);
+const searchText = [p.title, p.shortDescription, ...p.stack, ...p.tags, ...techs].join(' ').toLowerCase();
 ---
 <article
   class="card reveal"
   data-card
   data-categories={categoriesOf(p).join('|')}
   data-search={searchText}
+  data-techs={techs.join('|')}
+  data-live={p.liveUrl ? '1' : '0'}
+  data-private={p.isPrivate ? '1' : '0'}
+  data-team={(p.teamSize ?? 1) > 1 ? '1' : '0'}
+  data-start={p.period.start}
+  data-order={p.order}
 >
   <div class="card-media">
     <ProjectMedia project={p} />
@@ -29,8 +36,7 @@ const searchText = [p.title, p.shortDescription, ...p.stack, ...p.tags].join(' '
     <div class="card-foot">
       {p.isPrivate && <span class="badge"><Icon name="lock" size={12} /> Proyecto privado</span>}
       {p.teamSize && p.teamSize > 1 ? <span class="badge"><Icon name="users" size={12} /> Equipo</span> : null}
-      {p.liveUrl && <a class="mini-link" href={p.liveUrl} target="_blank" rel="noopener">Demo <Icon name="external" size={14} /></a>}
-      {p.repoUrl && <a class="mini-link" href={p.repoUrl} target="_blank" rel="noopener">Código <Icon name="external" size={14} /></a>}
+      {p.liveUrl && <a class="mini-link" href={p.liveUrl} target="_blank" rel="noopener">Ver página <Icon name="external" size={14} /></a>}
     </div>
   </div>
 </article>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Cuatro pantallas móviles de Huella Joven reconstruidas a partir de la API: resumen de la huella con horas y beneficiarios validados por rubro, lista de oportunidades con cupos e inscripción, formulario para registrar una actividad con evidencias y un grupo juvenil con mensajes</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    /* La app móvil no está en el repositorio: paleta neutra propuesta. Campos y estados salen de prisma/schema.prisma y src/schemas. */
+    .app { --pr: #0F7B5F; --pr2: #13a07a; --soft: #E3F4EE; --dk: #10251E; --mt: #5d6b66; --ln: #dfe7e3; --bg: #F5F8F6;
+           --amb: #2e9d5b; --edu: #3b6fd8; --ciu: #8b5cf6; --dig: #0ea5b7; --sal: #e5484d; --cul: #e8890c;
+           color: var(--dk); background: var(--bg); }
+    .top { background: var(--pr); color: #fff; padding: 4px 14px 14px; flex: none; }
+    .top .statusbar { padding: 0 2px 6px; }
+    .top h4 { font-size: 17px; font-weight: 700; } .top small { font-size: 11px; opacity: .85; }
+    .top .r { display: flex; justify-content: space-between; align-items: center; }
+    .bell { position: relative; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.16); display: grid; place-items: center; font-size: 14px; }
+    .bell i { position: absolute; top: 4px; right: 5px; width: 8px; height: 8px; border-radius: 50%; background: #ffd43b; }
+    .body { flex: 1; padding: 10px 12px 0; display: flex; flex-direction: column; gap: 9px; overflow: hidden; }
+    .c { background: #fff; border: 1px solid var(--ln); border-radius: 14px; padding: 11px 12px; }
+    .t1 { font-size: 13px; font-weight: 700; } .t2 { font-size: 11px; color: var(--mt); line-height: 1.35; }
+    .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+    .kpi { background: var(--soft); border-radius: 11px; padding: 8px 6px; text-align: center; }
+    .kpi b { display: block; font-size: 18px; color: var(--pr); } .kpi small { font-size: 9.5px; color: var(--mt); }
+    .rb { display: grid; grid-template-columns: 70px 1fr 30px; gap: 7px; align-items: center; font-size: 10.5px; margin-top: 6px; }
+    .rb .b { height: 7px; border-radius: 9px; background: #edf2ef; overflow: hidden; } .rb .b i { display: block; height: 100%; border-radius: 9px; }
+    .rb span:last-child { text-align: right; color: var(--mt); }
+    .note2 { display: flex; gap: 9px; align-items: center; background: #fff; border: 1px solid #bfe3d4; border-left: 4px solid var(--pr); border-radius: 12px; padding: 9px 10px; }
+    .note2 .ic { width: 26px; height: 26px; border-radius: 50%; background: var(--soft); color: var(--pr); display: grid; place-items: center; font-weight: 800; font-size: 12px; flex: none; }
+    .item { display: flex; gap: 9px; align-items: center; padding: 6px 0; border-top: 1px solid #eef3f0; }
+    .item:first-of-type { border-top: 0; }
+    .dot { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font-size: 14px; flex: none; }
+    .tag { font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px; white-space: nowrap; }
+    .tag.ok { background: #e3f4ea; color: #1f7a4d; } .tag.pe { background: #fff4dc; color: #a16207; }
+    .nav { height: 56px; background: #fff; border-top: 1px solid var(--ln); display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; text-align: center; font-size: 9px; color: #8a9893; flex: none; margin-top: auto; }
+    .nav span { line-height: 1.5; } .nav .on { color: var(--pr); font-weight: 700; }
+    .nav .plus { width: 40px; height: 40px; border-radius: 13px; background: var(--pr); color: #fff; font-size: 22px; display: grid; place-items: center; justify-self: center; line-height: 1; }
+    .chips { display: flex; gap: 5px; }
+    .chip { font-size: 10px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--ln); background: #fff; color: var(--mt); white-space: nowrap; }
+    .chip.on { background: var(--pr); border-color: var(--pr); color: #fff; font-weight: 600; }
+    .op .hd { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+    .rub { font-size: 9.5px; font-weight: 700; border-radius: 6px; padding: 2px 6px; color: #fff; white-space: nowrap; }
+    .meta { font-size: 10.5px; color: var(--mt); margin-top: 4px; display: flex; flex-direction: column; gap: 2px; }
+    .roles { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; } .roles b { font-size: 9.5px; font-weight: 600; background: #f0f4f2; border-radius: 6px; padding: 2px 6px; color: var(--mt); }
+    .spots { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; margin-top: 8px; }
+    .spots .b { height: 6px; border-radius: 9px; background: #edf2ef; overflow: hidden; } .spots .b i { display: block; height: 100%; background: var(--pr2); }
+    .spots small { font-size: 10px; color: var(--mt); }
+    .btn { display: flex; align-items: center; justify-content: center; height: 32px; border-radius: 10px; font-size: 11.5px; font-weight: 700; margin-top: 8px; }
+    .btn.fill { background: var(--pr); color: #fff; } .btn.out { border: 1.4px solid var(--pr); color: var(--pr); background: #fff; } .btn.dis { background: #eef1f0; color: #9aa6a1; }
+    .fl { display: flex; flex-direction: column; gap: 3px; }
+    .fl label { font-size: 10px; font-weight: 600; color: var(--mt); }
+    .fl .in { height: 31px; border: 1px solid var(--ln); background: #fff; border-radius: 9px; padding: 0 9px; display: flex; align-items: center; font-size: 11.5px; }
+    .fl .in.ta { height: 44px; align-items: flex-start; padding-top: 6px; line-height: 1.35; font-size: 11px; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .ev { display: flex; gap: 6px; } .ev i { width: 44px; height: 44px; border-radius: 9px; background: linear-gradient(135deg, #cfe9dd, #9fd3bd); display: grid; place-items: center; font-style: normal; font-size: 16px; }
+    .ev i.add { background: #fff; border: 1.5px dashed #b9cfc6; color: var(--pr); font-weight: 700; }
+    .foot { display: grid; grid-template-columns: 1fr 1.3fr; gap: 7px; padding: 10px 12px; background: #fff; border-top: 1px solid var(--ln); flex: none; }
+    .foot .btn { margin-top: 0; }
+    .msg { max-width: 82%; border-radius: 14px; padding: 7px 10px; font-size: 11.5px; line-height: 1.35; }
+    .msg small { display: block; font-size: 9.5px; font-weight: 700; margin-bottom: 2px; color: var(--pr); }
+    .msg.me { align-self: flex-end; background: var(--pr); color: #fff; border-bottom-right-radius: 4px; }
+    .msg.ot { background: #fff; border: 1px solid var(--ln); border-bottom-left-radius: 4px; }
+    .inputbar { display: flex; gap: 7px; padding: 9px 12px 12px; background: #fff; border-top: 1px solid var(--ln); flex: none; }
+    .inputbar span { flex: 1; height: 34px; border-radius: 999px; background: #f1f5f3; display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #8a9893; }
+    .inputbar b { width: 34px; height: 34px; border-radius: 50%; background: var(--pr); color: #fff; display: grid; place-items: center; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Móvil · Voluntariado juvenil</p>
+        <h1 class="title">La huella de cada joven, validada</h1>
+        <p class="subtitle">Pantallas reconstruidas desde los endpoints, los modelos Prisma y los esquemas Zod de la API.</p>
+      </div>
+      <span class="note">Recreación ilustrativa derivada de la API</span>
+    </header>
+
+    <main class="stage">
+      <!-- 1 · Mi huella -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen app">
+          <div class="top">
+            <div class="statusbar"><span>9:41</span><span>▂▄▆ ◔</span></div>
+            <div class="r"><div><small>Hola, joven voluntaria</small><h4>Ana Quispe</h4></div><span class="bell">🔔<i></i></span></div>
+          </div>
+          <div class="body">
+            <div class="note2"><span class="ic">✓</span><div><div class="t1" style="font-size:12px">Actividad validada</div><div class="t2">Tutoría de lectura · hace 2 h</div></div></div>
+            <div class="c">
+              <div class="t1">Tu huella</div><div class="t2">Solo cuenta lo que un validador aprobó</div>
+              <div class="kpis"><div class="kpi"><b>46 h</b><small>horas</small></div><div class="kpi"><b>320</b><small>beneficiarios</small></div><div class="kpi"><b>7</b><small>validadas</small></div></div>
+              <div style="margin-top:6px">
+                <div class="rb"><span>Ambiente</span><div class="b"><i style="width:78%;background:var(--amb)"></i></div><span>18 h</span></div>
+                <div class="rb"><span>Educación</span><div class="b"><i style="width:60%;background:var(--edu)"></i></div><span>14 h</span></div>
+                <div class="rb"><span>Ciudadanía</span><div class="b"><i style="width:35%;background:var(--ciu)"></i></div><span>8 h</span></div>
+                <div class="rb"><span>Cultura</span><div class="b"><i style="width:26%;background:var(--cul)"></i></div><span>6 h</span></div>
+              </div>
+            </div>
+            <div class="c" style="padding-top:8px;padding-bottom:6px">
+              <div class="t1" style="margin-bottom:2px">Mis actividades</div>
+              <div class="item"><span class="dot" style="background:#e3f0ff">📚</span><div style="flex:1"><div class="t1" style="font-size:12px">Tutoría de lectura</div><div class="t2">Educación · 6 h</div></div><span class="tag ok">validada</span></div>
+              <div class="item"><span class="dot" style="background:#e5f5ea">🌿</span><div style="flex:1"><div class="t1" style="font-size:12px">Limpieza de ribera</div><div class="t2">Ambiente · 4 h</div></div><span class="tag pe">pendiente</span></div>
+            </div>
+          </div>
+          <div class="nav"><span class="on">⌂<br/>Inicio</span><span>✦<br/>Oportunidades</span><span class="plus">+</span><span>☺<br/>Grupos</span><span>●<br/>Perfil</span></div>
+        </div></div>
+        <p class="phone-label">1 · Mi huella de impacto</p>
+      </div>
+
+      <!-- 2 · Oportunidades -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen app">
+          <div class="top">
+            <div class="statusbar"><span>9:41</span><span>▂▄▆ ◔</span></div>
+            <h4>Oportunidades</h4><small>Publicadas por organizaciones</small>
+          </div>
+          <div class="body">
+            <div class="chips"><span class="chip on">Todas</span><span class="chip">Ambiente</span><span class="chip">Educación</span><span class="chip">Salud</span></div>
+            <div class="c op">
+              <div class="hd"><div class="t1">Limpieza de ribera</div><span class="rub" style="background:var(--amb)">ambiente</span></div>
+              <div class="meta"><span>🏢 Asociación Ejemplo</span><span>📍 Puno · sáb 14 nov</span></div>
+              <div class="roles"><b>Voluntario</b><b>Coordinador de zona</b><b>Registro fotográfico</b></div>
+              <div class="spots"><div class="b"><i style="width:72%"></i></div><small>18 / 25 cupos</small></div>
+              <div class="btn fill">Inscribirme</div>
+            </div>
+            <div class="c op">
+              <div class="hd"><div class="t1">Tutoría sabatina</div><span class="rub" style="background:var(--edu)">educación</span></div>
+              <div class="meta"><span>🏢 Colectivo Aula Abierta</span><span>📍 Juliaca · sáb 21 nov</span></div>
+              <div class="spots"><div class="b"><i style="width:55%"></i></div><small>11 / 20 cupos</small></div>
+              <div class="btn out">✓ Inscrita · Cancelar</div>
+            </div>
+            <div class="c op">
+              <div class="hd"><div class="t1">Feria de salud joven</div><span class="rub" style="background:var(--sal)">salud</span></div>
+              <div class="meta"><span>📍 Puno · dom 29 nov</span></div>
+              <div class="spots"><div class="b"><i style="width:100%;background:#c3ccc8"></i></div><small>30 / 30 cupos</small></div>
+              <div class="btn dis">Sin cupos</div>
+            </div>
+          </div>
+        </div></div>
+        <p class="phone-label">2 · Oportunidades con cupos</p>
+      </div>
+
+      <!-- 3 · Registrar actividad -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen app">
+          <div class="top">
+            <div class="statusbar"><span>9:41</span><span>▂▄▆ ◔</span></div>
+            <h4>← Registrar actividad</h4>
+          </div>
+          <div class="body" style="gap:7px">
+            <div class="fl"><label>Título</label><div class="in">Limpieza de ribera</div></div>
+            <div class="fl"><label>Descripción</label><div class="in ta">Brigada de recojo de residuos en la ribera con vecinos del barrio.</div></div>
+            <div class="fl"><label>Rubro</label><div class="chips" style="flex-wrap:wrap"><span class="chip on">Ambiente</span><span class="chip">Educación</span><span class="chip">Ciudadanía</span><span class="chip">Digital</span></div></div>
+            <div class="two"><div class="fl"><label>Fecha</label><div class="in">14/11/2026</div></div><div class="fl"><label>Lugar</label><div class="in">Puno</div></div></div>
+            <div class="two"><div class="fl"><label>Horas</label><div class="in">4</div></div><div class="fl"><label>Beneficiarios</label><div class="in">60</div></div></div>
+            <div class="two"><div class="fl"><label>Tu rol</label><div class="in">Voluntaria</div></div><div class="fl"><label>Validador</label><div class="in">Luis Mamani</div></div></div>
+            <div class="fl"><label>Reflexión</label><div class="in ta">Aprendí a organizar brigadas y a separar residuos.</div></div>
+            <div class="fl"><label>Evidencias</label><div class="ev"><i>📷</i><i>📷</i><i class="add">+</i></div></div>
+          </div>
+          <div class="foot"><div class="btn out">Borrador</div><div class="btn fill">Enviar a validar</div></div>
+        </div></div>
+        <p class="phone-label">3 · Registrar con evidencia</p>
+      </div>
+
+      <!-- 4 · Grupo -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen app">
+          <div class="top">
+            <div class="statusbar"><span>9:41</span><span>▂▄▆ ◔</span></div>
+            <div class="r"><div><h4>← Jóvenes del Lago</h4><small>Puno · 24 miembros</small></div><span class="bell">⋯</span></div>
+          </div>
+          <div class="body" style="gap:8px">
+            <div class="c" style="background:var(--soft);border-color:#bfe3d4"><div class="t2" style="color:#0b5d47"><b>Propósito:</b> organizar jornadas ambientales y culturales en el barrio.</div></div>
+            <div class="msg ot"><small>Luis Mamani</small>¿Quién se apunta a la limpieza del sábado?</div>
+            <div class="msg me">¡Yo! Ya me inscribí en la oportunidad 🙌</div>
+            <div class="msg ot"><small>Rosa Ccama</small>Llevo bolsas y guantes para el grupo.</div>
+            <div class="msg ot"><small>Luis Mamani</small>Nos vemos 8:00 en el muelle.</div>
+            <div class="msg me">Perfecto, subo las fotos como evidencia después.</div>
+          </div>
+          <div class="inputbar"><span>Escribe un mensaje…</span><b>➤</b></div>
+        </div></div>
+        <p class="phone-label">4 · Grupo juvenil</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Aplicación de escritorio del clasificador de frescura de carne: panel con la foto y los datos opcionales de laboratorio, y un tablero con el resultado, el recorte segmentado, el mapa Grad-CAM y las probabilidades por clase, con valores de ejemplo</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    .win { --bg: #F6F4FF; --card: #FFFFFF; --edge: #E6E2F5; --txt: #1F2430; --sub: #5C6270; --acc: #6C5CE7; --ok: #00B894; --warn: #E17055; --bad: #D63031;
+      width: 1456px; height: 704px; background: var(--bg); border-radius: 10px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,.16), 0 4px 12px rgba(0,0,0,.06); border: 1px solid #d8d4e8; display: flex; flex-direction: column; font-family: 'Segoe UI', 'Inter', sans-serif; color: var(--txt); font-size: 12.5px; }
+    .tbar { height: 34px; flex: none; background: #fff; border-bottom: 1px solid var(--edge); display: flex; align-items: center; padding-left: 12px; gap: 8px; font-size: 12px; color: var(--sub); }
+    .tbar .ic { width: 16px; height: 16px; border-radius: 4px; background: var(--acc); }
+    .tbar .ctl { margin-left: auto; display: flex; height: 100%; }
+    .tbar .ctl span { width: 46px; display: grid; place-items: center; font-size: 13px; color: #444; }
+    .hdr { padding: 12px 18px 8px; }
+    .hdr h2 { font-size: 17px; font-weight: 600; }
+    .hdr p { color: var(--sub); font-size: 12px; margin-top: 2px; }
+    .body { flex: 1; display: flex; gap: 14px; padding: 0 18px 16px; min-height: 0; }
+    .left { width: 258px; flex: none; background: var(--card); border: 1px solid var(--edge); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 7px; }
+    .ct { font-size: 13.5px; font-weight: 600; }
+    .btn { background: var(--acc); color: #fff; text-align: center; padding: 9px; border-radius: 4px; font-weight: 600; }
+    .btn.soft { background: #ECE9FF; color: var(--txt); }
+    .fld small { font-size: 11px; color: var(--sub); }
+    .fld div { border: 1px solid #cfcadf; border-radius: 3px; padding: 5px 8px; background: #fff; height: 27px; font-size: 12px; }
+    .fld div.empty { color: #b3afc4; }
+    .tip { font-size: 11px; color: var(--sub); line-height: 1.5; margin-top: 3px; }
+    .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 2px; }
+    .status { font-size: 11px; color: var(--sub); margin-top: auto; }
+    .dash { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 168px 238px 200px; gap: 12px; min-width: 0; overflow: hidden; padding-right: 16px; position: relative; }
+    .dash::after { content: ''; position: absolute; right: 2px; top: 0; width: 8px; height: 62%; border-radius: 999px; background: #d8d3ea; }
+    .pb { display: grid; grid-template-columns: 82px 1fr 44px; gap: 8px; align-items: center; font-size: 11px; font-weight: 600; color: #5C6270; }
+    .pb div { height: 12px; background: #f0eef7; border-radius: 3px; overflow: hidden; }
+    .pb i { display: block; height: 100%; border-radius: 0 4px 4px 0; }
+    .pb b { color: #1F2430; text-align: right; }
+    .leg { display: flex; gap: 12px; font-size: 10.5px; color: #5C6270; margin-top: 4px; }
+    .leg i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+    .gb { flex: 1; display: flex; align-items: flex-end; gap: 2px; position: relative; padding-bottom: 14px; }
+    .gb i { flex: 1; display: block; border-radius: 3px 3px 0 0; }
+    .gb span { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; font-size: 10px; color: #5C6270; font-weight: 600; }
+    .card { background: var(--card); border: 1px solid var(--edge); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; min-height: 0; box-shadow: none; }
+    .card h4 { font-size: 13px; font-weight: 600; }
+    .card .cs { font-size: 10.5px; color: var(--sub); }
+    .card .cb { flex: 1; min-height: 0; margin-top: 4px; position: relative; }
+    .state { font-size: 18px; font-weight: 700; color: var(--warn); }
+    .conf { font-size: 11.5px; color: var(--sub); }
+    .exp { font-size: 11px; line-height: 1.55; color: var(--txt); margin-top: 6px; }
+    .mono { font-family: Consolas, monospace; font-size: 11.5px; line-height: 1.6; white-space: pre; color: var(--txt); }
+    .mono .s { color: var(--sub); }
+    .ph { position: absolute; inset: 0; border-radius: 4px; overflow: hidden; display: grid; place-items: center; }
+    .ej { position: absolute; top: 8px; right: 10px; font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #92400e; background: #fef3c7; border: 1px solid #fcd34d; padding: 2px 8px; border-radius: 999px; }
+    .card { position: relative; }
+    .bars { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: space-around; padding: 6px 10px 22px; border-bottom: 1px solid #ddd; }
+    .bars .b { width: 56px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10.5px; font-weight: 600; }
+    .bars .b i { display: block; width: 100%; border-radius: 4px 4px 0 0; }
+    .bars .b span.l { position: absolute; bottom: 4px; font-size: 10px; font-weight: 600; color: var(--sub); }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Escritorio · Inspección de muestras</p>
+        <h1 class="title">Una foto, unos datos y un veredicto explicado</h1>
+        <p class="subtitle">La app Tkinter segmenta la carne, combina la imagen con pH y color, y muestra en qué se basó.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+    <main class="stage">
+      <div class="win">
+        <div class="tbar"><span class="ic"></span>Clasificador de Frescura de Carne — Multimodal (Imagen + pH + LAB) + Grad-CAM<div class="ctl"><span>–</span><span>▢</span><span>✕</span></div></div>
+        <div class="hdr">
+          <h2>Clasificador de Frescura de Carne — Multimodal (Imagen + pH + LAB) + Grad-CAM</h2>
+          <p>Imagen obligatoria. Datos opcionales: temp, día, pH, L*, a*, b*. Si no ingresas, se estiman (LAB desde imagen) o se usan medias del dataset.</p>
+        </div>
+        <div class="body">
+          <aside class="left">
+            <span class="ct">Acciones</span>
+            <span class="btn">📂 Cargar imagen</span>
+            <span class="ct" style="margin-top: 6px">Datos opcionales</span>
+            <div class="fld"><small>temp (°C)</small><div>4</div></div>
+            <div class="fld"><small>día</small><div>6</div></div>
+            <div class="fld"><small>pH</small><div>6.21</div></div>
+            <div class="fld"><small>L*</small><div class="empty"></div></div>
+            <div class="fld"><small>a*</small><div class="empty"></div></div>
+            <div class="fld"><small>b*</small><div class="empty"></div></div>
+            <p class="tip">Tip: si no pones L*, a*, b*, la app los estima desde la imagen recortada. Si no pones temp/día/pH, usa medias del dataset.</p>
+            <div class="btns"><span class="btn">▶ Analizar</span><span class="btn soft">↺ Limpiar</span></div>
+            <span class="status">Imagen cargada: muestra_014.jpg</span>
+          </aside>
+          <section class="dash">
+            <div class="card">
+              <h4>Resultado</h4><span class="cs">Predicción y explicación compacta del modelo.</span>
+              <span class="ej">Ejemplo</span>
+              <div class="cb">
+                <div class="state">Estado: SEMIFRESCO</div>
+                <div class="conf">Confianza: 71.8%</div>
+                <div class="exp">Perfil más cercano (pH/L/a/b): SEMIFRESCO<br/>Zonas cálidas = regiones que más influyeron en la decisión.</div>
+              </div>
+            </div>
+            <div class="card" style="grid-column: span 2;">
+              <h4>Datos usados (final)</h4><span class="cs">Qué se tomó del usuario vs estimado/media.</span>
+              <div class="cb" style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+<div class="mono">temp: 4.000   <span class="s">(usuario)</span>
+ dia: 6.000   <span class="s">(usuario)</span>
+  pH: 6.210   <span class="s">(usuario)</span>
+   L: 34.870  <span class="s">(estimado imagen)</span>
+   a: 15.420  <span class="s">(estimado imagen)</span>
+   b: 13.960  <span class="s">(estimado imagen)</span></div>
+<div class="mono">WI (blancura): 30.69
+RI (enrojecimiento): 0.411
+
+Stats ROI (percentiles):
+L*: p10=28.6  p50=34.9  p90=41.2
+a*: p10=11.0  p50=15.3  p90=19.8</div>
+              </div>
+            </div>
+            <div class="card">
+              <h4>Imagen original</h4><span class="cs">Entrada capturada · zona analizada en rojo.</span>
+              <div class="cb"><div class="ph" style="background:#d9d4cc">
+                <svg width="100%" height="100%" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice">
+                  <defs><linearGradient id="m0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8414a"/><stop offset="1" stop-color="#7a2f35"/></linearGradient></defs>
+                  <rect width="300" height="200" fill="#e7e2da"/><rect x="30" y="18" width="240" height="164" rx="14" fill="#f5f2ec"/>
+                  <g transform="translate(78 30) scale(.5)"><path d="M58 70c30-36 120-48 176-20 34 17 40 62 18 98-26 42-110 58-160 38-44-17-62-80-34-116z" fill="url(#m0)"/><path d="M58 70c30-36 120-48 176-20 34 17 40 62 18 98-26 42-110 58-160 38-44-17-62-80-34-116z" fill="#ff2020" opacity=".3"/></g>
+                </svg>
+              </div></div>
+            </div>
+            <div class="card">
+              <h4>Recorte (carne)</h4><span class="cs">ROI segmentada (sin fondo).</span>
+              <div class="cb"><div class="ph" style="background:#fff">
+                <svg width="100%" height="100%" viewBox="0 0 300 220" preserveAspectRatio="xMidYMid meet">
+                  <defs><linearGradient id="m1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8414a"/><stop offset=".55" stop-color="#9c3540"/><stop offset="1" stop-color="#7a2f35"/></linearGradient></defs>
+                  <path d="M58 70c30-36 120-48 176-20 34 17 40 62 18 98-26 42-110 58-160 38-44-17-62-80-34-116z" fill="url(#m1)"/>
+                  <path d="M92 92c30-10 70-6 96 6M84 126c40 6 86 2 120-10M110 156c26 4 54 2 74-6" stroke="#e8c9c0" stroke-width="5" fill="none" stroke-linecap="round" opacity=".6"/>
+                </svg>
+              </div></div>
+            </div>
+            <div class="card">
+              <h4>Grad-CAM (zona decisiva)</h4><span class="cs">Zonas cálidas = regiones que más influyeron.</span>
+              <span class="ej">Ilustrativo</span>
+              <div class="cb"><div class="ph" style="background:#fff">
+                <svg height="100%" viewBox="0 0 220 220" preserveAspectRatio="xMidYMid meet">
+                  <defs>
+                    <linearGradient id="m2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8414a"/><stop offset="1" stop-color="#7a2f35"/></linearGradient>
+                    <radialGradient id="hot" cx="64%" cy="62%" r="48%"><stop offset="0" stop-color="#ff2a00" stop-opacity=".85"/><stop offset=".35" stop-color="#ffd000" stop-opacity=".7"/><stop offset=".65" stop-color="#3ccf6a" stop-opacity=".45"/><stop offset="1" stop-color="#1f4fd8" stop-opacity=".55"/></radialGradient>
+                  </defs>
+                  <rect width="220" height="220" fill="#8fa6e8"/>
+                  <g transform="translate(-30 4) scale(.95)"><path d="M58 70c30-36 120-48 176-20 34 17 40 62 18 98-26 42-110 58-160 38-44-17-62-80-34-116z" fill="url(#m2)"/></g>
+                  <rect width="220" height="220" fill="url(#hot)"/>
+                </svg>
+              </div></div>
+            </div>
+            <div class="card">
+              <h4>Probabilidades por clase</h4><span class="cs">Lectura directa de la salida del modelo.</span>
+              <span class="ej">Ejemplo</span>
+              <div class="cb" style="display:flex; flex-direction:column; gap:7px; padding-top:4px;">
+                <div class="pb"><span>FRESCO</span><div><i style="width:17.6%; background:#00B894"></i></div><b>17.6%</b></div>
+                <div class="pb"><span>SEMIFRESCO</span><div><i style="width:71.8%; background:#E17055"></i></div><b>71.8%</b></div>
+                <div class="pb"><span>NO_APTO</span><div><i style="width:10.6%; background:#D63031"></i></div><b>10.6%</b></div>
+              </div>
+            </div>
+            <div class="card">
+              <h4>Histogramas LAB (ROI)</h4><span class="cs">Distribución de valores: homogeneidad vs variación.</span>
+              <div class="cb"><svg width="100%" height="88" viewBox="0 0 300 88" preserveAspectRatio="none">
+                <path d="M10 86 C40 86 50 30 70 24 C90 18 100 80 130 86Z" fill="#f58518" opacity=".55"/>
+                <path d="M120 86 C140 86 150 20 172 14 C194 8 206 80 236 86Z" fill="#4c78a8" opacity=".55"/>
+                <path d="M60 86 C80 86 92 40 110 36 C128 32 140 82 160 86Z" fill="#54a24b" opacity=".55"/>
+                <line x1="0" y1="86" x2="300" y2="86" stroke="#ccc"/></svg>
+                <div class="leg"><span><i style="background:#4c78a8"></i>L*</span><span><i style="background:#f58518"></i>a*</span><span><i style="background:#54a24b"></i>b*</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <h4>Comparación vs medias por clase</h4><span class="cs">Tu muestra vs perfiles promedio del dataset.</span>
+              <div class="cb" style="display:flex; align-items:flex-end; gap:22px; padding:0 8px 4px; height: 92px;">
+                <div class="gb"><i style="height:40px;background:#00B894"></i><i style="height:44px;background:#E17055"></i><i style="height:50px;background:#D63031"></i><span>pH</span></div>
+                <div class="gb"><i style="height:78px;background:#00B894"></i><i style="height:72px;background:#E17055"></i><i style="height:66px;background:#D63031"></i><span>L</span></div>
+                <div class="gb"><i style="height:58px;background:#00B894"></i><i style="height:48px;background:#E17055"></i><i style="height:40px;background:#D63031"></i><span>a</span></div>
+                <div class="gb"><i style="height:38px;background:#00B894"></i><i style="height:42px;background:#E17055"></i><i style="height:46px;background:#D63031"></i><span>b</span></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

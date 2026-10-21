@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Flujo de sincronización de la app ECOING: captura sin señal, guardado local en SQLite, cola con optimización de fotos, sincronización automática al volver la conexión y confirmación del servidor que guarda las fotos en el NAS; incluye la máquina de estados de cada registro</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --azul: #0D47A1; --exito: #2E7D32; --pend: #EF6C00; --err: #C62828; }
+    .stage { flex-direction: column; align-items: stretch; gap: 26px; }
+    .flow { gap: 26px; }
+    .step { padding: 22px 20px; gap: 9px; }
+    .step h3 { font-size: 18.5px; }
+    .step p { font-size: 14px; line-height: 1.45; }
+    .step .tagline { margin-top: auto; padding-top: 6px; }
+    .step.offline { background: #f7f6f4; }
+    .step.server { border-color: var(--accent); background: var(--accent-soft); }
+    .ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 19px; background: var(--surface-2); }
+    .hd { display: flex; justify-content: space-between; align-items: center; }
+    .lower { display: grid; grid-template-columns: 1.55fr 1fr; gap: 26px; flex: 1; min-height: 0; }
+    .card h4 { font-size: 17px; margin-bottom: 4px; }
+    .card > p, .card p.lead { font-size: 13.5px; color: var(--muted); }
+    .sm text { font-family: 'Inter', sans-serif; }
+    .inv { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-top: 14px; }
+    .inv li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; font-size: 14px; line-height: 1.4; }
+    .inv li b { font-weight: 600; }
+    .inv li small { display: block; font-size: 12px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; margin-top: 1px; }
+    .inv .k { width: 22px; height: 22px; border-radius: 50%; background: #e3f3ea; color: var(--ok); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+    .band { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--muted); }
+    .band i { display: inline-block; width: 26px; height: 8px; border-radius: 9px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Cómo funciona · Offline-first</p>
+        <h1 class="title">Del cerro sin señal al NAS</h1>
+        <p class="subtitle">Guardar localmente primero, sincronizar después y confirmar solo con respuesta del servidor.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+
+    <main class="stage">
+      <div class="flow">
+        <div class="step offline">
+          <div class="hd"><div class="ico">📍</div><span class="pill">sin señal</span></div>
+          <h3>Captura en campo</h3>
+          <p>Formulario en 5 pasos y 28 fotos por estructura, con coordenadas del GPS del teléfono.</p>
+        </div>
+        <div class="step offline">
+          <div class="hd"><div class="ico">💾</div><span class="pill">sin señal</span></div>
+          <h3>Guardado local primero</h3>
+          <p>Copia verificada con SHA-256 y fila en SQLite en estado <b>pending</b>. El dato ya está a salvo.</p>
+        </div>
+        <div class="step offline">
+          <div class="hd"><div class="ico">🗜️</div><span class="pill">en cola</span></div>
+          <h3>Cola y optimización</h3>
+          <p>Compresión nativa según la gama del teléfono; las fotos viajan en lotes de 6.</p>
+        </div>
+        <div class="step">
+          <div class="hd"><div class="ico">📶</div><span class="pill warn">vuelve la red</span></div>
+          <h3>Sincronización</h3>
+          <p>Al recuperar conexión se dispara sola. Reintentos con espera creciente: 0 s, 30 s, 2 min, 8 min…</p>
+        </div>
+        <div class="step server">
+          <div class="hd"><div class="ico" style="background:#fff">🗄️</div><span class="pill ok">confirmado</span></div>
+          <h3>Servidor y NAS</h3>
+          <p>La API PHP valida y normaliza a JPEG, registra en MariaDB y guarda la foto en el NAS.</p>
+        </div>
+      </div>
+
+      <div class="lower">
+        <div class="card" style="display:flex;flex-direction:column">
+          <div><h4>Estados de cada formulario y foto</h4><p class="lead">Solo el repositorio puede escribir <b>synced</b>, y solo con la confirmación del servidor en la mano.</p></div>
+          <svg class="sm" viewBox="0 0 860 300" width="100%" style="flex:1;margin-top:10px">
+            <defs>
+              <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#8a847d"/></marker>
+              <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#2E7D32"/></marker>
+              <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#C62828"/></marker>
+              <marker id="y" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#9a5d08"/></marker>
+            </defs>
+            <g font-size="17" font-weight="700" text-anchor="middle">
+              <rect x="4" y="44" width="170" height="72" rx="14" fill="#f1efec" stroke="#d6d1cb"/>
+              <text x="89" y="75" fill="#141414">local</text>
+              <text x="89" y="98" font-size="13" font-weight="400" fill="#5f5a55">Guardado en el teléfono</text>
+              <rect x="228" y="44" width="170" height="72" rx="14" fill="#FFF3E0" stroke="#f3c08a"/>
+              <text x="313" y="75" fill="#b45309">pending</text>
+              <text x="313" y="98" font-size="13" font-weight="400" fill="#7c4a12">Pendiente de enviar</text>
+              <rect x="452" y="44" width="170" height="72" rx="14" fill="#E3F2FD" stroke="#9cc3ef"/>
+              <text x="537" y="75" fill="#0D47A1">uploading</text>
+              <text x="537" y="98" font-size="13" font-weight="400" fill="#1e3a6b">Subiendo…</text>
+              <rect x="684" y="44" width="170" height="72" rx="14" fill="#E8F5E9" stroke="#9ccfa0"/>
+              <text x="769" y="75" fill="#2E7D32">synced</text>
+              <text x="769" y="98" font-size="13" font-weight="400" fill="#1f5a24">Sincronizado</text>
+              <rect x="300" y="222" width="214" height="72" rx="14" fill="#FFEBEE" stroke="#efa3a3"/>
+              <text x="407" y="253" fill="#C62828">failed</text>
+              <text x="407" y="276" font-size="13" font-weight="400" fill="#7f1d1d">Error al enviar · sigue guardada</text>
+              <rect x="620" y="222" width="214" height="72" rx="14" fill="#fbf0dc" stroke="#e6c27a"/>
+              <text x="727" y="253" fill="#9a5d08">conflict</text>
+              <text x="727" y="276" font-size="13" font-weight="400" fill="#6b4206">Requiere revisión</text>
+            </g>
+            <g fill="none" stroke-width="2">
+              <path d="M174 80h50" stroke="#8a847d" marker-end="url(#a)"/>
+              <path d="M398 80h50" stroke="#8a847d" marker-end="url(#a)"/>
+              <path d="M622 80h58" stroke="#2E7D32" marker-end="url(#g)"/>
+              <path d="M515 116 L440 218" stroke="#C62828" marker-end="url(#r)"/>
+              <path d="M300 258 C 250 258, 286 170, 292 121" stroke="#8a847d" stroke-dasharray="5 4" marker-end="url(#a)"/>
+              <path d="M575 116 L690 218" stroke="#9a5d08" marker-end="url(#y)"/>
+            </g>
+            <g font-size="13" fill="#5f5a55">
+              <text x="201" y="34" text-anchor="middle">marcar para envío</text>
+              <text x="651" y="34" text-anchor="middle" fill="#2E7D32" font-weight="600">el servidor confirma</text>
+              <text x="250" y="200" text-anchor="end">reintento</text>
+              <text x="452" y="160" text-anchor="end" fill="#C62828">sin red · timeout · 401</text>
+              <text x="650" y="162" fill="#9a5d08">ya existía</text>
+            </g>
+          </svg>
+          <div class="band" style="margin-top:6px"><i style="background:#d6d1cb"></i>en el teléfono <i style="background:#9cc3ef;margin-left:10px"></i>en tránsito <i style="background:#9ccfa0;margin-left:10px"></i>confirmado por el servidor</div>
+        </div>
+
+        <div class="card">
+          <h4>Lo que el código garantiza</h4>
+          <p>Invariantes de la app, con el lugar donde se hacen cumplir.</p>
+          <ul class="inv">
+            <li><span class="k">✓</span><div><b>La foto se copia a disco antes de subirla</b><small>FotosRepositorio.registrarCaptura</small></div></li>
+            <li><span class="k">✓</span><div><b>Un solo borrador vigente por estructura</b><small>índice único · BorradoresRepositorio</small></div></li>
+            <li><span class="k">✓</span><div><b>Solo el servidor lleva a «synced»</b><small>marcarSincronizada · marcarSincronizado</small></div></li>
+            <li><span class="k">✓</span><div><b>Nada se descarta al fallar</b><small>marcarFallida conserva y suma un intento</small></div></li>
+            <li><span class="k">✓</span><div><b>Lo interrumpido vuelve a la cola</b><small>al arrancar: uploading → pending</small></div></li>
+            <li><span class="k">✓</span><div><b>Las migraciones no borran datos</b><small>migraciones.dart con historial</small></div></li>
+          </ul>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

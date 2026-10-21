@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Cómo explica su decisión el clasificador de carne: del recorte segmentado se obtiene un mapa Grad-CAM que se superpone a la imagen, junto con los canales CIELAB y los índices de blancura y enrojecimiento; ilustración abstracta de ejemplo</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    .stage { flex-direction: column; gap: 22px; align-items: stretch; }
+    .top { display: grid; grid-template-columns: 1fr 1fr 1fr 400px; gap: 26px; align-items: stretch; }
+    .tile { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .tile:not(:nth-child(3))::after { content: '→'; position: absolute; right: -21px; top: 45%; color: var(--accent); font-weight: 700; font-size: 20px; }
+    .tile:nth-child(3)::after { content: ''; }
+    .img { aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: #fff; border: 1px solid var(--line); }
+    .tile b { font-size: 16px; }
+    .tile small { font-size: 13px; color: var(--muted); line-height: 1.4; }
+    .ej { position: absolute; top: 24px; left: 24px; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #92400e; background: #fef3c7; border: 1px solid #fcd34d; padding: 2px 8px; border-radius: 999px; }
+    .how { background: #1b1a19; color: #f4f2ef; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; }
+    .how h3 { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: #bdb6ae; font-weight: 700; }
+    .how ol { list-style: none; display: flex; flex-direction: column; gap: 10px; counter-reset: s; }
+    .how li { counter-increment: s; display: grid; grid-template-columns: 26px 1fr; gap: 10px; font-size: 14px; line-height: 1.45; color: #e6e1db; }
+    .how li::before { content: counter(s); width: 24px; height: 24px; border-radius: 50%; background: #3a3735; color: #f4f2ef; font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+    .how .more { margin-top: auto; padding-top: 14px; border-top: 1px solid #3a3735; font-size: 13px; line-height: 1.5; color: #bdb6ae; }
+    .how code { font-family: Consolas, monospace; font-size: 12.5px; background: #2d2b29; padding: 1px 6px; border-radius: 5px; }
+    .bottom { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 22px; }
+    .card h4 { font-size: 16px; margin-bottom: 4px; }
+    .card p.c { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+    .labs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .lab { display: flex; flex-direction: column; gap: 6px; }
+    .lab .sq { height: 92px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+    .lab span { font-size: 12.5px; font-weight: 600; }
+    .lab em { font-style: normal; font-size: 11.5px; color: var(--muted); font-weight: 400; display: block; }
+    .formula { font-family: Consolas, monospace; font-size: 13px; background: #faf9f7; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; margin-bottom: 8px; }
+    .formula b { font-family: 'Inter', sans-serif; font-size: 13px; display: block; margin-bottom: 2px; }
+    .guide { display: flex; flex-direction: column; gap: 9px; }
+    .g { display: flex; gap: 10px; align-items: center; font-size: 14px; }
+    .g i { width: 34px; height: 14px; border-radius: 4px; display: block; flex: none; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">IA explicable · Grad-CAM</p>
+        <h1 class="title">Muestra dónde miró el modelo</h1>
+        <p class="subtitle">El mapa de calor marca las zonas que más pesaron; los índices de color dan la evidencia numérica.</p>
+      </div>
+      <span class="note">Diagrama · ilustración abstracta</span>
+    </header>
+    <main class="stage">
+      <section class="top">
+        <div class="tile">
+          <div class="img"><svg width="100%" height="100%" viewBox="0 0 320 320">
+            <defs><linearGradient id="m1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8414a"/><stop offset=".55" stop-color="#9c3540"/><stop offset="1" stop-color="#7a2f35"/></linearGradient></defs>
+            <rect width="320" height="320" fill="#fff"/>
+            <path d="M58 110c30-36 130-52 190-24 36 17 44 66 20 106-28 46-120 64-174 42-48-19-66-88-36-124z" fill="url(#m1)"/>
+            <path d="M92 134c30-10 74-6 104 6M84 172c42 6 92 2 128-10M112 206c28 4 58 2 80-6" stroke="#e8c9c0" stroke-width="6" fill="none" stroke-linecap="round" opacity=".6"/>
+            <ellipse cx="196" cy="186" rx="26" ry="16" fill="#6d4a2e" opacity=".55"/>
+          </svg></div>
+          <b>1 · Recorte segmentado</b><small>La carne sin fondo, 320×320, en 6 canales</small>
+        </div>
+        <div class="tile">
+          <div class="img"><svg width="100%" height="100%" viewBox="0 0 320 320">
+            <defs><radialGradient id="cam" cx="61%" cy="58%" r="40%"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#9a9a9a"/><stop offset="1" stop-color="#111"/></radialGradient></defs>
+            <rect width="320" height="320" fill="#111"/>
+            <rect width="320" height="320" fill="url(#cam)"/>
+            <g stroke="#000" stroke-opacity=".25">
+              <path d="M0 32H320M0 64H320M0 96H320M0 128H320M0 160H320M0 192H320M0 224H320M0 256H320M0 288H320M32 0V320M64 0V320M96 0V320M128 0V320M160 0V320M192 0V320M224 0V320M256 0V320M288 0V320"/>
+            </g>
+          </svg></div>
+          <b>2 · Mapa Grad-CAM</b><small>Importancia por zona, normalizada de 0 a 1</small>
+        </div>
+        <div class="tile">
+          <span class="ej">Ejemplo</span>
+          <div class="img"><svg width="100%" height="100%" viewBox="0 0 320 320">
+            <defs>
+              <linearGradient id="m2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b8414a"/><stop offset="1" stop-color="#7a2f35"/></linearGradient>
+              <radialGradient id="hot" cx="61%" cy="58%" r="52%"><stop offset="0" stop-color="#ff2a00" stop-opacity=".8"/><stop offset=".3" stop-color="#ffd000" stop-opacity=".65"/><stop offset=".6" stop-color="#3ccf6a" stop-opacity=".45"/><stop offset="1" stop-color="#1f4fd8" stop-opacity=".5"/></radialGradient>
+            </defs>
+            <rect width="320" height="320" fill="#fff"/>
+            <path d="M58 110c30-36 130-52 190-24 36 17 44 66 20 106-28 46-120 64-174 42-48-19-66-88-36-124z" fill="url(#m2)"/>
+            <ellipse cx="196" cy="186" rx="26" ry="16" fill="#6d4a2e" opacity=".55"/>
+            <rect width="320" height="320" fill="url(#hot)"/>
+          </svg></div>
+          <b>3 · Superposición</b><small>Zonas cálidas = las que más influyeron en la clase</small>
+        </div>
+        <aside class="how">
+          <h3>Cómo se calcula</h3>
+          <ol>
+            <li><span>Se predice la clase y se toma su puntaje (logit).</span></li>
+            <li><span>Se propagan los gradientes hasta el último bloque de la EfficientNet: <code>features[-1]</code>.</span></li>
+            <li><span>Cada canal pesa según la media de sus gradientes.</span></li>
+            <li><span>Suma ponderada + ReLU, normalizada a 0–1.</span></li>
+            <li><span>Se colorea con la escala JET y se mezcla al 42&nbsp;% sobre el recorte.</span></li>
+          </ol>
+          <p class="more">La app suma histogramas L*, a*, b* del recorte y una comparación de pH, L*, a* y b* con la media de cada clase.</p>
+        </aside>
+      </section>
+      <section class="bottom">
+        <div class="card">
+          <h4>Canales CIELAB del recorte</h4>
+          <p class="c">La app los muestra por separado para ver dónde cambia el color.</p>
+          <div class="labs">
+            <div class="lab"><div class="sq"><svg width="100%" height="100%" viewBox="0 0 120 92" preserveAspectRatio="none"><rect width="120" height="92" fill="#f2f2f2"/><ellipse cx="60" cy="46" rx="48" ry="34" fill="#6b6b6b"/><ellipse cx="74" cy="54" rx="10" ry="6" fill="#3d3d3d"/></svg></div><span>L*<em>luminosidad</em></span></div>
+            <div class="lab"><div class="sq"><svg width="100%" height="100%" viewBox="0 0 120 92" preserveAspectRatio="none"><rect width="120" height="92" fill="#808080"/><ellipse cx="60" cy="46" rx="48" ry="34" fill="#c4c4c4"/><ellipse cx="74" cy="54" rx="10" ry="6" fill="#9a9a9a"/></svg></div><span>a*<em>rojo ↔ verde</em></span></div>
+            <div class="lab"><div class="sq"><svg width="100%" height="100%" viewBox="0 0 120 92" preserveAspectRatio="none"><rect width="120" height="92" fill="#808080"/><ellipse cx="60" cy="46" rx="48" ry="34" fill="#a3a3a3"/><ellipse cx="74" cy="54" rx="10" ry="6" fill="#b8b8b8"/></svg></div><span>b*<em>amarillo ↔ azul</em></span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h4>Índices de color</h4>
+          <p class="c">Calculados con las medias L*, a*, b* del recorte.</p>
+          <div class="formula"><b>WI · blancura</b>100 − √((100−L*)² + a*² + b*²)</div>
+          <div class="formula"><b>RI · enrojecimiento</b>a* / √(L*² + b*²)</div>
+        </div>
+        <div class="card">
+          <h4>Leyenda interpretativa</h4>
+          <p class="c">Guía para leer el resultado; no reemplaza al modelo.</p>
+          <div class="guide">
+            <div class="g"><i style="background: linear-gradient(90deg,#c9c9c9,#b8414a)"></i>a* alto → más rojo; baja con oxidación</div>
+            <div class="g"><i style="background: linear-gradient(90deg,#c9c9c9,#d9b13b)"></i>b* alto → más amarillento</div>
+            <div class="g"><i style="background: linear-gradient(90deg,#e5e5e5,#3d3d3d)"></i>L* bajo → más oscuro</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Arquitectura de la API Huella Joven: la app móvil llama por HTTPS a funciones serverless; una ruta pasa por Express con helmet, cors, JWT y Zod hacia Prisma y PostgreSQL en Neon, y otra ruta rápida usa SQL directo con el driver de Neon; a la derecha, los endpoints de los cinco módulos</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #0F7B5F; --accent-soft: #E3F4EE; }
+    .stage { align-items: center; gap: 30px; }
+    .left { flex: 1; min-width: 0; }
+    .arch { gap: 14px; }
+    .lane { grid-template-columns: 120px 1fr; }
+    .node { min-width: 0; flex: 1 1 auto; font-size: 16px; padding: 14px 16px; }
+    .node small { font-size: 13px; }
+    .down { display: grid; grid-template-columns: 120px 1fr 1fr; gap: 20px; font-size: 12.5px; color: var(--muted); }
+    .down span { padding-left: 18px; } .down b { color: var(--accent); font-size: 17px; margin-right: 6px; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .path { border: 1.5px solid var(--line); border-radius: 16px; padding: 14px; background: rgba(255,255,255,.6); display: flex; flex-direction: column; gap: 10px; }
+    .path h5 { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .path.fast { border-color: var(--accent); background: var(--accent-soft); }
+    .path .node { flex: none; }
+    .chain { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chain span { font-size: 12.5px; font-weight: 600; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 4px 9px; }
+    .api { width: 560px; flex: none; padding: 24px 26px; }
+    .api h4 { font-size: 18px; } .api > p { font-size: 13.5px; color: var(--muted); margin-top: 3px; }
+    .mod { margin-top: 14px; }
+    .mod h6 { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; display: flex; justify-content: space-between; }
+    .mod h6 span { color: var(--muted); font-weight: 500; letter-spacing: 0; text-transform: none; }
+    .ep { display: grid; grid-template-columns: 56px 1fr auto; gap: 8px; align-items: center; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; padding: 3px 0; }
+    .m { font-size: 10.5px; font-weight: 700; border-radius: 5px; padding: 2px 0; text-align: center; font-family: 'Inter', sans-serif; }
+    .GET { background: #e3f0ff; color: #1d4ed8; } .POST { background: #e3f4ea; color: #1f7a4d; } .PATCH { background: #fbf0dc; color: #9a5d08; } .DEL { background: #fde8e6; color: #b42318; }
+    .ep i { font-style: normal; font-family: 'Inter', sans-serif; font-size: 11px; color: var(--muted); }
+    .foot { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+    .foot b { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Backend · API REST serverless</p>
+        <h1 class="title">Express, Prisma y Postgres serverless</h1>
+        <p class="subtitle">Cinco módulos y nueve modelos, con una ruta rápida para bajar la latencia desde el móvil.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+
+    <main class="stage">
+      <div class="left">
+        <div class="arch">
+          <div class="lane"><span class="lane-name">Cliente</span><div class="lane-row">
+            <div class="node dark">App móvil Huella Joven<small>HTTPS · JSON · Authorization: Bearer</small></div>
+          </div></div>
+          <div class="lane"><span class="lane-name">Serverless</span>
+            <div class="two">
+              <div class="path">
+                <h5>Ruta completa · api/index.ts</h5>
+                <div class="chain"><span>serverless-http</span><span>Express</span><span>helmet</span><span>cors</span><span>morgan</span></div>
+                <div class="node">Rutas → middleware JWT<small>requireAuth · requireRoles(…)</small></div>
+                <div class="node">Controladores + Zod<small>validación de cuerpo, query y params</small></div>
+                <div class="node accent">Prisma Client<small>transacciones y agregados</small></div>
+              </div>
+              <div class="path fast">
+                <h5>Ruta rápida · api/fast-api.ts</h5>
+                <div class="chain"><span>@neondatabase/serverless</span><span>JWT</span><span>bcryptjs</span></div>
+                <div class="node">SQL directo por HTTP<small>sin arrancar Express ni Prisma</small></div>
+                <div class="node">Rutas más usadas por el móvil<small>login, perfil, actividades, oportunidades, grupos, notificaciones</small></div>
+                <div class="node">Misma base y mismo JWT<small>convive con la ruta completa</small></div>
+              </div>
+            </div>
+          </div>
+          <div class="down"><i></i><span><b>↓</b>pooling de conexiones</span><span><b>↓</b>driver HTTP de Neon</span></div>
+          <div class="lane"><span class="lane-name">Datos</span><div class="lane-row">
+            <div class="node dark" style="flex:1">PostgreSQL en Neon<small>users · activities · activity_validations · opportunities · opportunity_enrollments · youth_groups · group_members · group_messages · notifications</small></div>
+          </div></div>
+        </div>
+      </div>
+
+      <aside class="card api">
+        <h4>Endpoints principales</h4>
+        <p>Todas bajo <b>/api</b>; las privadas exigen token.</p>
+        <div class="mod"><h6>Auth <span>4</span></h6>
+          <div class="ep"><span class="m POST">POST</span>/auth/register · /auth/login<i>público</i></div>
+          <div class="ep"><span class="m GET">GET</span>/auth/me<i>JWT</i></div>
+          <div class="ep"><span class="m PATCH">PATCH</span>/auth/diagnostic<i>JWT</i></div>
+        </div>
+        <div class="mod"><h6>Activities <span>8</span></h6>
+          <div class="ep"><span class="m GET">GET</span>/activities · /activities/:id<i>JWT</i></div>
+          <div class="ep"><span class="m POST">POST</span>/activities<i>JWT</i></div>
+          <div class="ep"><span class="m PATCH">PATCH</span>/activities/:id · /:id/status<i>dueño</i></div>
+          <div class="ep"><span class="m POST">POST</span>/activities/:id/validate<i>validador</i></div>
+          <div class="ep"><span class="m GET">GET</span>/activities/impact/summary<i>JWT</i></div>
+        </div>
+        <div class="mod"><h6>Opportunities <span>8</span></h6>
+          <div class="ep"><span class="m GET">GET</span>/opportunities · /:id<i>público</i></div>
+          <div class="ep"><span class="m POST">POST</span>/opportunities<i>organización</i></div>
+          <div class="ep"><span class="m POST">POST</span>/opportunities/:id/enroll<i>JWT</i></div>
+          <div class="ep"><span class="m DEL">DELETE</span>/opportunities/:id/enroll<i>JWT</i></div>
+          <div class="ep"><span class="m GET">GET</span>/opportunities/mine/enrollments<i>JWT</i></div>
+        </div>
+        <div class="mod"><h6>Groups <span>6</span></h6>
+          <div class="ep"><span class="m GET">GET</span>/groups · /groups/:id<i>JWT</i></div>
+          <div class="ep"><span class="m POST">POST</span>/groups/:id/join · /:id/messages<i>JWT</i></div>
+        </div>
+        <div class="mod"><h6>Notifications <span>3</span></h6>
+          <div class="ep"><span class="m GET">GET</span>/notifications<i>JWT</i></div>
+          <div class="ep"><span class="m PATCH">PATCH</span>/notifications/:id/read<i>JWT</i></div>
+        </div>
+        <div class="foot"><span><b>+ GET /health</b> y <b>/db-check</b> para diagnóstico</span><span>· errores 400 · 403 · 404 · 409</span></div>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>

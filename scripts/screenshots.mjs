@@ -13,7 +13,9 @@ const MAX_BYTES = 200 * 1024;
 const only = process.argv.slice(2);
 
 const projects = JSON.parse(await fs.readFile(DATA, 'utf8'));
-const targets = projects.filter((p) => p.liveUrl && !p.isPrivate && !p.skipScreenshots && (!only.length || only.includes(p.slug)));
+const capture = JSON.parse(await fs.readFile(path.join(ROOT, 'scripts/capture.json'), 'utf8').catch(() => '{}'));
+const cfgOf = (p) => capture[p.slug] ?? {};
+const targets = projects.filter((p) => p.liveUrl && (!p.isPrivate || cfgOf(p).allowPrivate) && (!only.length || only.includes(p.slug)));
 
 async function toWebp(buf, out, width) {
   for (const quality of [80, 70, 60, 50, 40]) {
@@ -34,10 +36,12 @@ async function dismissBanners(page) {
   }
 }
 
-async function shoot(page, url) {
+async function shoot(page, url, blur = []) {
   await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 }).catch(() => page.waitForLoadState('load'));
   await page.waitForTimeout(1500);
   await dismissBanners(page);
+  // Difumina datos de personas (fotos, nombres) que no son del autor
+  if (blur.length) await page.addStyleTag({ content: `${blur.join(',')}{filter:blur(9px)!important}` }).catch(() => {});
   // Desactiva animaciones para capturas estables
   await page.addStyleTag({ content: '*,*::before,*::after{animation-play-state:paused!important;transition:none!important;caret-color:transparent!important}' }).catch(() => {});
 }
@@ -50,9 +54,10 @@ for (const p of targets) {
   const images = [];
   try {
     const desk = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, colorScheme: 'light', locale: 'es-PE' });
-    await shoot(desk, p.liveUrl);
+    const cfg = cfgOf(p);
+    await shoot(desk, p.liveUrl, cfg.blur);
     const height = await desk.evaluate(() => document.documentElement.scrollHeight);
-    const stops = [0, Math.round(height * 0.33), Math.round(height * 0.66)].filter((y, i, a) => i === 0 || y - a[i - 1] > 600);
+    const stops = [0, Math.round(height * 0.33), Math.round(height * 0.66)].filter((y, i, a) => i === 0 || y - a[i - 1] > 600).slice(0, cfg.maxStops ?? 3);
     for (const [i, y] of stops.entries()) {
       await desk.evaluate((yy) => window.scrollTo(0, yy), y);
       await desk.waitForTimeout(700);
@@ -65,14 +70,15 @@ for (const p of targets) {
     await desk.close();
 
     const mob = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, colorScheme: 'light', locale: 'es-PE' });
-    await shoot(mob, p.liveUrl);
+    await shoot(mob, p.liveUrl, cfg.blur);
     const buf = await mob.screenshot({ type: 'png' });
     const big = await toWebp(buf, path.join(dir, 'mobile-1.webp'), 780);
     await toWebp(buf, path.join(dir, 'mobile-1-720.webp'), 390);
     images.push({ src: `projects/${p.slug}/mobile-1.webp`, alt: `${p.title} en móvil`, width: big.w, height: big.h, kind: 'mobile' });
     await mob.close();
 
-    p.images = images;
+    // Las ilustraciones generadas (si las hay) van después de las capturas reales
+    p.images = [...images, ...(p.images ?? []).filter((i) => i.generated)];
     report.push(`OK   ${p.slug}: ${images.length} capturas`);
   } catch (e) {
     report.push(`FALLO ${p.slug}: ${e.message.split('\n')[0]}`);

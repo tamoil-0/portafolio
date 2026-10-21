@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Datos reales del entrenamiento según meta.json: 1 760 muestras repartidas en 366 frescas, 594 semifrescas y 800 no aptas, con sus pesos por clase y la media y desviación de temperatura, día, pH y color CIELAB</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --c-ok: #00A884; --c-warn: #E17055; --c-bad: #D63031; }
+    .stage { gap: 28px; align-items: stretch; }
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 26px 30px; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    .ph { display: flex; justify-content: space-between; align-items: baseline; }
+    .ph h3 { font-size: 20px; }
+    .ph span { font-size: 13px; color: var(--muted); }
+    .cap { font-size: 14.5px; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+    .left { width: 640px; flex: none; }
+    .hero { display: flex; align-items: baseline; gap: 12px; margin: 34px 0 30px; }
+    .hero b { font-family: 'Serif', Georgia, serif; font-weight: 400; font-size: 76px; line-height: 1; letter-spacing: -1px; }
+    .hero span { font-size: 16px; color: var(--muted); }
+    .rows { display: flex; flex-direction: column; gap: 30px; margin-top: 10px; }
+    .crow { display: grid; grid-template-columns: 130px 1fr 128px; gap: 16px; align-items: center; }
+    .cname { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14.5px; }
+    .cname i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+    .track { height: 34px; position: relative; }
+    .track .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; }
+    .track .grid { position: absolute; top: -6px; bottom: -6px; width: 1px; background: var(--line); }
+    .cval { font-size: 14px; text-align: right; color: var(--muted); }
+    .cval b { font-size: 18px; color: var(--text); margin-right: 6px; }
+    .axis { display: grid; grid-template-columns: 130px 1fr 128px; gap: 16px; margin-top: 8px; }
+    .axis div { position: relative; height: 16px; margin-top: 6px; font-size: 11.5px; color: var(--muted); }
+    .axis span { position: absolute; transform: translateX(-50%); }
+    .cfg { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+    .cfg span { font-size: 12.5px; color: var(--muted); background: var(--surface-2); padding: 5px 11px; border-radius: 999px; }
+    .cfg b { color: var(--text); font-weight: 600; }
+    .weights { margin-top: 18px; padding-top: 20px; border-top: 1px solid var(--line); }
+    .weights h4 { font-size: 14px; margin-bottom: 10px; }
+    .wgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .w { background: #faf9f7; border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+    .w small { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+    .w small i { width: 8px; height: 8px; border-radius: 50%; display: block; }
+    .w b { font-size: 22px; }
+    .right { flex: 1; }
+    .vrows { display: flex; flex-direction: column; gap: 30px; margin-top: 34px; }
+    .vrow { display: grid; grid-template-columns: 112px 1fr 128px; gap: 18px; align-items: center; }
+    .vname b { font-size: 15.5px; display: block; }
+    .vname small { font-size: 12px; color: var(--muted); }
+    .scale { position: relative; height: 40px; }
+    .scale .base { position: absolute; left: 0; right: 0; top: 14px; height: 4px; border-radius: 999px; background: var(--surface-2); }
+    .scale .band { position: absolute; top: 9px; height: 14px; border-radius: 4px; background: #c9c2f5; }
+    .scale .dot { position: absolute; top: 8px; width: 16px; height: 16px; border-radius: 50%; background: #6C5CE7; border: 2px solid #fff; transform: translateX(-50%); box-shadow: 0 0 0 1px #6C5CE7; }
+    .scale .t { position: absolute; top: 26px; font-size: 11px; color: var(--muted); }
+    .scale .t.r { right: 0; }
+    .vval { text-align: right; font-size: 13px; color: var(--muted); }
+    .vval b { font-size: 17px; color: var(--text); }
+    .legend { display: flex; gap: 20px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); align-items: center; }
+    .legend .lb { display: inline-block; width: 26px; height: 12px; border-radius: 3px; background: #c9c2f5; vertical-align: -2px; margin-right: 6px; }
+    .legend .ld { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #6C5CE7; vertical-align: -2px; margin-right: 6px; }
+    .src { margin-left: auto; font-family: Consolas, monospace; font-size: 12px; background: var(--surface-2); padding: 3px 9px; border-radius: 6px; color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Datos · Dataset propio</p>
+        <h1 class="title">1 760 muestras, tres clases desbalanceadas</h1>
+        <p class="subtitle">Lo que el entrenamiento dejó registrado: muestras por clase y variación de las mediciones.</p>
+      </div>
+      <span class="note">Datos reales del repositorio</span>
+    </header>
+    <main class="stage">
+      <section class="panel left">
+        <div class="ph"><h3>Muestras por clase</h3><span>class_counts</span></div>
+        <p class="cap">NO_APTO tiene más del doble de muestras que FRESCO.</p>
+        <div class="hero"><b>1 760</b><span>muestras etiquetadas</span></div>
+        <div class="rows">
+          <div class="crow"><span class="cname"><i style="background:var(--c-ok)"></i>FRESCO</span>
+            <div class="track"><span class="grid" style="left:25%"></span><span class="grid" style="left:50%"></span><span class="grid" style="left:75%"></span><div class="fill" style="width: 45.75%; background: var(--c-ok)"></div></div>
+            <span class="cval"><b>366</b>20,8 %</span></div>
+          <div class="crow"><span class="cname"><i style="background:var(--c-warn)"></i>SEMIFRESCO</span>
+            <div class="track"><span class="grid" style="left:25%"></span><span class="grid" style="left:50%"></span><span class="grid" style="left:75%"></span><div class="fill" style="width: 74.25%; background: var(--c-warn)"></div></div>
+            <span class="cval"><b>594</b>33,8 %</span></div>
+          <div class="crow"><span class="cname"><i style="background:var(--c-bad)"></i>NO_APTO</span>
+            <div class="track"><span class="grid" style="left:25%"></span><span class="grid" style="left:50%"></span><span class="grid" style="left:75%"></span><div class="fill" style="width: 100%; background: var(--c-bad)"></div></div>
+            <span class="cval"><b>800</b>45,5 %</span></div>
+        </div>
+        <div class="axis"><em></em><div><span style="left:0; transform:none">0</span><span style="left:25%">200</span><span style="left:50%">400</span><span style="left:75%">600</span><span style="left:100%; transform: translateX(-100%)">800</span></div><em></em></div>
+        <div class="cfg"><span>Partición: <b>GroupShuffleSplit temp-día</b></span><span>Pérdida: <b>FocalLoss</b></span><span>Imagen: <b>320 px</b></span></div>
+        <div class="weights">
+          <h4>Pesos por clase usados en la Focal Loss</h4>
+          <div class="wgrid">
+            <div class="w"><small><i style="background:var(--c-ok)"></i>FRESCO</small><b>1,45</b></div>
+            <div class="w"><small><i style="background:var(--c-warn)"></i>SEMIFRESCO</small><b>0,89</b></div>
+            <div class="w"><small><i style="background:var(--c-bad)"></i>NO_APTO</small><b>0,66</b></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel right">
+        <div class="ph"><h3>Mediciones de laboratorio</h3><span>tab_mean · tab_std</span></div>
+        <p class="cap">Media y desviación estándar de cada variable; con ellas se estandariza la entrada del MLP.</p>
+        <div class="vrows">
+          <div class="vrow"><div class="vname"><b>Temperatura</b><small>°C</small></div>
+            <div class="scale"><span class="base"></span><span class="band" style="left:20.0%; width:37.7%"></span><span class="dot" style="left:38.8%"></span><span class="t" style="left:0">0</span><span class="t r">25</span></div>
+            <div class="vval"><b>9,71</b> ± 4,71</div></div>
+          <div class="vrow"><div class="vname"><b>Día</b><small>de almacenamiento</small></div>
+            <div class="scale"><span class="base"></span><span class="band" style="left:9.6%; width:50.5%"></span><span class="dot" style="left:34.9%"></span><span class="t" style="left:0">0</span><span class="t r">20</span></div>
+            <div class="vval"><b>6,97</b> ± 5,04</div></div>
+          <div class="vrow"><div class="vname"><b>pH</b><small>acidez</small></div>
+            <div class="scale"><span class="base"></span><span class="band" style="left:29.7%; width:41.7%"></span><span class="dot" style="left:50.5%"></span><span class="t" style="left:0">5,5</span><span class="t r">8,0</span></div>
+            <div class="vval"><b>6,76</b> ± 0,52</div></div>
+          <div class="vrow"><div class="vname"><b>L*</b><small>luminosidad</small></div>
+            <div class="scale"><span class="base"></span><span class="band" style="left:48.3%; width:11.9%"></span><span class="dot" style="left:54.3%"></span><span class="t" style="left:0">0</span><span class="t r">60</span></div>
+            <div class="vval"><b>32,56</b> ± 3,57</div></div>
+          <div class="vrow"><div class="vname"><b>a*</b><small>rojo ↔ verde</small></div>
+            <div class="scale"><span class="base"></span><span class="band" style="left:35.6%; width:19.5%"></span><span class="dot" style="left:45.4%"></span><span class="t" style="left:0">0</span><span class="t r">40</span></div>
+            <div class="vval"><b>18,16</b> ± 3,90</div></div>
+          <div class="vrow"><div class="vname"><b>b*</b><small>amarillo ↔ azul</small></div>
+            <div class="scale"><span class="base"></span><span class="band" style="left:37.1%; width:13.7%"></span><span class="dot" style="left:44.0%"></span><span class="t" style="left:0">0</span><span class="t r">30</span></div>
+            <div class="vval"><b>13,19</b> ± 2,06</div></div>
+        </div>
+        <div class="legend"><span><span class="ld"></span>Media</span><span><span class="lb"></span>± 1 desviación estándar</span><span class="src">runs_multimodal/meta.json</span></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

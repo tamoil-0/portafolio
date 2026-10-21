@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Pipeline de datos del recomendador: tres scripts cosechan los metadatos de los repositorios DSpace de UNAP y UNSA, generan embeddings con bge-m3 y un índice FAISS, y agrupan las tesis en temas con UMAP, HDBSCAN y TF-IDF, todo sobre PostgreSQL</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --p: #0077b6; --p2: #00b4d8; --psoft: #e8f4f8; }
+    .stage { flex-direction: column; align-items: stretch; gap: 0; justify-content: center; }
+    .g { display: grid; grid-template-columns: repeat(5, 1fr); column-gap: 34px; }
+    .c { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px 20px 24px; display: flex; flex-direction: column; gap: 10px; min-height: 270px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    .c:not(:last-child)::after { content: '→'; position: absolute; right: -27px; top: 50%; transform: translateY(-50%); color: var(--accent); font-weight: 700; font-size: 20px; }
+    .c .k { font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .c h3 { font-size: 20px; line-height: 1.25; }
+    .c code { font-family: Consolas, monospace; font-size: 12.5px; background: var(--surface-2); padding: 2px 7px; border-radius: 6px; align-self: flex-start; }
+    .c ul { list-style: none; display: flex; flex-direction: column; gap: 5px; margin-top: 2px; }
+    .c li { font-size: 14.5px; color: var(--muted); line-height: 1.4; padding-left: 14px; position: relative; }
+    .c li::before { content: ''; position: absolute; left: 2px; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--p2); }
+    .c.src { background: #faf9f7; }
+    .repo { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: #fff; border-radius: 12px; padding: 9px 12px; }
+    .repo .u { font-size: 10px; font-weight: 800; color: #fff; padding: 3px 8px; border-radius: 6px; letter-spacing: .6px; }
+    .repo small { font-size: 12px; color: var(--muted); display: block; }
+    .repo b { font-size: 13.5px; }
+    .unap { background: linear-gradient(135deg, #0077b6, #00b4d8); }
+    .unsa { background: linear-gradient(135deg, #5D101D, #8B1A1A); }
+    .c.svc { background: #1b1a19; color: #f4f2ef; border-color: #1b1a19; }
+    .c.svc .k { color: #bdb6ae; }
+    .c.svc li { color: #d6d0c9; }
+    .c.svc code { background: #2d2b29; color: #f4f2ef; }
+    .arrows { height: 72px; }
+    .arrows div { display: flex; align-items: center; justify-content: center; color: var(--p); font-weight: 700; font-size: 13px; gap: 8px; }
+    .arrows div b { font-size: 22px; }
+    .db { background: var(--psoft); border: 1px solid #a9d6ea; border-radius: 20px; padding: 18px 20px 20px; }
+    .dbh { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .dbh .ic { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--p), var(--p2)); color: #fff; display: grid; place-items: center; }
+    .dbh .ic svg { width: 18px; height: 18px; }
+    .dbh b { font-size: 17px; }
+    .dbh span { font-size: 13.5px; color: var(--muted); }
+    .tbl { background: #fff; border: 1px solid #a9d6ea; border-radius: 12px; padding: 12px 14px; min-height: 84px; }
+    .tbl b { font-family: Consolas, monospace; font-size: 13.5px; color: #005a8d; }
+    .tbl small { display: block; font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+    .tbl.file { border-style: dashed; background: #fbfdfe; }
+    .foot { display: flex; gap: 10px; margin-top: 22px; }
+    .foot .pill { font-size: 13px; padding: 6px 12px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Datos · Pipeline de procesamiento</p>
+        <h1 class="title">De los repositorios a un índice de temas</h1>
+        <p class="subtitle">Tres scripts cosechan, vectorizan y agrupan la producción académica sobre una base PostgreSQL.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="g">
+        <div class="c src">
+          <span class="k">Fuentes</span>
+          <h3>Repositorios DSpace</h3>
+          <div class="repo"><span class="u unap">UNAP</span><div><b>Puno</b><small>Tesis y artículos</small></div></div>
+          <div class="repo"><span class="u unsa">UNSA</span><div><b>Arequipa</b><small>Tesis y artículos</small></div></div>
+        </div>
+        <div class="c">
+          <span class="k">Paso 1 · Cosecha</span>
+          <h3>Metadatos limpios</h3>
+          <code>01.harvest_multi.py</code>
+          <ul><li>Título, resumen, autores, asesores, palabras clave y fecha</li><li>Normaliza el texto y calcula un hash SHA-256</li></ul>
+        </div>
+        <div class="c">
+          <span class="k">Paso 2 · Vectores</span>
+          <h3>Embeddings + FAISS</h3>
+          <code>02.semantic_indexer.py</code>
+          <ul><li>Solo procesa textos nuevos o modificados</li><li>bge-m3 por lotes; si falta memoria, reduce el lote</li></ul>
+        </div>
+        <div class="c">
+          <span class="k">Paso 3 · Temas</span>
+          <h3>Agrupación sin etiquetas</h3>
+          <code>03.build_topics_hdbscan.py</code>
+          <ul><li>UMAP reduce dimensiones (coseno)</li><li>HDBSCAN forma los grupos</li><li>TF-IDF (1–3 palabras) los nombra</li></ul>
+        </div>
+        <div class="c svc">
+          <span class="k">Servicio</span>
+          <h3>API + extensión</h3>
+          <ul><li><code>/recommend</code> tesis similares</li><li><code>/items/{uuid}</code> detalle</li><li><code>/topics/top</code> y <code>/topics/{id}</code></li><li>Panel en Chrome / Edge</li></ul>
+        </div>
+      </div>
+      <div class="g arrows">
+        <div></div>
+        <div><b>↓</b>guarda</div>
+        <div><b>⇅</b>lee y guarda</div>
+        <div><b>⇅</b>lee y guarda</div>
+        <div><b>↑</b>carga y consulta</div>
+      </div>
+      <section class="db">
+        <div class="dbh"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span><b>PostgreSQL</b><span>Docker Compose en local · base gestionada en la nube</span></div>
+        <div class="g" style="column-gap: 34px;">
+          <div class="tbl file"><b>database/schema.sql</b><small>Esquema reproducible de las cuatro tablas</small></div>
+          <div class="tbl"><b>items</b><small>Metadatos por tesis, universidad y text_hash</small></div>
+          <div class="tbl"><b>embeddings</b><small>Vector por documento (BYTEA), modelo y dimensión</small></div>
+          <div class="tbl"><b>clusters · cluster_labels</b><small>Tema de cada tesis, etiqueta, palabras y tamaño</small></div>
+          <div class="tbl file"><b>faiss.index + uuid_map</b><small>Archivos del índice (1024-d) que carga la API; salen de la tabla embeddings</small></div>
+        </div>
+      </section>
+      <div class="foot">
+        <span class="pill">Actualización incremental: lo que no cambió no se vuelve a vectorizar</span>
+        <span class="pill">Arranque en Windows con un solo .cmd</span>
+        <span class="pill">GPU CUDA opcional</span>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

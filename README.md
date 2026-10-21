@@ -28,15 +28,18 @@ npm run preview    # sirve dist/ para revisarlo
 | `tags` | etiquetas libres; si incluyes otra categoría (p. ej. `Postulación`) también aparecerá en ese filtro |
 | `stack` | tecnologías, en orden de importancia |
 | `role`, `teamSize`, `period` (`{"start": "2026-05", "end": "2026-06"}`), `status`, `context` | ficha del proyecto |
-| `isPrivate` | `true` muestra el candado y oculta el botón de código |
-| `repoUrl`, `liveUrl` | enlaces (o `null`) |
+| `isPrivate` | `true` muestra el candado "Proyecto privado" |
+| `liveUrl` | página pública (botón "Ver página") o `null`; `repoUrl` se guarda pero no se muestra |
 | `problem`, `solution`, `howItWorks[]`, `results[]` | secciones de la página de detalle |
-| `architecture[]` | líneas tipo `"App -> API -> Base de datos"`; se dibujan como diagrama y como portada si no hay capturas |
+| `architecture[]` | líneas tipo `"App -> API -> Base de datos"` (referencia interna; la arquitectura se muestra con láminas) |
 | `ai` | `null` o `{ "models": [], "technique": "", "datasets": [], "metrics": [] }` |
 | `featured` | `true` para que salga en "Proyectos destacados" (ideal 3 a 6) |
 | `order` | posición en la lista (menor = primero) |
 
-3. Imágenes: si el proyecto tiene demo pública, ejecuta `npm run screenshots -- mi-proyecto` (toma capturas de escritorio y móvil, las optimiza en WebP y actualiza `images`). Si prefieres poner tus propias capturas, guárdalas en `public/projects/<slug>/` como `nombre.webp` **y** `nombre-720.webp` (versión de 720 px de ancho) y agrégalas a `images` con `src`, `alt`, `width`, `height` y `kind` (`desktop` o `mobile`).
+3. Imágenes (la primera es la portada de la tarjeta):
+   - **Página pública:** `npm run screenshots -- mi-proyecto` toma capturas de escritorio y móvil, las optimiza en WebP y actualiza `images`. Si el repo es privado pero la página es pública, o hay que difuminar fotos y nombres de personas, configúralo en `scripts/capture.json`.
+   - **Proyecto privado o sin página:** crea láminas HTML en `scripts/mockups/<slug>/01-nombre.html` (copia `scripts/mockups/_ejemplo/`, usan `scripts/mockups/_kit.css`) y ejecuta `node scripts/render-mockups.mjs mi-proyecto`. Se marcan como "Ilustración" en la galería.
+   - **Capturas propias:** guárdalas en `public/projects/<slug>/` como `nombre.webp` **y** `nombre-720.webp` y agrégalas a `images` con `src`, `alt`, `width`, `height` y `kind` (`desktop` o `mobile`).
 4. `npm run build` para comprobar que todo compila.
 
 Los datos personales (bio, contacto, habilidades) están en `data/profile.json`.

@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>App móvil de AgendIA para estudiantes: inicio con entrega prioritaria y sugerencia de organización, chat con el asistente Agi que anota exámenes y tareas, y agenda del día</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    /* Tokens reales: AgThemes.estudianteColors + AgGradients (packages/agendia_design_system) */
+    :root { --indigo: #4055F5; --iris: #7657F6; --pulse: #199CFF; --midnight: #0B1020; --cloud: #F7F8FC; --slate: #667085; --border: #DDE2EF; --soft: #EEF0FF; --success: #12B76A; --warning: #F79009; --error: #D92D20; }
+    .stage { gap: 64px; }
+    .phone { --s: 1; zoom: .76; }
+    .phone-label { margin-top: 14px; }
+    .screen { background: var(--cloud); color: var(--midnight); font-size: 14px; }
+    .statusbar { position: absolute; top: 0; left: 0; right: 0; z-index: 2; color: #fff; }
+    .disp { font-weight: 800; letter-spacing: -.4px; }
+    /* Inicio */
+    .hero { height: 250px; flex: none; border-radius: 0 0 36px 36px; background: radial-gradient(160px 160px at 92% 88%, rgba(25,156,255,.35), transparent 70%), linear-gradient(110deg, rgba(11,16,32,.95) 0%, #111A72 55%, #199CFF 120%); color: #fff; padding: 52px 20px 0; position: relative; }
+    .brandrow { display: flex; align-items: center; gap: 10px; }
+    .brand { font-weight: 800; font-size: 19px; letter-spacing: -.3px; flex: 1; }
+    .brand span { color: #8fd0ff; }
+    .cb { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(10,23,71,.85); border: 1px solid rgba(255,255,255,.18); position: relative; }
+    .cb.l { background: #F4F6FF; color: var(--indigo); font-weight: 800; font-size: 14px; }
+    .cb .dot { position: absolute; top: 6px; right: 7px; width: 9px; height: 9px; border-radius: 50%; background: #FF3366; border: 2px solid #0A1747; }
+    .hello { font-size: 30px; margin-top: 46px; }
+    .hsub { font-size: 14px; color: #CCD3FF; margin-top: 4px; }
+    .body { padding: 0 16px; display: flex; flex-direction: column; gap: 12px; margin-top: -46px; position: relative; }
+    .prio { background: #fff; border-radius: 24px; padding: 16px; box-shadow: 0 18px 40px rgba(64,85,245,.16); border: 1px solid #E8ECF6; }
+    .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--indigo); background: var(--soft); padding: 5px 10px; border-radius: 999px; }
+    .prio h4 { font-size: 19px; margin: 10px 0 2px; }
+    .prio .c { color: var(--slate); font-size: 13.5px; }
+    .prio .r { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+    .due { font-size: 12.5px; font-weight: 700; color: #B54708; background: #FEF0C7; padding: 5px 10px; border-radius: 999px; }
+    .btn { background: linear-gradient(90deg, var(--iris), var(--indigo), var(--pulse)); color: #fff; font-weight: 700; font-size: 13.5px; padding: 9px 16px; border-radius: 14px; }
+    .sec { background: #fff; border: 1px solid #E8ECF6; border-radius: 22px; padding: 14px 16px; }
+    .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .sh i { width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; color: #fff; font-style: normal; font-size: 15px; }
+    .sh b { font-size: 16.5px; flex: 1; }
+    .sh small { color: var(--indigo); font-weight: 700; font-size: 12.5px; }
+    .cls { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid #EEF1F7; }
+    .cls:first-of-type { border-top: 0; }
+    .cls .t { width: 48px; font-weight: 800; font-size: 13px; }
+    .cls .t span { display: block; font-weight: 400; color: #7786A8; font-size: 11.5px; }
+    .bar { width: 4px; align-self: stretch; border-radius: 4px; }
+    .cls .n { flex: 1; font-weight: 700; font-size: 14px; }
+    .cls .n span { display: block; font-weight: 400; color: var(--slate); font-size: 12px; }
+    .sug { border-radius: 22px; padding: 14px 16px; color: #fff; background: linear-gradient(120deg, var(--indigo), var(--iris)); box-shadow: 0 14px 30px rgba(118,87,246,.3); }
+    .sug .k { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; opacity: .85; }
+    .sug p { font-size: 14.5px; font-weight: 600; margin: 6px 0 12px; line-height: 1.35; }
+    .sug .a { display: flex; gap: 8px; justify-content: flex-end; }
+    .sug .a span { font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 12px; }
+    .glass { position: absolute; left: 14px; right: 14px; bottom: 16px; height: 70px; border-radius: 26px; background: rgba(255,255,255,.96); border: 1.4px solid #fff; box-shadow: 0 12px 30px rgba(11,16,32,.14); display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; text-align: center; font-size: 11.5px; color: #617197; z-index: 3; }
+    .glass div { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .glass .on { color: var(--indigo); font-weight: 700; }
+    .glass .ctr { position: relative; top: -16px; }
+    .glass .ctr b { width: 64px; height: 64px; border-radius: 50%; border: 3px solid #fff; display: block; background: radial-gradient(circle at 35% 30%, #fff 0%, #BDE8FF 18%, #199CFF 42%, #4055F5 64%, #7657F6 82%, #0B1020 100%); box-shadow: 0 10px 22px rgba(25,156,255,.42); }
+    .ic { width: 22px; height: 22px; }
+    /* Agi */
+    .agi-h { background: linear-gradient(135deg, #0B1020, #151C3F 60%, #202A63); color: #fff; padding: 54px 18px 16px; display: flex; align-items: center; gap: 14px; flex: none; }
+    .orb { width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0%, #BDE8FF 18%, #199CFF 42%, #4055F5 64%, #7657F6 82%, #0B1020 100%); box-shadow: 0 0 18px rgba(25,156,255,.42); flex: none; }
+    .agi-h h4 { font-size: 22px; }
+    .agi-h p { font-size: 13px; color: #CCD3FF; }
+    .strip { background: #151C3F; padding: 10px 16px; display: flex; gap: 8px; flex: none; overflow: hidden; }
+    .si { border: 1px solid rgba(255,255,255,.24); background: rgba(255,255,255,.08); border-radius: 12px; padding: 6px 12px; color: #fff; font-size: 13px; font-weight: 600; white-space: nowrap; }
+    .si span { display: block; color: #CCD3FF; font-weight: 400; font-size: 12px; }
+    .chat { flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; background: var(--cloud); }
+    .bub { max-width: 82%; padding: 10px 13px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
+    .bub.a { background: #fff; border: 1px solid var(--border); border-bottom-left-radius: 6px; }
+    .bub.u { background: var(--indigo); color: #fff; margin-left: auto; border-bottom-right-radius: 6px; }
+    .it { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 13px; }
+    .it i { width: 22px; height: 22px; border-radius: 7px; background: var(--indigo); display: grid; place-items: center; color: #fff; font-size: 11px; font-style: normal; }
+    .sup { color: var(--indigo); font-weight: 700; font-size: 13.5px; margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+    .chips { display: flex; gap: 8px; padding: 0 16px 8px; overflow: hidden; background: var(--cloud); }
+    .chips span { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 7px 11px; font-size: 12.5px; white-space: nowrap; }
+    .disc { text-align: center; font-size: 12px; color: var(--slate); background: var(--cloud); }
+    .comp { margin: 8px 12px 30px; background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 6px 6px 6px 14px; display: flex; align-items: center; box-shadow: 0 8px 24px rgba(64,85,245,.12); }
+    .comp span { flex: 1; color: #98A2B3; }
+    .send { width: 40px; height: 40px; border-radius: 13px; background: linear-gradient(135deg, var(--iris), var(--indigo), var(--pulse)); display: grid; place-items: center; }
+    /* Agenda */
+    .ahero { height: 210px; flex: none; background: radial-gradient(140px 140px at 85% 70%, rgba(25,156,255,.35), transparent 70%), linear-gradient(110deg, rgba(11,16,32,.95), rgba(17,27,112,.9) 60%, rgba(25,156,255,.6)); color: #fff; padding: 52px 20px 0; position: relative; }
+    .ahero h4 { font-size: 34px; letter-spacing: -1.2px; margin-top: 30px; }
+    .ahero p { font-size: 14px; color: #F1F4FF; line-height: 1.35; margin-top: 4px; }
+    .tabs { margin: -24px 14px 0; background: #F0F2FC; border: 1px solid #DDE3F3; border-radius: 18px; padding: 5px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; position: relative; box-shadow: 0 10px 24px rgba(64,85,245,.12); }
+    .tabs span { text-align: center; font-size: 12px; font-weight: 700; color: #617197; padding: 8px 0; border-radius: 13px; }
+    .tabs span.on { background: linear-gradient(90deg, var(--indigo), var(--iris)); color: #fff; box-shadow: 0 6px 14px rgba(64,85,245,.3); }
+    .abody { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+    .banner { border-radius: 18px; padding: 12px 14px; background: linear-gradient(135deg, #F9FAFF, #EDF3FF); border: 1px solid #DDE3F3; display: flex; gap: 12px; align-items: center; }
+    .banner i { width: 38px; height: 38px; border-radius: 12px; background: var(--indigo); color: #fff; display: grid; place-items: center; font-style: normal; }
+    .banner b { display: block; font-size: 14.5px; }
+    .banner span { font-size: 12.5px; color: var(--slate); }
+    .week { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .week div { text-align: center; border: 1px solid #DDE3F3; border-radius: 14px; padding: 6px 0; font-size: 12px; color: #67769A; background: #fff; }
+    .week div b { display: block; font-size: 16px; color: var(--midnight); }
+    .week div.on { background: linear-gradient(90deg, var(--indigo), var(--iris)); color: #fff; border-color: transparent; }
+    .week div.on b { color: #fff; }
+    .tr { display: flex; gap: 10px; }
+    .tr .tm { width: 46px; text-align: center; font-weight: 800; font-size: 13px; padding-top: 10px; }
+    .tr .tm span { display: block; font-weight: 400; color: #7786A8; font-size: 11.5px; }
+    .tr .cd { flex: 1; background: #fff; border: 1px solid #E8ECF6; border-radius: 16px; padding: 9px 12px; display: flex; gap: 10px; align-items: center; }
+    .tr .cd.br { background: #F2F4F9; }
+    .tr .cd i { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; color: #fff; font-style: normal; font-size: 14px; }
+    .tr .cd b { font-size: 14px; display: block; }
+    .tr .cd span { font-size: 12px; color: #6F7FA2; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Móvil · App del estudiante</p>
+        <h1 class="title">Tu semana, ordenada con Agi</h1>
+        <p class="subtitle">Inicio con la entrega prioritaria, chat con Agi que anota en la agenda y el horario del día.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+    <main class="stage">
+      <!-- 1 · Inicio -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="hero">
+            <div class="brandrow"><div class="brand">Agend<span>IA</span></div><div class="cb"><svg class="ic" viewBox="0 0 24 24" style="width:20px"><path d="M12 22a2 2 0 002-2h-4a2 2 0 002 2zm6-6V11a6 6 0 00-5-5.9V4a1 1 0 00-2 0v1.1A6 6 0 006 11v5l-2 2v1h16v-1z" fill="#70CAFF"/></svg><span class="dot"></span></div><div class="cb l">AQ</div></div>
+            <div class="hello disp">¡Hola, Ana! 👋</div>
+            <div class="hsub">5 días seguidos contándonos cómo estás</div>
+          </div>
+          <div class="body">
+            <div class="prio">
+              <span class="tag">⚡ ENTREGA PRIORITARIA</span>
+              <h4 class="disp">Informe de laboratorio</h4>
+              <div class="c">Ciencia y Tecnología · Prof. Rosa Huanca</div>
+              <div class="r"><span class="due">Entrega hoy · 18:00</span><span class="btn">Abrir tarea →</span></div>
+            </div>
+            <div class="sec">
+              <div class="sh"><i style="background:var(--indigo)">▦</i><b>Hoy</b><small>Ver agenda →</small></div>
+              <div class="cls"><div class="t">07:45<span>08:30</span></div><span class="bar" style="background:#4055F5"></span><div class="n">Matemática<span>Aula 4A</span></div></div>
+              <div class="cls"><div class="t">08:30<span>09:15</span></div><span class="bar" style="background:#199CFF"></span><div class="n">Comunicación<span>Aula 4A</span></div></div>
+            </div>
+            <div class="sug">
+              <div class="k">✦ SUGERENCIA DE AGENDIA</div>
+              <p>Tienes 6 entregas esta semana.<br>¿Quieres que organice tu tiempo?</p>
+              <div class="a"><span style="background:rgba(255,255,255,.16)">Ahora no</span><span style="background:#fff;color:#4055F5">Sí, organizar</span></div>
+            </div>
+          </div>
+          <div class="glass">
+            <div class="on"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z" fill="#4055F5"/></svg>Inicio</div>
+            <div><svg class="ic" viewBox="0 0 24 24"><path d="M4 5h7a2 2 0 012 2v12a2 2 0 00-2-2H4zm16 0h-5a2 2 0 00-2 2v12a2 2 0 012-2h5z" fill="#617197"/></svg>Aula</div>
+            <div class="ctr"><b></b>Agi</div>
+            <div><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3" fill="#617197"/><rect x="5" y="10" width="14" height="9" rx="1" fill="#fff"/><path d="M7 3v4M17 3v4" stroke="#617197" stroke-width="2"/></svg>Agenda</div>
+            <div><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#617197"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="#fff"/></svg>Orienta</div>
+          </div>
+        </div></div>
+        <p class="phone-label">1 · Inicio</p>
+      </div>
+
+      <!-- 2 · Agi -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="agi-h"><div class="orb"></div><div style="flex:1"><h4 class="disp">Agi</h4><p>Tu agenda que conversa</p></div><svg width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3" fill="none" stroke="#fff" stroke-width="2"/><path d="M8 11h8M8 15h5" stroke="#fff" stroke-width="2"/></svg></div>
+          <div class="strip"><div class="si">📝 Informe de Comunicación<span>Mañana</span></div><div class="si">✏️ Examen de Matemática<span>Viernes</span></div></div>
+          <div class="chat">
+            <div class="bub a">¡Hola, Ana! Cuéntame qué tienes esta semana. Yo lo ordeno en tu agenda.</div>
+            <div class="bub u">Tengo examen de mate el viernes y entrego informe de comu mañana</div>
+            <div class="bub a">Anotado:
+              <div class="it"><i>✎</i>Examen de Matemática · viernes</div>
+              <div class="it"><i>▤</i>Informe de Comunicación · mañana</div>
+            </div>
+            <div class="bub u">Me siento estresado</div>
+            <div class="bub a">Gracias por contármelo. Podemos organizar un paso pequeño para hoy. También puedes conversar con tu tutora desde Apoyo.<div class="sup">♥ Ir a Apoyo</div></div>
+          </div>
+          <div class="chips"><span>Recuérdame repasar mañana a las 6 p. m.</span><span>¿Qué tengo mañana?</span></div>
+          <div class="disc">Agi es una IA y puede equivocarse</div>
+          <div class="comp"><span>Escríbele a Agi…</span><div class="send"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M3 20l18-8L3 4v6l12 2-12 2z" fill="#fff"/></svg></div></div>
+        </div></div>
+        <p class="phone-label">2 · Chat con Agi</p>
+      </div>
+
+      <!-- 3 · Agenda -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="ahero"><h4 class="disp">Agenda</h4><p>Tu horario, entregas, eventos y<br>asistencia en un solo lugar.</p></div>
+          <div class="tabs"><span class="on">Hoy</span><span>Semana</span><span>Pendientes</span><span>Asistencia</span></div>
+          <div class="abody">
+            <div class="banner"><i>🎓</i><div><b>5 clases · terminas a las 13:20</b><span>Un gran día de aprendizaje ✨</span></div></div>
+            <div class="week"><div class="on">Lun<b>14</b></div><div>Mar<b>15</b></div><div>Mié<b>16</b></div><div>Jue<b>17</b></div><div>Vie<b>18</b></div></div>
+            <div class="tr"><div class="tm">07:45<span>08:30</span></div><div class="cd"><i style="background:#4055F5">∑</i><div><b>Matemática</b><span>Aula 4A</span></div></div></div>
+            <div class="tr"><div class="tm">08:30<span>09:15</span></div><div class="cd"><i style="background:#199CFF">✎</i><div><b>Comunicación</b><span>Aula 4A</span></div></div></div>
+            <div class="tr"><div class="tm">09:15<span>09:35</span></div><div class="cd br"><i style="background:#7E8CAA">☕</i><div><b>Receso</b><span>Un momento para recargar energías</span></div></div></div>
+            <div class="tr"><div class="tm">09:35<span>11:05</span></div><div class="cd"><i style="background:#7657F6">⚗</i><div><b>Ciencia y Tecnología</b><span>Laboratorio</span></div></div></div>
+            <div class="tr"><div class="tm">11:05<span>11:50</span></div><div class="cd"><i style="background:#12C9D8">✦</i><div><b>Tutoría</b><span>Orientación · Aula 2B</span></div></div></div>
+            <div class="sec" style="padding:12px 14px"><div class="sh" style="margin-bottom:6px"><i style="background:var(--iris)">📌</i><b>Próximo pendiente</b><small>Ver todos</small></div><div class="cls" style="padding:4px 0 0"><span class="bar" style="background:#7657F6"></span><div class="n">Informe de laboratorio<span>Ciencia y Tecnología · hoy 18:00</span></div><span class="due">Hoy</span></div></div>
+          </div>
+        </div></div>
+        <p class="phone-label">3 · Agenda del día</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

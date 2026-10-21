@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Panel web de gestión ECOING: padrón de estructuras de una línea con coordenadas UTM, estado de formulario y de las 28 imágenes, métricas de avance y descarga de reportes Excel y PDF</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    /* Colores reales: web/css/estilos.css (:root) */
+    .web { --navy-950: #071827; --navy-900: #0b2239; --navy-800: #123553; --blue-700: #155e9a; --blue-100: #dceefa; --blue-50: #eff8fd;
+           --green-700: #176b55; --green-100: #d9f2e9; --amber-700: #9a5d08; --amber-100: #fff0ce; --red-700: #a43a3a; --red-100: #fde4e4;
+           --s950: #101b25; --s700: #405464; --s600: #60717f; --s500: #7a8a96; --s300: #c9d3da; --s200: #dde4e9; --s100: #edf1f4; --s50: #f6f8fa;
+           background: var(--s50); color: var(--s950); font-size: 12.5px; height: 100%; display: flex; flex-direction: column; }
+    .top { background: var(--navy-950); color: #fff; height: 54px; display: flex; align-items: center; gap: 18px; padding: 0 26px; flex: none; }
+    .logo { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg, #1976b9, #155e9a); display: grid; place-items: center; font-weight: 800; font-size: 11px; }
+    .brand strong { display: block; font-size: 13px; } .brand span { font-size: 10.5px; color: rgba(255,255,255,.6); }
+    .nav { flex: 1; display: flex; gap: 6px; } .nav a { font-size: 11.5px; font-weight: 650; color: #fff; background: rgba(255,255,255,.09); padding: 6px 10px; border-radius: 8px; }
+    .api { display: flex; align-items: center; gap: 7px; font-size: 11px; color: rgba(255,255,255,.75); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 4px 10px; }
+    .api::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #52d5a9; box-shadow: 0 0 0 3px rgba(82,213,169,.15); }
+    .user { display: flex; align-items: center; gap: 8px; } .user i { width: 28px; height: 28px; border-radius: 50%; background: #1976b9; display: grid; place-items: center; font-style: normal; font-size: 10.5px; font-weight: 700; }
+    .user strong { display: block; font-size: 11.5px; } .user span { font-size: 10px; color: rgba(255,255,255,.6); }
+    .main { padding: 18px 26px; display: flex; flex-direction: column; gap: 14px; flex: 1; overflow: hidden; }
+    .crumbs { font-size: 11px; color: var(--s500); } .crumbs b { color: var(--s600); } .crumbs strong { color: var(--s950); }
+    .heading { display: flex; justify-content: space-between; align-items: flex-end; }
+    .heading .ey { font-size: 10px; font-weight: 720; letter-spacing: .08em; text-transform: uppercase; color: var(--blue-700); }
+    .heading h2 { font-size: 23px; font-weight: 780; color: var(--navy-900); letter-spacing: -.02em; margin: 3px 0; }
+    .heading p { font-size: 12px; color: var(--s600); }
+    .b { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 13px; border-radius: 9px; font-weight: 650; font-size: 11.5px; border: 1px solid var(--s300); background: #fff; color: var(--navy-800); }
+    .b.p { background: var(--blue-700); color: #fff; border-color: var(--blue-700); }
+    .b.sm { height: 24px; padding: 0 8px; font-size: 10.5px; border-radius: 7px; }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .m { position: relative; overflow: hidden; background: #fff; border: 1px solid var(--s200); border-radius: 14px; padding: 12px 14px; }
+    .m::after { content: ''; position: absolute; width: 56px; height: 56px; right: -20px; bottom: -26px; border-radius: 50%; background: var(--blue-100); opacity: .7; }
+    .m.ok::after { background: var(--green-100); } .m.wa::after { background: var(--amber-100); } .m.da::after { background: var(--red-100); }
+    .m span { display: block; font-size: 9.5px; font-weight: 720; letter-spacing: .04em; text-transform: uppercase; color: var(--s600); }
+    .m strong { display: block; font-size: 25px; font-weight: 810; color: var(--navy-900); letter-spacing: -.04em; margin: 6px 0 2px; }
+    .m small { font-size: 10px; color: var(--s500); }
+    .surface { background: #fff; border: 1px solid var(--s200); border-radius: 14px; overflow: hidden; flex: 1; display: flex; flex-direction: column; }
+    .sh { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--s200); }
+    .sh h3 { font-size: 14px; color: var(--navy-900); } .sh p { font-size: 10.5px; color: var(--s600); }
+    .badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--s100); color: var(--s700); white-space: nowrap; }
+    .badge.ok { background: var(--green-100); color: var(--green-700); } .badge.wa { background: var(--amber-100); color: var(--amber-700); } .badge.da { background: var(--red-100); color: var(--red-700); }
+    .tools { display: grid; grid-template-columns: 1fr 200px; gap: 12px; padding: 10px 16px; }
+    .in label { display: block; font-size: 10px; font-weight: 650; color: var(--s700); margin-bottom: 3px; }
+    .in div { height: 30px; border: 1px solid var(--s300); border-radius: 8px; padding: 0 10px; display: flex; align-items: center; color: var(--s500); font-size: 11px; justify-content: space-between; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-size: 9.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--s600); background: var(--s50); padding: 7px 12px; border-top: 1px solid var(--s200); border-bottom: 1px solid var(--s200); font-weight: 700; }
+    td { padding: 7px 12px; border-bottom: 1px solid var(--s100); font-size: 11.5px; white-space: nowrap; }
+    td.mono { font-variant-numeric: tabular-nums; color: var(--s700); }
+    td b { display: block; font-size: 12px; } td small { color: var(--s500); font-size: 10px; }
+    .acts { display: flex; gap: 5px; }
+    /* columna lateral */
+    .side { width: 320px; flex: none; display: flex; flex-direction: column; gap: 16px; }
+    .side .card { padding: 20px; }
+    .side h4 { font-size: 16px; margin-bottom: 4px; }
+    .side p { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+    .file { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
+    .file i { width: 40px; height: 48px; border-radius: 6px; display: grid; place-items: center; font-style: normal; font-size: 10px; font-weight: 800; color: #fff; flex: none; }
+    .file b { font-size: 13.5px; display: block; } .file small { font-size: 12px; color: var(--muted); }
+    .lrow { display: grid; grid-template-columns: 58px 1fr 38px; gap: 10px; align-items: center; font-size: 12.5px; margin-top: 10px; }
+    .lrow .bar > i { background: #176b55; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Web · Panel de gestión</p>
+        <h1 class="title">El avance de campo, línea por línea</h1>
+        <p class="subtitle">Padrón de estructuras con UTM, evidencia recibida y reportes Excel/PDF generados por la API.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+
+    <main class="stage" style="align-items:stretch;gap:28px">
+      <div class="browser" style="flex:1">
+        <div class="browser-bar"><i></i><i></i><i></i><span>servidor-local / web / detalle_poste.html</span></div>
+        <div class="browser-body"><div class="web">
+          <div class="top">
+            <div class="row" style="gap:10px"><div class="logo">EC</div><div class="brand"><strong>ECOING</strong><span>Operaciones de campo</span></div></div>
+            <nav class="nav"><a>Proyectos</a></nav>
+            <span class="api">API en línea</span>
+            <div class="user"><i>LM</i><div><strong>Luis Mamani</strong><span>supervisor</span></div></div>
+            <span style="font-size:11.5px;color:rgba(255,255,255,.74)">Salir</span>
+          </div>
+          <div class="main">
+            <div class="crumbs"><b>Proyectos</b> / <b>Líneas</b> / <strong>L-1002</strong></div>
+            <div class="heading">
+              <div><div class="ey">Control de campo</div><h2>Estructuras de la línea L-1002</h2><p>Revise el estado de cada estructura y genere los entregables de la línea.</p></div>
+              <div class="row" style="gap:8px"><span class="b">⤓ Descargar Excel</span><span class="b p">⤓ Descargar reportes ZIP</span></div>
+            </div>
+            <div class="metrics">
+              <div class="m"><span>Estructuras</span><strong>58</strong><small>En esta línea</small></div>
+              <div class="m ok"><span>Completas</span><strong>41</strong><small>Formulario + imágenes</small></div>
+              <div class="m wa"><span>En proceso</span><strong>9</strong><small>Con avance parcial</small></div>
+              <div class="m da"><span>Pendientes</span><strong>8</strong><small>Sin información cargada</small></div>
+            </div>
+            <div class="surface">
+              <div class="sh"><div><h3>Padrón de estructuras</h3><p>Busque por código, número de estructura, tramo o coordenada UTM.</p></div><span class="badge">58 de 58</span></div>
+              <div class="tools"><div class="in"><label>Buscar estructura</label><div>Ej. L-1002-25, 25 o tramo</div></div><div class="in"><label>Estado de avance</label><div>Todos <span>▾</span></div></div></div>
+              <table>
+                <thead><tr><th>Estructura</th><th>Tramo</th><th>UTM Este (X)</th><th>UTM Norte (Y)</th><th>Zona</th><th>Formulario</th><th>28 imágenes</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody>
+                  <tr><td><b>0023</b><small>L-1002-23</small></td><td>Tramo A</td><td class="mono">391 240.5</td><td class="mono">8 248 310.2</td><td>19L</td><td><span class="badge ok">Recibido</span></td><td><span class="badge ok">Completas</span></td><td><span class="badge ok">Completo</span></td><td><div class="acts"><span class="b p sm">Ver inspección</span><span class="b sm">PDF</span></div></td></tr>
+                  <tr><td><b>0024</b><small>L-1002-24</small></td><td>Tramo A</td><td class="mono">391 512.8</td><td class="mono">8 248 105.7</td><td>19L</td><td><span class="badge ok">Recibido</span></td><td><span class="badge ok">Completas</span></td><td><span class="badge ok">Completo</span></td><td><div class="acts"><span class="b p sm">Ver inspección</span><span class="b sm">PDF</span></div></td></tr>
+                  <tr><td><b>0025</b><small>L-1002-25</small></td><td>Tramo B</td><td class="mono">391 790.1</td><td class="mono">8 247 902.4</td><td>19L</td><td><span class="badge ok">Recibido</span></td><td><span class="badge wa">Pendientes</span></td><td><span class="badge wa">En proceso</span></td><td><div class="acts"><span class="b p sm">Ver inspección</span><span class="b sm">PDF</span></div></td></tr>
+                  <tr><td><b>0026</b><small>L-1002-26</small></td><td>Tramo B</td><td class="mono">392 044.6</td><td class="mono">8 247 688.9</td><td>19L</td><td><span class="badge wa">Pendiente</span></td><td><span class="badge wa">Pendientes</span></td><td><span class="badge da">Pendiente</span></td><td><div class="acts"><span class="b p sm">Ver inspección</span><span class="b sm">PDF</span></div></td></tr>
+                  <tr><td><b>0027</b><small>L-1002-27</small></td><td>Tramo B</td><td class="mono">392 301.3</td><td class="mono">8 247 470.5</td><td>19L</td><td><span class="badge wa">Pendiente</span></td><td><span class="badge wa">Pendientes</span></td><td><span class="badge da">Pendiente</span></td><td><div class="acts"><span class="b p sm">Ver inspección</span><span class="b sm">PDF</span></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <aside class="side">
+        <div class="card">
+          <h4>Entregables por línea</h4>
+          <p>La API PHP arma los reportes directamente desde MariaDB y las fotos guardadas.</p>
+          <div class="file"><i style="background:#1d6f42">XLSX</i><div><b>Excel de la línea</b><small>PhpSpreadsheet · un clic</small></div></div>
+          <div class="file"><i style="background:#b42318">PDF</i><div><b>Reportes ZIP</b><small>FPDF · formulario + fotos por estructura</small></div></div>
+        </div>
+        <div class="card">
+          <h4>Avance completo por línea</h4>
+          <p>Cuenta solo estructuras con formulario y las 28 imágenes.</p>
+          <div class="lrow"><span>L-1001</span><div class="bar"><i style="width:92%"></i></div><span>92 %</span></div>
+          <div class="lrow"><span>L-1002</span><div class="bar"><i style="width:71%"></i></div><span>71 %</span></div>
+          <div class="lrow"><span>L-1003</span><div class="bar"><i style="width:38%"></i></div><span>38 %</span></div>
+          <div class="lrow"><span>L-1004</span><div class="bar"><i style="width:12%"></i></div><span>12 %</span></div>
+        </div>
+        <div class="card" style="flex:1">
+          <h4>Evidencia controlada</h4>
+          <p>Cada imagen se verifica por contenido, se redimensiona y se normaliza a JPEG. La estructura solo cuenta como completa con los 28 tipos de foto.</p>
+          <p style="margin-top:10px;font-size:12.5px"><b style="color:var(--text)">Roles:</b> administrador y supervisor crean proyectos; el acceso usa sesión JWT.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>

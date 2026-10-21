@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Arquitectura de la app Allprocar: pantallas Flutter con Riverpod, servicios de dominio sobre un cliente GraphQL hacia una API en Go con PostgreSQL y PostGIS, y un asistente de IA que usa Gemini o Groq con respaldo entre modelos y sugiere talleres</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #0089a8; --accent-soft: #e0f6fb; }
+    .stage { align-items: stretch; }
+    .arch { gap: 0; align-content: center; }
+    .lane { grid-template-columns: 180px 1fr; padding: 15px 0; border-bottom: 1px dashed var(--line); }
+    .lane:last-child { border-bottom: 0; }
+    .lane-row { flex-wrap: nowrap; gap: 14px; }
+    .node { flex: 1; min-width: 0; }
+    .node.fit { flex: none; }
+    .who { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); }
+    .node.dark .who { color: #7fdcf0; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .chips span { font-size: 12px; font-weight: 500; background: var(--surface-2); border-radius: 6px; padding: 3px 8px; color: var(--muted); }
+    .node.dark .chips span { background: rgba(255,255,255,.12); color: #e7e3de; }
+    .proto { flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: var(--accent); }
+    .proto b { display: block; font-size: 20px; }
+    .chain { flex: 1; display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--accent); border-radius: 14px; padding: 12px 14px; }
+    .chain .node { box-shadow: none; padding: 10px 12px; font-size: 15px; }
+    .chain .lbl { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); writing-mode: vertical-rl; transform: rotate(180deg); }
+    .fb { font-size: 11.5px; color: var(--muted); text-align: center; line-height: 1.2; }
+    .fb b { display: block; color: var(--accent); font-size: 18px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Arquitectura · Flutter + GraphQL + IA</p>
+        <h1 class="title">Una app, un grafo y una IA con respaldo</h1>
+        <p class="subtitle">Si un proveedor o modelo de lenguaje falla, el asistente pasa al siguiente sin cortar la conversación.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="arch">
+        <div class="lane">
+          <div class="lane-name">App Flutter</div>
+          <div class="lane-row">
+            <div class="node">Pantallas<small>Inicio · Talleres · Repuestos · Servicios · Perfil</small></div>
+            <div class="node accent"><span class="who">Mi módulo</span>Perfil<small>Vehículos, citas, pagos, direcciones, club</small></div>
+            <div class="node accent"><span class="who">Mi módulo</span>Asistente IA<small>Chat con sugerencia de talleres</small></div>
+            <div class="node">Estado y avisos<small>Riverpod · notificaciones locales</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Servicios</div>
+          <div class="lane-row">
+            <div class="node">Servicios de dominio<small>Autenticación, perfil, vehículos, citas, catálogo, talleres</small></div>
+            <div class="node">Cliente GraphQL<small>Un solo cliente compartido · sesión en almacenamiento seguro</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Asistente IA</div>
+          <div class="lane-row">
+            <div class="chain">
+              <span class="lbl">Fallback</span>
+              <div class="node">Gemini<small>API REST</small></div>
+              <div class="fb"><b>→</b>si falla</div>
+              <div class="node">Groq<small>Cadena de modelos</small></div>
+              <div class="fb"><b>→</b>si falla</div>
+              <div class="node">Respuesta local<small>Guía por palabras clave</small></div>
+              <div class="fb"><b>+</b></div>
+              <div class="node accent">Talleres sugeridos<small>Si se menciona una falla común</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Transporte</div>
+          <div class="lane-row"><div class="proto"><b>↕</b>GraphQL · consultas y mutaciones con token</div></div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Backend del equipo</div>
+          <div class="lane-row">
+            <div class="node dark"><span class="who">Otro equipo</span>API GraphQL en Go<small>Catálogo, perfil, talleres y sugerencia de servicios</small>
+            </div>
+            <span class="arrow">→</span>
+            <div class="node">PostgreSQL + PostGIS<small>Datos y ubicación de talleres</small></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

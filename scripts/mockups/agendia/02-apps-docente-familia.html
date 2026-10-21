@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Apps de AgendIA para docente y familia: inicio de sesión del docente con biometría, hoja para registrar en tres toques, bienvenida de la familia y selector de hijo o hija</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    /* Temas reales: AgThemes.docenteColors (Teal Heritage) y AgThemes.familiaColors (Melon Intelligence) */
+    .doc { --p: #105C5B; --ps: #E3F0EF; --sec: #1AA79C; --acc: #E8B84E; --bg: #F7FAF9; --sv: #EEF4F3; --bd: #DCE5E4; --tx: #182827; --t2: #3D5352; }
+    .fam { --p: #6654D9; --ps: #EDE9FB; --sec: #68CFC0; --acc: #FF9A7A; --bg: #FAF8F8; --sv: #F4F0F4; --bd: #ECE6EA; --tx: #201C27; --t2: #4A4458; }
+    .stage { gap: 46px; }
+    .phone { --s: 1; zoom: .7; }
+    .phone-label { margin-top: 12px; }
+    .phone-label small { display: block; font-weight: 500; color: var(--muted); font-size: 13px; }
+    .screen { background: var(--bg); color: var(--tx); font-size: 15px; }
+    .appbar { padding: 10px 20px 12px; display: flex; align-items: center; gap: 12px; flex: none; }
+    .appbar h4 { font-size: 21px; flex: 1; }
+    .appbar .bk { font-size: 22px; color: var(--t2); }
+    .pad { padding: 8px 20px; display: flex; flex-direction: column; gap: 14px; flex: 1; position: relative; }
+    .lab { font-size: 26px; font-weight: 800; letter-spacing: -.5px; color: var(--p); margin-top: 8px; }
+    .muted { color: var(--t2); font-size: 15px; line-height: 1.45; }
+    .tf { height: 58px; border-radius: 12px; border: 1px solid var(--bd); background: #fff; display: flex; align-items: center; gap: 12px; padding: 0 16px; color: var(--t2); position: relative; }
+    .tf b { position: absolute; top: -9px; left: 12px; background: var(--bg); padding: 0 4px; font-size: 12px; font-weight: 600; color: var(--p); }
+    .tf.f { border: 2px solid var(--p); color: var(--tx); }
+    .ab { height: 54px; border-radius: 16px; background: var(--p); color: #fff; font-weight: 700; font-size: 16px; display: grid; place-items: center; }
+    .ob { height: 54px; border-radius: 16px; border: 1.5px solid var(--bd); background: #fff; color: var(--p); font-weight: 700; font-size: 15.5px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .links { display: flex; justify-content: space-between; font-weight: 600; font-size: 14.5px; color: var(--p); padding: 4px 4px 0; }
+    .logo { width: 64px; height: 64px; border-radius: 20px; background: linear-gradient(135deg, var(--p), var(--sec)); display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 26px; margin-top: 10px; }
+    /* shell + hoja */
+    .card { border-radius: 16px; padding: 16px; background: #fff; border: 1px solid var(--bd); box-shadow: none; }
+    .ph { display: flex; gap: 12px; align-items: center; font-weight: 700; font-size: 15px; }
+    .ph i { width: 36px; height: 36px; border-radius: 12px; background: var(--ps); color: var(--p); display: grid; place-items: center; font-style: normal; }
+    .bul { font-size: 14px; color: var(--t2); margin-top: 10px; padding-left: 14px; position: relative; line-height: 1.4; }
+    .bul::before { content: ''; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--sec); }
+    .nav { height: 76px; flex: none; background: #fff; border-top: 1px solid var(--bd); display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; text-align: center; font-size: 12px; color: var(--t2); padding-bottom: 8px; }
+    .nav div { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .nav .on { color: var(--p); font-weight: 700; }
+    .nav .ctr span { width: 52px; height: 44px; border-radius: 16px; background: var(--p); color: #fff; display: grid; place-items: center; font-size: 28px; font-weight: 300; }
+    .ni { width: 24px; height: 24px; }
+    .scrim { position: absolute; inset: 0; background: rgba(14,26,26,.45); z-index: 4; }
+    .sheet2 { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; background: #fff; border-radius: 24px 24px 0 0; padding: 12px 20px 34px; }
+    .handle { width: 40px; height: 5px; border-radius: 3px; background: var(--bd); margin: 0 auto 14px; }
+    .sheet2 h5 { font-size: 22px; }
+    .sheet2 p { color: var(--t2); font-size: 14.5px; margin: 2px 0 10px; }
+    .tile { display: flex; align-items: center; gap: 16px; padding: 14px 4px; border-top: 1px solid var(--sv); font-size: 16px; font-weight: 600; }
+    .tile i { width: 42px; height: 42px; border-radius: 12px; background: var(--ps); color: var(--p); display: grid; place-items: center; font-style: normal; font-size: 19px; }
+    .tile span { flex: 1; }
+    .tile em { color: var(--t2); font-style: normal; font-size: 20px; }
+    /* familia */
+    .onb { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 30px 30px 40px; }
+    .skip { align-self: flex-end; color: var(--p); font-weight: 700; font-size: 15px; }
+    .ill { width: 190px; height: 190px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fff, var(--ps) 60%); display: grid; place-items: center; margin-top: 70px; position: relative; }
+    .ill i { width: 104px; height: 104px; border-radius: 32px; background: var(--p); display: grid; place-items: center; box-shadow: 0 18px 36px rgba(102,84,217,.35); }
+    .ill b { position: absolute; width: 40px; height: 40px; border-radius: 50%; }
+    .onb h4 { font-size: 26px; font-weight: 800; letter-spacing: -.5px; margin-top: 44px; }
+    .onb p { color: var(--t2); font-size: 16px; line-height: 1.5; margin-top: 10px; }
+    .dots { display: flex; gap: 8px; margin-top: auto; margin-bottom: 22px; }
+    .dots span { width: 8px; height: 8px; border-radius: 4px; background: var(--bd); }
+    .dots span.on { width: 26px; background: var(--p); }
+    .onb .ab { width: 100%; }
+    .chip { display: flex; align-items: center; gap: 8px; background: var(--ps); padding: 5px 12px 5px 5px; border-radius: 999px; }
+    .av { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 13px; flex: none; }
+    .chip b { font-size: 14px; display: block; line-height: 1.1; }
+    .chip small { font-size: 11.5px; color: var(--t2); }
+    .opt { display: flex; align-items: center; gap: 14px; padding: 14px 4px; border-top: 1px solid var(--sv); }
+    .opt .av { width: 44px; height: 44px; font-size: 15px; }
+    .opt div { flex: 1; } .opt b { font-size: 16px; display: block; } .opt small { color: var(--t2); font-size: 13.5px; }
+    .opt em { color: var(--p); font-style: normal; font-size: 20px; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Móvil · Docente y familia</p>
+        <h1 class="title">Un design system, tres apps</h1>
+        <p class="subtitle">Mismos componentes Ag* con el tema de cada rol: acceso, navegación y registro rápido.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+    <main class="stage">
+      <!-- Docente · login -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen doc">
+          <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="appbar"><h4>Iniciar sesión</h4></div>
+          <div class="pad">
+            <div class="logo">A</div>
+            <div class="lab">AgendIA Docente</div>
+            <div class="muted" style="margin-top:-6px">Ingresa con los datos que te dio tu colegio.</div>
+            <div class="tf f" style="margin-top:10px"><b>Correo institucional</b><svg class="ni" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="#105C5B"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6z" fill="#105C5B"/></svg>rosa.huanca@colegioejemplo.pe</div>
+            <div class="tf"><b style="color:#3D5352">Contraseña</b><svg class="ni" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2" fill="#3D5352"/><path d="M8 10V7a4 4 0 018 0v3" stroke="#3D5352" stroke-width="2" fill="none"/></svg>••••••••<span style="margin-left:auto">👁</span></div>
+            <div class="ab">Entrar</div>
+            <div class="ob"><svg class="ni" viewBox="0 0 24 24"><path d="M12 3a8 8 0 00-8 8v2M20 13v-2a8 8 0 00-3-6.2M8 20c1-2 1.5-4.5 1.5-7a2.5 2.5 0 015 0c0 2.8-.5 5.4-1.6 7.6M12 13c0 3-.7 5.6-2 8M16.5 13c0 2.3-.3 4.4-.9 6.3" stroke="#105C5B" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>Entrar con huella o rostro</div>
+            <div class="links"><span>Activar mi cuenta</span><span>Olvidé mi contraseña</span></div>
+          </div>
+        </div></div>
+        <p class="phone-label">Docente · Acceso<small>Tema Teal Heritage</small></p>
+      </div>
+
+      <!-- Docente · Registrar -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen doc">
+          <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="appbar"><h4>Inicio</h4><span class="bk">🔔</span></div>
+          <div class="pad">
+            <div class="card"><div class="ph"><i>▦</i>Clases de hoy</div><div class="bul">3.° A · Matemática · 07:45</div><div class="bul">4.° B · Matemática · 09:35 · asistencia pendiente</div></div>
+            <div class="card"><div class="ph"><i>⚑</i>Estudiantes con señales nuevas</div><div class="bul">2 estudiantes de 3.° A</div></div>
+          </div>
+          <div class="nav">
+            <div class="on"><svg class="ni" viewBox="0 0 24 24"><path d="M3 3h8v10H3zm10 0h8v6h-8zM3 15h8v6H3zm10-4h8v10h-8z" fill="#105C5B"/></svg>Inicio</div>
+            <div><svg class="ni" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4" fill="#3D5352"/><circle cx="16.5" cy="9" r="2.6" fill="#3D5352"/><path d="M2.5 19c0-3.4 3-5 6.5-5s6.5 1.6 6.5 5zM16 14c3 0 5.5 1.5 5.5 5H17c0-2-.4-3.6-1-5z" fill="#3D5352"/></svg>Mis grupos</div>
+            <div class="ctr"><span>+</span>Registrar</div>
+            <div><svg class="ni" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2" fill="#3D5352"/><path d="M12 8v5M12 15.5v1" stroke="#fff" stroke-width="2"/></svg>Casos</div>
+            <div><svg class="ni" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2" fill="#3D5352"/><circle cx="12" cy="12" r="2" fill="#3D5352"/><circle cx="19" cy="12" r="2" fill="#3D5352"/></svg>Más</div>
+          </div>
+          <div class="scrim"></div>
+          <div class="sheet2">
+            <div class="handle"></div>
+            <h5>Registrar</h5>
+            <p>Elige que quieres registrar</p>
+            <div class="tile"><i>☑</i><span>Tomar asistencia</span><em>›</em></div>
+            <div class="tile"><i>✎</i><span>Registrar observación</span><em>›</em></div>
+            <div class="tile"><i>⚑</i><span>Señal rápida</span><em>›</em></div>
+            <div class="tile"><i>➜</i><span>Derivar a tutor</span><em>›</em></div>
+          </div>
+        </div></div>
+        <p class="phone-label">Docente · Registrar en 3 toques<small>Funciona sin conexión (cola offline)</small></p>
+      </div>
+
+      <!-- Familia · onboarding -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen fam">
+          <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="onb">
+            <span class="skip">Saltar</span>
+            <div class="ill"><i><svg width="56" height="56" viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.6-7 10-7 10z" fill="#fff"/></svg></i><b style="background:#68CFC0;top:18px;right:14px"></b><b style="background:#FF9A7A;bottom:22px;left:6px;width:28px;height:28px"></b></div>
+            <h4>Acompaña sin complicarte</h4>
+            <p>Cómo le va a tu hijo o hija, en lenguaje claro y en un minuto al día.</p>
+            <div class="dots"><span class="on"></span><span></span><span></span></div>
+            <div class="ab">Siguiente</div>
+          </div>
+        </div></div>
+        <p class="phone-label">Familia · Bienvenida<small>Tema Melon Intelligence</small></p>
+      </div>
+
+      <!-- Familia · selector de hijo -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen fam">
+          <div class="statusbar"><span>9:41</span><span>●●● ▮</span></div>
+          <div class="appbar"><div class="chip"><span class="av" style="background:#6654D9">LM</span><div><b>Lucía</b><small>2.° de secundaria</small></div><span style="color:#6654D9">⌄</span></div><span style="flex:1"></span><span class="bk">🔔</span></div>
+          <div class="pad">
+            <div class="card"><div class="ph"><i style="background:#EDE9FB;color:#6654D9">♥</i>Resumen de la semana</div><div class="bul">Asistencia, tareas y reuniones</div></div>
+          </div>
+          <div class="nav">
+            <div class="on" style="color:#6654D9"><svg class="ni" viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3z" fill="#6654D9"/></svg>Inicio</div>
+            <div><svg class="ni" viewBox="0 0 24 24"><path d="M12 22a2 2 0 002-2h-4a2 2 0 002 2zm6-6V11a6 6 0 00-12 0v5l-2 2v1h16v-1z" fill="#4A4458"/></svg>Novedades</div>
+            <div><svg class="ni" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3" fill="#4A4458"/><rect x="5" y="10" width="14" height="9" rx="1" fill="#fff"/></svg>Agenda</div>
+            <div><svg class="ni" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z" fill="#4A4458"/></svg>Mensajes</div>
+            <div><svg class="ni" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2" fill="#4A4458"/><circle cx="12" cy="12" r="2" fill="#4A4458"/><circle cx="19" cy="12" r="2" fill="#4A4458"/></svg>Más</div>
+          </div>
+          <div class="scrim" style="background:rgba(23,19,31,.45)"></div>
+          <div class="sheet2">
+            <div class="handle"></div>
+            <h5>Elige a tu hijo o hija</h5>
+            <p style="margin-bottom:6px"></p>
+            <div class="opt"><span class="av" style="background:#6654D9">LM</span><div><b>Lucía Mamani</b><small>2.° de secundaria</small></div><em>✓</em></div>
+            <div class="opt"><span class="av" style="background:#68CFC0">MM</span><div><b>Mateo Mamani</b><small>5.° de secundaria</small></div></div>
+          </div>
+        </div></div>
+        <p class="phone-label">Familia · Selector de hijo<small>Un perfil por cada hijo o hija</small></p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

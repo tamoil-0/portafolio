@@ -174,7 +174,50 @@
       "Cron (bin/push-reminders.php, expire-previas.php, send-birthday-greetings.php) -> BD + push/correo"
     ],
     "ai": null,
-    "images": [],
+    "images": [
+      {
+        "src": "projects/friding/desktop-1.webp",
+        "alt": "Pantalla principal de Friding",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/friding/planes.webp",
+        "width": 1095,
+        "height": 874,
+        "alt": "Friding: planes propuestos por usuarios, grupos abiertos y momentos (datos de usuarios difuminados)",
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/friding/desktop-2.webp",
+        "alt": "Friding: sección 2 de la página",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/friding/desktop-3.webp",
+        "alt": "Friding: sección 3 de la página",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/friding/mobile-1.webp",
+        "alt": "Friding en móvil",
+        "width": 780,
+        "height": 1688,
+        "kind": "mobile"
+      },
+      {
+        "src": "projects/friding/mobile-2.webp",
+        "width": 396,
+        "height": 880,
+        "alt": "Friding en móvil: explorar planes y grupos (datos de usuarios difuminados)",
+        "kind": "mobile"
+      }
+    ],
     "featured": true,
     "order": 2
   },
@@ -222,7 +265,7 @@
     "status": "En desarrollo",
     "isPrivate": true,
     "repoUrl": null,
-    "liveUrl": null,
+    "liveUrl": "https://agendianet.com",
     "context": "Profesional: startup EdTech Agendianet (3 personas en móvil y 1 en backend).",
     "problem": "En los colegios, las señales de riesgo de un estudiante (inasistencias, bajo rendimiento, problemas emocionales o familiares) quedan dispersas y no se convierten a tiempo en una intervención coordinada entre docentes, tutores y familia. Además, muchos usuarios tienen celulares Android de gama baja y conexión inestable.",
     "solution": "Tres apps móviles por rol conectadas a un mismo backend. El estudiante hace check-ins emocionales y pide apoyo, el docente registra señales en pocos toques y gestiona casos, y la familia sigue el acompañamiento con un lenguaje no estigmatizante. Las apps tienen caché offline y una cola de envíos con Idempotency-Key, de modo que nada se pierde ni se duplica sin conexión.",
@@ -256,7 +299,60 @@
       "datasets": [],
       "metrics": []
     },
-    "images": [],
+    "images": [
+      {
+        "src": "projects/agendia/desktop-1.webp",
+        "width": 1440,
+        "height": 770,
+        "alt": "AgendIA: portada de agendianet.com con la app del estudiante",
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/agendia/desktop-2.webp",
+        "width": 1440,
+        "height": 900,
+        "alt": "AgendIA: cómo funciona, de información dispersa a orientación útil",
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/agendia/desktop-3.webp",
+        "width": 1440,
+        "height": 900,
+        "alt": "AgendIA: panel institucional para colegios",
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/agendia/mobile-1.webp",
+        "alt": "AgendIA en móvil",
+        "width": 780,
+        "height": 1688,
+        "kind": "mobile"
+      },
+      {
+        "src": "projects/agendia/gen-01-app-estudiante.webp",
+        "alt": "App móvil de AgendIA para estudiantes: inicio con entrega prioritaria y sugerencia de organización, chat con el asistente Agi que anota exámenes y tareas, y agenda del día",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/agendia/gen-02-apps-docente-familia.webp",
+        "alt": "Apps de AgendIA para docente y familia: inicio de sesión del docente con biometría, hoja para registrar en tres toques, bienvenida de la familia y selector de hijo o hija",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/agendia/gen-03-arquitectura-monorepo.webp",
+        "alt": "Arquitectura del monorepo Flutter de AgendIA: tres apps por rol sobre paquetes compartidos, capas de presentación, dominio y datos con repositorios Mock y Remote, cola offline y build de iOS en CI",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": true,
     "order": 3
   },
@@ -434,7 +530,40 @@
       "datasets": [],
       "metrics": []
     },
-    "images": [],
+    "images": [
+      {
+        "src": "projects/recomendador-semantico-tesis/gen-01-extension-navegador.webp",
+        "alt": "Extensión de Chrome del recomendador semántico: sobre la ficha de una tesis en un repositorio institucional abre un panel con tesis relacionadas de UNAP y UNSA ordenadas por similitud, y a la derecha una búsqueda escrita como idea libre; títulos de ejemplo",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/recomendador-semantico-tesis/gen-02-busqueda-semantica.webp",
+        "alt": "Cómo funciona la búsqueda semántica: el texto se convierte en un vector de 1024 dimensiones con BAAI/bge-m3, FAISS encuentra las tesis más cercanas por similitud coseno y PostgreSQL añade sus datos y el tema; ejemplo ilustrativo",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/recomendador-semantico-tesis/gen-03-pipeline-datos.webp",
+        "alt": "Pipeline de datos del recomendador: tres scripts cosechan los metadatos de los repositorios DSpace de UNAP y UNSA, generan embeddings con bge-m3 y un índice FAISS, y agrupan las tesis en temas con UMAP, HDBSCAN y TF-IDF, todo sobre PostgreSQL",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/recomendador-semantico-tesis/gen-04-despliegue.webp",
+        "alt": "Despliegue del recomendador como prototipo: imagen Docker para Hugging Face Spaces y Render, índice FAISS de 36 756 vectores de 1024 dimensiones, arranque no bloqueante con /health, reconstrucción del índice desde PostgreSQL y actualización programada",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": true,
     "order": 5
   },
@@ -597,7 +726,7 @@
     ],
     "results": [
       "Sobre un video de 10 min 27 s, se detectaron 37 paladas en 6 ciclos, con 88.7% de utilización estimada de la pala.",
-      "El coaching score de la muestra fue de 60.5/100, con 24 alertas detectadas.",
+      "El coaching score de la muestra fue de 64.8/100, con 22 alertas detectadas.",
       "La simulación estimó +13.6% de t/h con doble cola lateral y una flota óptima de 12 camiones frente a los 10 actuales.",
       "El informe técnico incluye recomendaciones priorizadas y un plan de implementación."
     ],
@@ -619,7 +748,40 @@
       "datasets": [],
       "metrics": []
     },
-    "images": [],
+    "images": [
+      {
+        "src": "projects/jebi-hackathon-2026/gen-01-dashboard-resumen.webp",
+        "alt": "Dashboard de Streamlit con el análisis de carguío pala-camión: KPIs de paladas, toneladas, productividad y utilización, distribución del tiempo y proyección por turno",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/jebi-hackathon-2026/gen-02-pipeline.webp",
+        "alt": "Pipeline de Mine Loading Analytics: video e IMU, detección de paladas, agrupación en ciclos por camión, KPIs y coach del operador, con la línea de tiempo real de los 6 ciclos detectados",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/jebi-hackathon-2026/gen-03-arquitectura.webp",
+        "alt": "Arquitectura de Mine Loading Analytics: entradas de video e IMU, módulos Python de análisis, modelos operacionales, coach con YOLOv8, reportes JSON y dashboards en Streamlit",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/jebi-hackathon-2026/gen-04-coach-operador.webp",
+        "alt": "Pestaña Coach del operador en Streamlit: métricas de desempeño, coaching score 65 de 100 con radar por componente y volumen estimado de cada una de las 39 paladas",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": false,
     "order": 7
   },
@@ -790,7 +952,36 @@
       "QR del certificado -> /fellows?c=CODIGO -> verificación en el navegador"
     ],
     "ai": null,
-    "images": [],
+    "images": [
+      {
+        "src": "projects/impact-regional-fellowship-web/desktop-1.webp",
+        "alt": "Pantalla principal de Impact Regional Fellowship: sitio oficial",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/impact-regional-fellowship-web/desktop-2.webp",
+        "alt": "Impact Regional Fellowship: sitio oficial: sección 2 de la página",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/impact-regional-fellowship-web/desktop-3.webp",
+        "alt": "Impact Regional Fellowship: sitio oficial: sección 3 de la página",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/impact-regional-fellowship-web/mobile-1.webp",
+        "alt": "Impact Regional Fellowship: sitio oficial en móvil",
+        "width": 780,
+        "height": 1688,
+        "kind": "mobile"
+      }
+    ],
     "featured": false,
     "order": 9
   },
@@ -854,7 +1045,36 @@
       "dashboard-peru.js (MapLibre + GeoJSON) -> GET api/donors/list.php -> mapa, ranking y feed"
     ],
     "ai": null,
-    "images": [],
+    "images": [
+      {
+        "src": "projects/irf-fondos-donaciones/desktop-1.webp",
+        "alt": "Pantalla principal de IRF 2026: donaciones por región",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/irf-fondos-donaciones/desktop-2.webp",
+        "alt": "IRF 2026: donaciones por región: sección 2 de la página",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/irf-fondos-donaciones/desktop-3.webp",
+        "alt": "IRF 2026: donaciones por región: sección 3 de la página",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/irf-fondos-donaciones/mobile-1.webp",
+        "alt": "IRF 2026: donaciones por región en móvil",
+        "width": 780,
+        "height": 1688,
+        "kind": "mobile"
+      }
+    ],
     "featured": false,
     "order": 10
   },
@@ -1023,7 +1243,36 @@
       "datasets": [],
       "metrics": []
     },
-    "images": [],
+    "images": [
+      {
+        "src": "projects/rowan/desktop-1.webp",
+        "alt": "Pantalla principal de Rowan: mentoría para startups peruanas",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/rowan/desktop-2.webp",
+        "alt": "Rowan: mentoría para startups peruanas: sección 2 de la página",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/rowan/desktop-3.webp",
+        "alt": "Rowan: mentoría para startups peruanas: sección 3 de la página",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/rowan/mobile-1.webp",
+        "alt": "Rowan: mentoría para startups peruanas en móvil",
+        "width": 780,
+        "height": 1688,
+        "kind": "mobile"
+      }
+    ],
     "featured": false,
     "order": 12
   },
@@ -1100,7 +1349,40 @@
       "datasets": [],
       "metrics": []
     },
-    "images": [],
+    "images": [
+      {
+        "src": "projects/sistema-capacitaciones-pj/gen-01-panel-asistencias.webp",
+        "alt": "Panel web de asistencias de una capacitación: estadísticas de entradas y salidas, lista de inscritos y registro por DNI",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/sistema-capacitaciones-pj/gen-02-hoja-omr.webp",
+        "alt": "Hoja de respuestas OMR recreada: hoja marcada por un participante, la misma hoja leída con aciertos y errores coloreados, y el resultado con la nota calculada",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/sistema-capacitaciones-pj/gen-03-como-se-califica.webp",
+        "alt": "Cómo se califica un examen: clave de respuestas, escaneo del PDF, detección de cuadrados de referencia, lectura de marcas y cálculo de la nota con reporte",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/sistema-capacitaciones-pj/gen-04-arquitectura.webp",
+        "alt": "Arquitectura del sistema de capacitaciones: SPA en Vue, API REST en Laravel con MySQL y app de escritorio en Python que califica hojas OMR y sincroniza resultados",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": false,
     "order": 13
   },
@@ -1144,7 +1426,7 @@
     "status": "En desarrollo",
     "isPrivate": true,
     "repoUrl": null,
-    "liveUrl": null,
+    "liveUrl": "https://allprocar.com",
     "context": "Profesional: Mobile Developer Intern en Allprocar (desde feb 2026).",
     "problem": "El dueño de un vehículo tiene la oferta de posventa (talleres, servicios, repuestos, asistencia) fragmentada y le cuesta diagnosticar qué necesita su auto o a quién acudir.",
     "solution": "Una app móvil que centraliza el perfil del conductor y sus vehículos, el catálogo de talleres, servicios y repuestos, el flujo de solicitud de servicio y un asistente conversacional que orienta sobre fallas comunes y sugiere talleres.",
@@ -1177,7 +1459,53 @@
       "datasets": [],
       "metrics": []
     },
-    "images": [],
+    "images": [
+      {
+        "src": "projects/allprocar/gen-01-pantallas.webp",
+        "alt": "App móvil Allprocar en tema oscuro: inicio con vehículo y accesos rápidos, asistente de IA que orienta sobre una falla y sugiere talleres, y perfil del conductor con nivel del club y menú de cuenta",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/allprocar/desktop-1.webp",
+        "alt": "Pantalla principal de Allprocar",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/allprocar/desktop-2.webp",
+        "alt": "Allprocar: sección 2 de la página",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/allprocar/mobile-1.webp",
+        "alt": "Allprocar en móvil",
+        "width": 780,
+        "height": 1688,
+        "kind": "mobile"
+      },
+      {
+        "src": "projects/allprocar/gen-02-flujo-solicitud.webp",
+        "alt": "Flujo de nueva solicitud de servicio en Allprocar: elegir el síntoma, precisar el problema, indicar gravedad y turno, y los pasos siguientes del diseño de referencia hasta la búsqueda de talleres, la cotización y el seguimiento",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/allprocar/gen-03-arquitectura.webp",
+        "alt": "Arquitectura de la app Allprocar: pantallas Flutter con Riverpod, servicios de dominio sobre un cliente GraphQL hacia una API en Go con PostgreSQL y PostGIS, y un asistente de IA que usa Gemini o Groq con respaldo entre modelos y sugiere talleres",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": false,
     "order": 14
   },
@@ -1345,7 +1673,40 @@
       "datasets": [],
       "metrics": []
     },
-    "images": [],
+    "images": [
+      {
+        "src": "projects/dermapp/gen-01-analisis-web.webp",
+        "alt": "DermApp en el navegador: una imagen subida y el panel de resultado con la clase principal, su confianza y alternativas, rotulado como ejemplo",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/dermapp/gen-02-historial-catalogo.webp",
+        "alt": "Dos pantallas de DermApp: el historial de análisis guardado en el navegador y el catálogo educativo de las 10 enfermedades con severidad y prevalencia",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/dermapp/gen-03-modelo-transfer-learning.webp",
+        "alt": "Diagrama del modelo de DermApp: MobileNetV2 preentrenada y congelada con una cabeza densa de 10 clases, entrenada en Keras y exportada a TensorFlow.js para clasificar la imagen dentro del navegador sin enviarla a un servidor",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/dermapp/gen-04-reentrenamiento-continuo.webp",
+        "alt": "Ciclo de reentrenamiento continuo de DermApp: el especialista valida un análisis, el backend FastAPI guarda la imagen, GitHub Actions reentrena el modelo y lo reexporta a TensorFlow.js para la app",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": false,
     "order": 16
   },
@@ -1425,7 +1786,40 @@
       "datasets": [],
       "metrics": []
     },
-    "images": [],
+    "images": [
+      {
+        "src": "projects/omniface/gen-01-apps-moviles.webp",
+        "alt": "App móvil de OmniFace: verificación facial con la cámara del celular, panel de asistencias del apoderado con notificación push, ficha del estudiante asociado e ingreso con código de app",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/omniface/gen-02-panel-web.webp",
+        "alt": "Panel web de administración de OmniFace en modo asistencia: dos cámaras reconocen rostros en vivo con nombre, emoción y similitud, y debajo se listan las asistencias del día con su estado",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/omniface/gen-03-como-funciona.webp",
+        "alt": "Cómo funciona el reconocimiento de OmniFace: captura por WebSocket, embedding con InsightFace, búsqueda en FAISS con umbral de similitud, registro de la asistencia en MySQL y notificación push al apoderado",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/omniface/gen-04-arquitectura.webp",
+        "alt": "Arquitectura de OmniFace por capas: panel web React, app Flutter y cámaras se conectan a una API FastAPI con REST y WebSocket, que usa InsightFace, FAISS, MediaPipe, Keras y GPEN, guarda en MySQL y envía avisos push con Firebase",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": false,
     "order": 17
   },
@@ -1495,7 +1889,40 @@
       "Panel web HTML/JS -> API PHP"
     ],
     "ai": null,
-    "images": [],
+    "images": [
+      {
+        "src": "projects/ecoing-inspeccion-ligera/gen-01-app-campo.webp",
+        "alt": "Cuatro pantallas de la app de campo ECOING: lista de proyectos con pendientes por enviar, formulario de inspección de una estructura por pasos, captura de las 28 fotografías obligatorias con GPS y sincronización de una línea con el estado de cada estructura",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/ecoing-inspeccion-ligera/gen-02-panel-web.webp",
+        "alt": "Panel web de gestión ECOING: padrón de estructuras de una línea con coordenadas UTM, estado de formulario y de las 28 imágenes, métricas de avance y descarga de reportes Excel y PDF",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/ecoing-inspeccion-ligera/gen-03-flujo-sincronizacion.webp",
+        "alt": "Flujo de sincronización de la app ECOING: captura sin señal, guardado local en SQLite, cola con optimización de fotos, sincronización automática al volver la conexión y confirmación del servidor que guarda las fotos en el NAS; incluye la máquina de estados de cada registro",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/ecoing-inspeccion-ligera/gen-04-arquitectura-on-premise.webp",
+        "alt": "Arquitectura on-premise de ECOING: la app Flutter con SQLite envía por HTTPS y JWT a una API PHP que corre en Docker sobre un servidor Linux, con MariaDB para los datos y un NAS en la red privada para fotografías, reportes y respaldos; el panel web se usa desde la oficina y no hay nube pública",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": false,
     "order": 18
   },
@@ -1550,7 +1977,32 @@
       "API -> Respuesta: objeto + palabra aymara + fonética + audio -> App"
     ],
     "ai": null,
-    "images": [],
+    "images": [
+      {
+        "src": "projects/aruplay/gen-01-pantallas.webp",
+        "alt": "Cuatro pantallas de AruPlay: inicio con la palabra del día en aymara, mapa de un nivel con sus minijuegos, el duelo de preguntas Matachola contra la máquina y el modo Detecta que reconoce un objeto con la cámara y muestra su nombre en aymara",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/aruplay/gen-02-flujo-aprendizaje.webp",
+        "alt": "Flujo de aprendizaje de AruPlay en cinco pasos, desde elegir alias y avatar hasta detectar objetos con la cámara, con el detalle de los tres minijuegos (Pupiletras, Memoria y Matachola) y el vocabulario aymara incluido en el código",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/aruplay/gen-03-arquitectura.webp",
+        "alt": "Arquitectura de AruPlay: app Flutter con pantallas, view models y servicios de cámara, audio y HTTP, conectada a un servicio externo de detección y traducción que no está en el repositorio; a la derecha, el ciclo de detección en vivo cada 400 milisegundos",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": false,
     "order": 19
   },
@@ -1613,14 +2065,29 @@
       "lib/risk -> cálculo de exposición y límite de riesgo"
     ],
     "ai": null,
-    "images": [],
+    "images": [
+      {
+        "src": "projects/clasico-irf/desktop-1.webp",
+        "alt": "Pantalla principal de Clásico IRF",
+        "width": 1440,
+        "height": 900,
+        "kind": "desktop"
+      },
+      {
+        "src": "projects/clasico-irf/mobile-1.webp",
+        "alt": "Clásico IRF en móvil",
+        "width": 780,
+        "height": 1688,
+        "kind": "mobile"
+      }
+    ],
     "featured": false,
     "order": 20
   },
   {
     "id": "huella-joven-backend",
     "slug": "huella-joven-backend",
-    "title": "Huella Joven: API backend",
+    "title": "Huella Joven: app de voluntariado",
     "shortDescription": "API REST para una app móvil de voluntariado juvenil: actividades validadas, oportunidades, grupos y notificaciones.",
     "longDescription": "API REST para Huella Joven, una app móvil que registra y valida la participación de jóvenes en actividades de impacto (ambiente, educación, ciudadanía, digital, salud y cultura). Maneja usuarios con roles (joven, validador, organización y admin), actividades con validación, oportunidades con inscripción, grupos juveniles con mensajes y notificaciones. La desarrollé por mi cuenta y la desplegué como función serverless en Vercel con Neon Postgres, con una ruta optimizada para reducir la latencia desde el móvil.",
     "category": "Comunidad",
@@ -1653,8 +2120,8 @@
     "status": "Prototipo",
     "isPrivate": false,
     "repoUrl": "https://github.com/tamoil-0/huella_joven_backend",
-    "liveUrl": "https://huella-joven-backend.vercel.app",
-    "context": "Comunitario: voluntariado juvenil en la región Puno.",
+    "liveUrl": null,
+    "context": "Profesional: app móvil de voluntariado juvenil desarrollada para el BCP.",
     "problem": "Las actividades de voluntariado y participación juvenil no quedan registradas ni validadas de forma verificable, y los jóvenes tienen dificultad para encontrar oportunidades y grupos.",
     "solution": "Un backend que registra actividades con evidencia, permite que validadores y organizaciones las aprueben, publica oportunidades con inscripción y gestiona grupos y notificaciones para la app móvil.",
     "howItWorks": [
@@ -1676,7 +2143,32 @@
       "api/fast-api.ts -> @neondatabase/serverless (SQL directo, menor latencia)"
     ],
     "ai": null,
-    "images": [],
+    "images": [
+      {
+        "src": "projects/huella-joven-backend/gen-01-pantallas-movil.webp",
+        "alt": "Cuatro pantallas móviles de Huella Joven reconstruidas a partir de la API: resumen de la huella con horas y beneficiarios validados por rubro, lista de oportunidades con cupos e inscripción, formulario para registrar una actividad con evidencias y un grupo juvenil con mensajes",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/huella-joven-backend/gen-02-flujo-validacion.webp",
+        "alt": "Flujo de Huella Joven: el joven se registra, se inscribe en una oportunidad, registra su actividad con evidencias, un validador la aprueba u observa con notificación automática y la huella suma horas y beneficiarios validados; incluye los estados de una actividad y lo que puede hacer cada rol",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/huella-joven-backend/gen-03-arquitectura-endpoints.webp",
+        "alt": "Arquitectura de la API Huella Joven: la app móvil llama por HTTPS a funciones serverless; una ruta pasa por Express con helmet, cors, JWT y Zod hacia Prisma y PostgreSQL en Neon, y otra ruta rápida usa SQL directo con el driver de Neon; a la derecha, los endpoints de los cinco módulos",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": false,
     "order": 21
   },
@@ -1745,7 +2237,32 @@
       "API Spring Boot -> Swagger UI (documentación)"
     ],
     "ai": null,
-    "images": [],
+    "images": [
+      {
+        "src": "projects/inventario-pj/gen-01-pantallas.webp",
+        "alt": "App móvil InventarioPJ: inicio de sesión con DNI, menú principal por rol, escáner de código QR o de barras con linterna y detalle del equipo listo para inventariar",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/inventario-pj/gen-02-flujo.webp",
+        "alt": "Flujo de inventariado en InventarioPJ: iniciar sesión, elegir el bloque de inventario, escanear el código del equipo, revisar su ficha y registrarlo, con las respuestas posibles y el registro de movimientos",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/inventario-pj/gen-03-arquitectura.webp",
+        "alt": "Arquitectura de InventarioPJ: app Flutter con escáner, servicio de API y token guardado, conectada a una API REST Spring Boot con Spring Security y JWT, JPA sobre MySQL, reportes Excel con Apache POI y documentación Swagger",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": false,
     "order": 22
   },
@@ -1821,7 +2338,40 @@
       ],
       "metrics": []
     },
-    "images": [],
+    "images": [
+      {
+        "src": "projects/clasificador-frescura-carne/gen-01-app-escritorio.webp",
+        "alt": "Aplicación de escritorio del clasificador de frescura de carne: panel con la foto y los datos opcionales de laboratorio, y un tablero con el resultado, el recorte segmentado, el mapa Grad-CAM y las probabilidades por clase, con valores de ejemplo",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/clasificador-frescura-carne/gen-02-arquitectura-multimodal.webp",
+        "alt": "Arquitectura del modelo multimodal: la foto segmentada pasa en 6 canales RGB más CIELAB por una EfficientNet-B0, los datos de laboratorio pasan por un MLP, y ambos vectores se fusionan para predecir fresco, semifresco o no apto",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/clasificador-frescura-carne/gen-03-datos-reales.webp",
+        "alt": "Datos reales del entrenamiento según meta.json: 1 760 muestras repartidas en 366 frescas, 594 semifrescas y 800 no aptas, con sus pesos por clase y la media y desviación de temperatura, día, pH y color CIELAB",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      },
+      {
+        "src": "projects/clasificador-frescura-carne/gen-04-gradcam-explicacion.webp",
+        "alt": "Cómo explica su decisión el clasificador de carne: del recorte segmentado se obtiene un mapa Grad-CAM que se superpone a la imagen, junto con los canales CIELAB y los índices de blancura y enrojecimiento; ilustración abstracta de ejemplo",
+        "width": 1600,
+        "height": 1000,
+        "kind": "desktop",
+        "generated": true
+      }
+    ],
     "featured": false,
     "order": 23
   },

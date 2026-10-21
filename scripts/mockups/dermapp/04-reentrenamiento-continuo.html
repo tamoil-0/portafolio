@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Ciclo de reentrenamiento continuo de DermApp: el especialista valida un análisis, el backend FastAPI guarda la imagen, GitHub Actions reentrena el modelo y lo reexporta a TensorFlow.js para la app</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --lime: #A8D32C; --lime-dark: #8ab824; --lime-soft: #f3f9e2; }
+    .stage { gap: 40px; align-items: stretch; }
+    .side { width: 360px; flex: none; display: flex; flex-direction: column; gap: 16px; justify-content: center; }
+    .side-cap { font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .review { background: #fff; border: 1px solid #E6E9EE; border-radius: 16px; overflow: hidden; box-shadow: 0 24px 48px rgba(0,0,0,.12), 0 3px 10px rgba(0,0,0,.05); font-size: 12.5px; color: #0F172A; }
+    .rimg { height: 132px; position: relative; overflow: hidden; }
+    .rimg .shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.55), transparent 60%); }
+    .rimg .pend { position: absolute; top: 10px; left: 10px; background: #f59e0b; color: #fff; font-weight: 800; font-size: 10px; letter-spacing: .06em; padding: 4px 9px; border-radius: 6px; }
+    .rimg .pc { position: absolute; top: 10px; right: 10px; background: #fff; color: var(--lime-dark); font-weight: 800; font-size: 13px; padding: 4px 9px; border-radius: 6px; }
+    .rimg h4 { position: absolute; left: 12px; bottom: 26px; color: #fff; font-size: 15px; }
+    .rimg small { position: absolute; left: 12px; bottom: 10px; color: rgba(255,255,255,.9); font-size: 11px; }
+    .rb { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+    .lvl { display: flex; justify-content: space-between; font-size: 11px; color: #6B7280; font-weight: 600; }
+    .lvl b { color: #0F172A; }
+    .tr { height: 7px; border-radius: 999px; background: #F3F4F6; overflow: hidden; }
+    .tr i { display: block; height: 100%; width: 84%; background: #D97706; border-radius: 999px; }
+    .kv { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid #F3F4F6; }
+    .kv small { display: block; font-size: 9.5px; color: #6B7280; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+    .kv b { font-size: 12px; }
+    .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .acts span { text-align: center; font-weight: 700; padding: 8px; border-radius: 8px; font-size: 12px; }
+    .acts .ok { background: var(--lime); color: #fff; }
+    .acts .no { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .side-note { font-size: 14px; color: var(--muted); line-height: 1.5; }
+    .side-note b { color: var(--text); }
+    .loop { flex: 1; display: grid; grid-template-columns: 1fr 44px 1fr 44px 1fr; grid-template-rows: 230px 64px 230px; align-content: center; align-items: stretch; }
+    .st { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px 26px; display: flex; flex-direction: column; gap: 9px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    .st.human { border: 2px solid var(--lime); background: var(--lime-soft); }
+    .st.gh { background: #1b1a19; color: #f4f2ef; border-color: #1b1a19; }
+    .st.gh p { color: #c9c2ba; }
+    .st.gh code { background: #2d2b29; color: #f4f2ef; }
+    .top { display: flex; align-items: center; justify-content: space-between; }
+    .n { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-weight: 700; display: grid; place-items: center; font-size: 16px; }
+    .human .n { background: var(--lime); color: #fff; }
+    .gh .n { background: #3a3735; color: #f4f2ef; }
+    .who { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .human .who { color: #5d7a20; }
+    .gh .who { color: #bdb6ae; }
+    .st h3 { font-size: 21px; line-height: 1.25; margin-top: 4px; }
+    .st p { font-size: 15.5px; color: var(--muted); line-height: 1.5; }
+    code { font-family: Consolas, monospace; font-size: 12.5px; background: var(--surface-2); padding: 1px 6px; border-radius: 5px; color: var(--text); }
+    .ar { display: grid; place-items: center; color: var(--accent); font-size: 24px; font-weight: 700; }
+    .vr { display: grid; place-items: center; color: var(--accent); font-size: 24px; font-weight: 700; }
+    .mid { grid-column: 2 / 5; display: flex; align-items: center; justify-content: center; }
+    .mid span { font-size: 13px; color: var(--muted); background: var(--bg); padding: 0 14px; position: relative; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Backend · Aprendizaje continuo</p>
+        <h1 class="title">Un especialista valida y el modelo se reentrena</h1>
+        <p class="subtitle">Cada imagen validada vuelve al dataset y genera una nueva versión del modelo.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <aside class="side">
+        <p class="side-cap">Revisión en la app · Analizar</p>
+        <div class="review">
+          <div class="rimg">
+            <svg width="360" height="132"><defs><radialGradient id="g" r="50%"><stop offset="0" stop-color="#9c805f"/><stop offset=".6" stop-color="#b39878" stop-opacity=".8"/><stop offset="1" stop-color="#e0c8b0" stop-opacity="0"/></radialGradient></defs><rect width="360" height="132" fill="#e6ccb5"/><ellipse cx="180" cy="58" rx="70" ry="44" fill="url(#g)"/></svg>
+            <div class="shade"></div>
+            <span class="pend">PENDIENTE</span><span class="pc">84%</span>
+            <h4>Queratosis seborreica u otras benignas</h4>
+            <small>◷ 18/11/2025 · ilustración abstracta</small>
+          </div>
+          <div class="rb">
+            <div><div class="lvl"><span>Nivel de Confianza</span><b>84%</b></div><div class="tr"><i></i></div></div>
+            <div class="kv"><div><small>Modelo IA</small><b>v1.0</b></div><div><small>Asignado</small><b>Dra. Ana Quispe</b></div></div>
+            <div class="acts"><span class="ok">✓ Validar</span><span class="no">✕ Rechazar</span></div>
+          </div>
+        </div>
+        <p class="side-note">A revisión pasan los análisis con <b>confianza ≥ 80 %</b>. El rechazo exige un motivo; solo lo validado alimenta el reentrenamiento.</p>
+      </aside>
+
+      <section class="loop">
+        <div class="st">
+          <div class="top"><span class="n">1</span><span class="who">App web</span></div>
+          <h3>Análisis en el navegador</h3>
+          <p>TensorFlow.js clasifica la imagen y guarda el resultado en el historial.</p>
+        </div>
+        <div class="ar">→</div>
+        <div class="st human">
+          <div class="top"><span class="n">2</span><span class="who">Humano en el bucle</span></div>
+          <h3>El especialista valida o rechaza</h3>
+          <p>Confirma la clase correcta de la imagen antes de que se use para entrenar.</p>
+        </div>
+        <div class="ar">→</div>
+        <div class="st">
+          <div class="top"><span class="n">3</span><span class="who">FastAPI</span></div>
+          <h3>La imagen entra al dataset</h3>
+          <p><code>POST /api/nueva_imagen</code> la guarda en <code>dataset_confirmado/&lt;clase&gt;</code> y la sube al repositorio.</p>
+        </div>
+
+        <div class="vr" style="grid-column: 1;">↑</div>
+        <div class="mid"><span>el ciclo se repite con cada lote de imágenes validadas</span></div>
+        <div class="vr" style="grid-column: 5;">↓</div>
+
+        <div class="st">
+          <div class="top"><span class="n">6</span><span class="who">Despliegue</span></div>
+          <h3>Nueva versión en la app</h3>
+          <p><code>tensorflowjs_converter</code> reexporta el modelo a <code>model.json</code> y la app lo vuelve a cargar.</p>
+        </div>
+        <div class="ar">←</div>
+        <div class="st gh">
+          <div class="top"><span class="n">5</span><span class="who">GitHub Actions</span></div>
+          <h3>Reentrenamiento incremental</h3>
+          <p>Base MobileNetV2 congelada, Adam con lr 1e-5 y 5 épocas sobre las imágenes confirmadas.</p>
+        </div>
+        <div class="ar">←</div>
+        <div class="st">
+          <div class="top"><span class="n">4</span><span class="who">FastAPI</span></div>
+          <h3>Se dispara el reentrenamiento</h3>
+          <p><code>POST /retrain</code> envía el evento <code>retrain_model</code> a GitHub Actions.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,7 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
-import ArchDiagram from '../../components/ArchDiagram.astro';
 import Gallery from '../../components/Gallery.astro';
 import ProjectMedia from '../../components/ProjectMedia.astro';
 import { fmtPeriod, profile, projects, projectUrl, teamLabel, url, type Project } from '../../lib/site';
@@ -49,9 +48,8 @@ const meta = [
       <h1 class="d-title display">{p.title}</h1>
       <p class="lead">{p.shortDescription}</p>
       <div class="d-actions">
-        {p.liveUrl && <a class="btn btn-primary" href={p.liveUrl} target="_blank" rel="noopener">Ver demo <Icon name="external" size={16} /></a>}
-        {p.repoUrl && <a class="btn btn-secondary" href={p.repoUrl} target="_blank" rel="noopener"><Icon name="code" size={16} /> Ver código</a>}
-        {p.isPrivate && <p class="muted small">El código es privado; aquí explico el problema, la solución y cómo funciona.</p>}
+        {p.liveUrl && <a class="btn btn-primary" href={p.liveUrl} target="_blank" rel="noopener">Ver página <Icon name="external" size={16} /></a>}
+        {!p.liveUrl && <p class="muted small">Proyecto {p.isPrivate ? 'privado' : 'sin página pública'}: abajo muestro cómo funciona con capturas e ilustraciones.</p>}
       </div>
     </header>
 
@@ -87,12 +85,6 @@ const meta = [
             <ol class="steps">{p.howItWorks.map((s) => <li>{s}</li>)}</ol>
           </section>
         )}
-        {p.architecture.length > 0 && (
-          <section>
-            <h2 class="d-h">Arquitectura</h2>
-            <ArchDiagram lines={p.architecture} />
-          </section>
-        )}
         {p.ai && (
           <section>
             <h2 class="d-h">Inteligencia artificial</h2>
@@ -106,7 +98,7 @@ const meta = [
         )}
         {p.images.length > 0 && (
           <section>
-            <h2 class="d-h">Capturas</h2>
+            <h2 class="d-h">{p.images.every((i) => i.generated) ? 'Cómo se ve y cómo funciona' : 'Capturas'}</h2>
             <Gallery images={p.images} title={p.title} />
           </section>
         )}

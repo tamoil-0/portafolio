@@ -3,11 +3,17 @@ import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import ProjectMedia from '../components/ProjectMedia.astro';
-import { CATEGORIES, categoriesOf, fmtPeriod, profile, projects, projectUrl, teamLabel, url } from '../lib/site';
+import { CATEGORIES, categoriesOf, fmtPeriod, profile, projects, projectUrl, teamLabel, techsOf, url } from '../lib/site';
 
 const featured = projects.filter((p) => p.featured);
 const countOf = (key: string) => projects.filter((p) => categoriesOf(p).includes(key as never)).length;
 const categories = CATEGORIES.filter((c) => countOf(c.key) > 0);
+const catStats = categories.map((c) => ({ ...c, n: countOf(c.key) })).sort((a, b) => b.n - a.n);
+const catMax = Math.max(...catStats.map((c) => c.n));
+const techCount = new Map<string, number>();
+projects.forEach((p) => techsOf(p).forEach((t) => techCount.set(t, (techCount.get(t) ?? 0) + 1)));
+const techStats = [...techCount].map(([name, n]) => ({ name, n })).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name)).slice(0, 10);
+const techMax = Math.max(...techStats.map((t) => t.n));
 
 const bySlug = new Map(projects.map((p) => [p.slug, p]));
 const linkFor = (slug?: string) => (slug && bySlug.has(slug) ? projectUrl(bySlug.get(slug)!) : null);
@@ -75,8 +81,7 @@ const jsonLd = {
               <ul class="badges" aria-label="Tecnologías">{p.stack.slice(0, 6).map((s) => <li class="badge">{s}</li>)}</ul>
               <div class="feat-actions">
                 <a class="btn btn-primary" href={projectUrl(p)}>Ver proyecto <Icon name="arrowRight" size={16} /></a>
-                {p.liveUrl && <a class="btn btn-secondary" href={p.liveUrl} target="_blank" rel="noopener">Ver demo <Icon name="external" size={16} /></a>}
-                {p.repoUrl && <a class="btn btn-ghost" href={p.repoUrl} target="_blank" rel="noopener"><Icon name="code" size={16} /> Ver código</a>}
+                {p.liveUrl && <a class="btn btn-secondary" href={p.liveUrl} target="_blank" rel="noopener">Ver página <Icon name="external" size={16} /></a>}
                 {p.isPrivate && <span class="badge"><Icon name="lock" size={12} /> Privado</span>}
               </div>
             </div>
@@ -92,7 +97,41 @@ const jsonLd = {
       <header class="section-head">
         <p class="eyebrow">Archivo</p>
         <h2 id="todos-title" class="h2 display">Todos los proyectos</h2>
+        <p class="lead">Haz clic en una barra para filtrar, o combina los filtros de abajo.</p>
       </header>
+
+      <div class="charts">
+        <figure class="chart reveal" aria-labelledby="ch-cat-t">
+          <figcaption id="ch-cat-t" class="chart-title">Proyectos por categoría</figcaption>
+          <ul class="bars">
+            {catStats.map((c) => (
+              <li>
+                <button type="button" class="bar-row" data-chart-cat={c.key} data-tip={`${c.n} proyectos · ${c.label}`} aria-label={`${c.label}: ${c.n} proyectos. Filtrar`}>
+                  <span class="bar-label">{c.label}</span>
+                  <span class="bar-track"><span class="bar-fill" style={`--w:${(c.n / catMax) * 100}%`} /></span>
+                  <span class="bar-value">{c.n}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </figure>
+        <figure class="chart reveal" aria-labelledby="ch-tech-t">
+          <figcaption id="ch-tech-t" class="chart-title">Tecnologías más usadas <span class="muted">· nº de proyectos</span></figcaption>
+          <ul class="bars">
+            {techStats.map((t) => (
+              <li>
+                <button type="button" class="bar-row" data-chart-tech={t.name} data-tip={`${t.n} proyectos usan ${t.name}`} aria-label={`${t.name}: ${t.n} proyectos. Filtrar`}>
+                  <span class="bar-label">{t.name}</span>
+                  <span class="bar-track"><span class="bar-fill" style={`--w:${(t.n / techMax) * 100}%`} /></span>
+                  <span class="bar-value">{t.n}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </figure>
+        <div class="chart-tip" role="status" aria-hidden="true" data-chart-tip></div>
+      </div>
+
       <div class="filters" role="toolbar" aria-label="Filtrar proyectos">
         <div class="chips">
           <button type="button" class="chip" aria-pressed="true" data-filter="all">Todos <span>{projects.length}</span></button>
@@ -104,15 +143,36 @@ const jsonLd = {
         </div>
         <label class="search">
           <Icon name="search" size={16} />
-          <span class="sr-only">Buscar por tecnología</span>
-          <input type="search" placeholder="Buscar tecnología: Flutter, Python…" data-search-input autocomplete="off" />
+          <span class="sr-only">Buscar por tecnología o nombre</span>
+          <input type="search" placeholder="Buscar: Flutter, Python, IA…" data-search-input autocomplete="off" />
         </label>
       </div>
-      <p class="sr-only" aria-live="polite" data-results-count></p>
+      <div class="filters-2">
+        <div class="chips" aria-label="Filtros adicionales">
+          <button type="button" class="chip chip-sm" aria-pressed="false" data-toggle="live"><Icon name="external" size={14} /> Con página en vivo <span>{projects.filter((p) => p.liveUrl).length}</span></button>
+          <button type="button" class="chip chip-sm" aria-pressed="false" data-toggle="private"><Icon name="lock" size={14} /> Privados <span>{projects.filter((p) => p.isPrivate).length}</span></button>
+          <button type="button" class="chip chip-sm" aria-pressed="false" data-toggle="team"><Icon name="users" size={14} /> En equipo <span>{projects.filter((p) => (p.teamSize ?? 1) > 1).length}</span></button>
+          <span class="chip chip-sm chip-tech" data-tech-chip hidden>
+            <span data-tech-name></span>
+            <button type="button" class="chip-x" data-tech-clear aria-label="Quitar filtro de tecnología"><Icon name="close" size={14} /></button>
+          </span>
+        </div>
+        <label class="sort">
+          <span class="muted">Ordenar</span>
+          <select data-sort>
+            <option value="order">Relevancia</option>
+            <option value="recent">Más recientes</option>
+          </select>
+        </label>
+      </div>
+      <p class="results muted" aria-live="polite" data-results-count>{projects.length} proyectos</p>
       <div class="grid" data-grid>
         {projects.map((p) => <ProjectCard project={p} />)}
       </div>
-      <p class="empty muted" data-empty hidden>No hay proyectos con ese filtro.</p>
+      <div class="empty" data-empty hidden>
+        <p class="muted">No hay proyectos con esos filtros.</p>
+        <button type="button" class="btn btn-secondary" data-reset>Quitar filtros</button>
+      </div>
     </div>
   </section>
 
@@ -292,7 +352,48 @@ const jsonLd = {
   .search:focus-within { border-color: var(--accent); }
   .search input { border: 0; outline: 0; background: transparent; color: var(--text); font: inherit; font-size: var(--step--1); width: 100%; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--s-5); }
-  .empty { padding: var(--s-7) 0; text-align: center; }
+  .charts { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-5); margin-bottom: var(--s-7); }
+  .chart { margin: 0; padding: var(--s-5); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  .chart-title { font-size: var(--step--1); font-weight: 600; margin-bottom: var(--s-4); }
+  .chart-title .muted { font-weight: 400; }
+  .bars { list-style: none; display: grid; gap: 2px; }
+  .bar-row {
+    width: 100%; display: grid; grid-template-columns: 132px minmax(0, 1fr) 28px; align-items: center; gap: var(--s-3);
+    padding: 7px var(--s-2); border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--text);
+    font: inherit; font-size: var(--step--1); text-align: left; cursor: pointer; transition: background var(--dur) var(--ease);
+  }
+  .bar-row:hover, .bar-row:focus-visible, .bar-row.is-active { background: var(--surface-2); }
+  .bar-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+  .bar-row.is-active .bar-label { color: var(--text); font-weight: 600; }
+  .bar-track { height: 14px; display: block; }
+  .bar-fill {
+    display: block; height: 100%; width: var(--w); min-width: 4px; background: var(--accent);
+    border-radius: 0 4px 4px 0; transform-origin: left; transition: opacity var(--dur) var(--ease);
+  }
+  .bars:has(.is-active) .bar-row:not(.is-active) .bar-fill { opacity: 0.35; }
+  .bar-value { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+  .chart-tip {
+    position: absolute; z-index: 5; pointer-events: none; transform: translateY(-50%); opacity: 0;
+    padding: 6px 10px; border-radius: var(--radius-sm); background: var(--text); color: var(--bg);
+    font-size: 0.8rem; white-space: nowrap; transition: opacity 150ms var(--ease);
+  }
+  .chart-tip.is-on { opacity: 1; }
+  .reveal.is-visible .bar-fill { animation: grow 700ms var(--ease) both; }
+  @keyframes grow { from { transform: scaleX(0); } }
+  .filters-2 { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-3); margin: calc(-1 * var(--s-3)) 0 var(--s-5); }
+  .chip-sm { min-height: 36px; padding: 0 var(--s-3); font-size: 0.82rem; }
+  .chip-sm :global(svg) { width: 14px; height: 14px; }
+  .chip-tech { background: var(--accent-soft); color: var(--accent); border-color: transparent; font-weight: 600; cursor: default; padding-right: 4px; }
+  .chip-tech[hidden] { display: none; }
+  .chip-x { display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 999px; background: transparent; color: inherit; cursor: pointer; }
+  .chip-x:hover { background: color-mix(in srgb, var(--accent) 15%, transparent); }
+  .sort { display: inline-flex; align-items: center; gap: var(--s-2); font-size: var(--step--1); }
+  .sort select { font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; min-height: 36px; cursor: pointer; }
+  .results { font-size: var(--step--1); margin-bottom: var(--s-4); }
+  .empty { display: grid; justify-items: center; gap: var(--s-4); padding: var(--s-7) 0; }
+  .empty[hidden] { display: none; }
+  @media (max-width: 900px) { .charts { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 420px) { .bar-row { grid-template-columns: 104px minmax(0, 1fr) 24px; } }
 
   .about-head { grid-column: 1 / span 4; display: grid; gap: var(--s-3); align-content: start; }
   .about-body { grid-column: 6 / span 7; display: grid; gap: var(--s-4); font-size: var(--step-1); line-height: 1.6; }
@@ -354,18 +455,33 @@ const jsonLd = {
 </style>
 
 <script>
-  // Filtros por categoría + búsqueda por tecnología
+  // Filtros: categoría, búsqueda, tecnología (desde el gráfico), toggles y orden
   const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
-  const cards = document.querySelectorAll<HTMLElement>('[data-card]');
+  const toggles = document.querySelectorAll<HTMLButtonElement>('[data-toggle]');
+  const grid = document.querySelector<HTMLElement>('[data-grid]');
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-card]')];
   const input = document.querySelector<HTMLInputElement>('[data-search-input]');
+  const sort = document.querySelector<HTMLSelectElement>('[data-sort]');
   const empty = document.querySelector<HTMLElement>('[data-empty]');
   const count = document.querySelector<HTMLElement>('[data-results-count]');
-  let cat = 'all';
+  const techChip = document.querySelector<HTMLElement>('[data-tech-chip]');
+  const techName = document.querySelector<HTMLElement>('[data-tech-name]');
+  const catBars = document.querySelectorAll<HTMLButtonElement>('[data-chart-cat]');
+  const techBars = document.querySelectorAll<HTMLButtonElement>('[data-chart-tech]');
+  const state = { cat: 'all', tech: '', on: new Set<string>() };
+
   const apply = () => {
     const q = (input?.value ?? '').trim().toLowerCase();
     let shown = 0;
     cards.forEach((c) => {
-      const ok = (cat === 'all' || (c.dataset.categories ?? '').split('|').includes(cat)) && (!q || (c.dataset.search ?? '').includes(q));
+      const d = c.dataset;
+      const ok =
+        (state.cat === 'all' || (d.categories ?? '').split('|').includes(state.cat)) &&
+        (!state.tech || (d.techs ?? '').split('|').includes(state.tech)) &&
+        (!q || (d.search ?? '').includes(q)) &&
+        (!state.on.has('live') || d.live === '1') &&
+        (!state.on.has('private') || d.private === '1') &&
+        (!state.on.has('team') || d.team === '1');
       if (ok) {
         if (c.hidden) { c.hidden = false; c.animate?.([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'ease-out' }); }
         c.classList.add('is-visible');
@@ -373,14 +489,68 @@ const jsonLd = {
       } else c.hidden = true;
     });
     if (empty) empty.hidden = shown > 0;
-    if (count) count.textContent = `${shown} proyectos`;
+    if (count) count.textContent = `${shown} ${shown === 1 ? 'proyecto' : 'proyectos'}`;
+    chips.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.filter === state.cat)));
+    catBars.forEach((x) => x.classList.toggle('is-active', x.dataset.chartCat === state.cat));
+    techBars.forEach((x) => x.classList.toggle('is-active', x.dataset.chartTech === state.tech));
+    if (techChip && techName) { techChip.hidden = !state.tech; techName.textContent = state.tech; }
   };
-  chips.forEach((b) => b.addEventListener('click', () => {
-    cat = b.dataset.filter ?? 'all';
-    chips.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  const reorder = () => {
+    const by = sort?.value === 'recent'
+      ? (a: HTMLElement, b: HTMLElement) => (b.dataset.start ?? '').localeCompare(a.dataset.start ?? '')
+      : (a: HTMLElement, b: HTMLElement) => Number(a.dataset.order) - Number(b.dataset.order);
+    [...cards].sort(by).forEach((c) => grid?.appendChild(c));
+  };
+  const goGrid = () => grid?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+
+  chips.forEach((b) => b.addEventListener('click', () => { state.cat = b.dataset.filter ?? 'all'; apply(); }));
+  toggles.forEach((b) => b.addEventListener('click', () => {
+    const k = b.dataset.toggle!;
+    if (state.on.has(k)) state.on.delete(k); else state.on.add(k);
+    b.setAttribute('aria-pressed', String(state.on.has(k)));
     apply();
   }));
+  catBars.forEach((b) => b.addEventListener('click', () => {
+    state.cat = state.cat === b.dataset.chartCat ? 'all' : b.dataset.chartCat!;
+    apply(); goGrid();
+  }));
+  techBars.forEach((b) => b.addEventListener('click', () => {
+    state.tech = state.tech === b.dataset.chartTech ? '' : b.dataset.chartTech!;
+    apply(); goGrid();
+  }));
+  document.querySelector('[data-tech-clear]')?.addEventListener('click', () => { state.tech = ''; apply(); });
+  document.querySelector('[data-reset]')?.addEventListener('click', () => {
+    state.cat = 'all'; state.tech = ''; state.on.clear();
+    if (input) input.value = '';
+    toggles.forEach((t) => t.setAttribute('aria-pressed', 'false'));
+    apply();
+  });
   input?.addEventListener('input', apply);
+  sort?.addEventListener('change', reorder);
+
+  // Tooltip de los gráficos (hover y foco). El valor también está escrito en cada barra.
+  const tip = document.querySelector<HTMLElement>('[data-chart-tip]');
+  const charts = document.querySelector<HTMLElement>('.charts');
+  document.querySelectorAll<HTMLElement>('.bar-row').forEach((row) => {
+    const show = () => {
+      if (!tip || !charts) return;
+      const [value, ...rest] = (row.dataset.tip ?? '').split(' ');
+      tip.replaceChildren();
+      const strong = document.createElement('strong');
+      strong.textContent = value;
+      tip.append(strong, document.createTextNode(' ' + rest.join(' ')));
+      const r = row.querySelector('.bar-fill')!.getBoundingClientRect();
+      const c = charts.getBoundingClientRect();
+      tip.style.left = `${Math.min(r.right - c.left + 12, c.width - 230)}px`;
+      tip.style.top = `${r.top - c.top + r.height / 2}px`;
+      tip.classList.add('is-on');
+    };
+    const hide = () => tip?.classList.remove('is-on');
+    row.addEventListener('pointerenter', show);
+    row.addEventListener('focus', show);
+    row.addEventListener('pointerleave', hide);
+    row.addEventListener('blur', hide);
+  });
 
   // Copiar correo
   document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) => b.addEventListener('click', async () => {

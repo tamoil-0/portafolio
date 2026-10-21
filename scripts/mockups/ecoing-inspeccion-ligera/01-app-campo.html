@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Cuatro pantallas de la app de campo ECOING: lista de proyectos con pendientes por enviar, formulario de inspección de una estructura por pasos, captura de las 28 fotografías obligatorias con GPS y sincronización de una línea con el estado de cada estructura</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    /* Colores reales: lib/presentacion/diseno/tema_ecoing.dart (ColoresEcoing) */
+    .app { --azul: #0D47A1; --azul-claro: #E3F2FD; --marca: #8B0000; --exito: #2E7D32; --exito-f: #E8F5E9;
+           --pend: #EF6C00; --pend-f: #FFF3E0; --err: #C62828; --err-f: #FFEBEE; --txt: #1C1C1E; --suave: #5A5A5E;
+           --tenue: #8A8A8E; --borde: #D4D7DD; --fondo: #F3F5F9; color: var(--txt); background: var(--fondo); }
+    .appbar { background: var(--azul); color: #fff; display: flex; align-items: center; gap: 10px; padding: 8px 14px 12px; flex: none; }
+    .app .statusbar { background: var(--azul); color: #fff; }
+    .appbar h4 { font-size: 16px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .appbar .ic { font-size: 15px; opacity: .9; }
+    .appbar .back { font-size: 17px; }
+    .body { flex: 1; padding: 10px 10px 0; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+    .c { background: #fff; border: 1px solid var(--borde); border-radius: 14px; padding: 10px 12px; }
+    .t1 { font-size: 13px; font-weight: 700; }
+    .t2 { font-size: 11px; color: var(--suave); line-height: 1.35; }
+    .btn { display: flex; align-items: center; justify-content: center; gap: 6px; height: 34px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+    .btn.fill { background: var(--azul); color: #fff; }
+    .btn.out { border: 1.3px solid var(--azul); color: var(--azul); background: #fff; }
+    .chips { display: flex; gap: 5px; flex-wrap: nowrap; }
+    .chip { font-size: 10.5px; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--borde); background: #fff; color: var(--suave); white-space: nowrap; }
+    .chips.sm { gap: 4px; } .chips.sm .chip { font-size: 9.5px; padding: 4px 6px; }
+    .chip.on { background: var(--azul-claro); border-color: #9cc3ef; color: var(--azul); font-weight: 600; }
+    .search { height: 34px; border: 1px solid var(--borde); background: #fff; border-radius: 10px; display: flex; align-items: center; gap: 7px; padding: 0 10px; font-size: 11px; color: var(--tenue); }
+    .tag { font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 999px; white-space: nowrap; }
+    .tag.ok { background: var(--exito-f); color: var(--exito); } .tag.pe { background: var(--pend-f); color: var(--pend); }
+    .tag.er { background: var(--err-f); color: var(--err); } .tag.in { background: var(--azul-claro); color: var(--azul); }
+    .ln { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--suave); margin-top: 4px; }
+    .prog { height: 7px; border-radius: 99px; background: #e6e9ef; overflow: hidden; } .prog i { display: block; height: 100%; border-radius: 99px; background: var(--exito); }
+    .av { width: 34px; height: 34px; border-radius: 50%; background: var(--azul-claro); color: var(--azul); display: grid; place-items: center; font-size: 13px; font-weight: 700; flex: none; }
+    /* formulario */
+    .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 6px; }
+    .steps i { height: 5px; border-radius: 9px; background: #dfe3ea; } .steps i.on { background: var(--azul); }
+    .field { background: #fff; border: 1px solid var(--borde); border-radius: 11px; padding: 7px 10px; }
+    .field label { display: block; font-size: 10px; color: var(--suave); margin-bottom: 2px; }
+    .field .v { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+    .field .v span:last-child { color: var(--tenue); font-weight: 400; }
+    .field.nr .v span:first-child { color: var(--tenue); font-weight: 500; }
+    .multi { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+    .multi b { font-size: 10px; font-weight: 600; background: var(--azul-claro); color: var(--azul); border-radius: 6px; padding: 2px 6px; }
+    .bottom { display: grid; grid-template-columns: 1fr 1.4fr; gap: 8px; padding: 10px; background: #fff; border-top: 1px solid var(--borde); flex: none; }
+    /* fotos */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .ph { border-radius: 9px; overflow: hidden; border: 1px solid var(--borde); background: #fff; }
+    .ph .img { height: 50px; position: relative; background: linear-gradient(180deg, #bcd3e6 0%, #dbe7f0 58%, #b9b38f 58%, #a9a27c 100%); }
+    .ph .img svg { position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%); }
+    .ph .img.empty { background: repeating-linear-gradient(45deg, #f4f6f9 0 6px, #eceff4 6px 12px); display: grid; place-items: center; color: var(--tenue); font-size: 16px; }
+    .ph .st { position: absolute; top: 4px; right: 4px; width: 15px; height: 15px; border-radius: 50%; display: grid; place-items: center; font-size: 9px; color: #fff; font-weight: 700; }
+    .ph .cap { font-size: 9.5px; padding: 3px 5px; color: var(--suave); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sec { font-size: 11px; font-weight: 700; color: var(--txt); display: flex; justify-content: space-between; margin-top: 2px; }
+    .sec span { font-weight: 500; color: var(--suave); }
+    .gps { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--exito); background: var(--exito-f); border-radius: 8px; padding: 5px 8px; }
+    .sendbar { background: var(--pend); color: #fff; }
+    /* sincronización */
+    .row-e { display: flex; justify-content: space-between; align-items: center; }
+    .kv { display: grid; grid-template-columns: 74px 1fr; gap: 2px 6px; font-size: 10.5px; margin-top: 6px; }
+    .kv dt { color: var(--tenue); } .kv dd { color: var(--txt); }
+    .warn { font-size: 10.5px; color: var(--err); margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Móvil · Inspección en campo</p>
+        <h1 class="title">La app que trabaja sin señal</h1>
+        <p class="subtitle">Formulario por estructura, 28 fotos con GPS y sincronización confirmada por el servidor.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+
+    <main class="stage">
+      <!-- 1 · Proyectos -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen app">
+          <div class="statusbar"><span>9:41</span><span>▂▄▆ ◔</span></div>
+          <div class="appbar"><h4>Proyectos</h4><span class="ic">⟳</span><span class="ic">⋮</span></div>
+          <div class="body">
+            <div class="c row" style="gap:10px">
+              <div class="av">AQ</div>
+              <div><div class="t1">Ana Quispe</div><div class="t2">Inspectora de campo</div></div>
+            </div>
+            <div class="c" style="border-color:#f5c79a;background:var(--pend-f)">
+              <div class="row" style="gap:8px"><span style="color:var(--pend);font-size:16px">☁︎↑</span><div class="t1" style="color:#9a4600">5 elementos por enviar</div></div>
+              <div class="t2" style="margin:3px 0 8px">Última sincronización: 14 oct, 17:42</div>
+              <div class="btn fill">⟳ Sincronizar todo</div>
+            </div>
+            <div class="search">⌕ Buscar proyecto, contratista o ubicación</div>
+            <div class="chips"><span class="chip on">Todos</span><span class="chip">Activo</span><span class="chip">Completado</span><span class="chip">Cancelado</span></div>
+            <div class="c">
+              <div class="row-e"><div class="t1">Inspección LT Zona Sierra</div><span class="tag ok">activo</span></div>
+              <div class="ln">⚙ Contratista Ejemplo S.A.C.</div>
+              <div class="ln">⌖ Tramo norte · región sur</div>
+            </div>
+            <div class="c">
+              <div class="row-e"><div class="t1">Mantenimiento LT Valle</div><span class="tag ok">activo</span></div>
+              <div class="ln">⚙ Servicios Andinos E.I.R.L.</div>
+              <div class="ln">⌖ Sector valle bajo</div>
+            </div>
+            <div class="c">
+              <div class="row-e"><div class="t1">Inspección LT Altiplano</div><span class="tag in">completado</span></div>
+              <div class="ln">⚙ Contratista Ejemplo S.A.C.</div>
+              <div class="ln">⌖ Tramo lago · región sur</div>
+            </div>
+          </div>
+        </div></div>
+        <p class="phone-label">1 · Proyectos y pendientes</p>
+      </div>
+
+      <!-- 2 · Formulario -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen app">
+          <div class="statusbar"><span>9:41</span><span>✕ ◔</span></div>
+          <div class="appbar"><span class="back">←</span><h4>Estructura 0025</h4><span class="ic">💾</span></div>
+          <div class="body">
+            <div>
+              <div class="row-e"><span class="t1">Faja y vegetación</span><span class="t2">Paso 1 de 5</span></div>
+              <div class="steps"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="c" style="padding:7px 10px;background:var(--pend-f);border-color:#f5c79a"><div class="t2" style="color:#9a4600">● Borrador guardado en el teléfono, pendiente de enviar.</div></div>
+            <div class="field"><label>1. Obstáculos en la faja de servidumbre</label>
+              <div class="multi"><b>Cercos / vallas</b><b>Construcciones nuevas</b></div></div>
+            <div class="field"><label>2. Estado de cuencas</label><div class="v"><span>Seguimiento</span><span>▾</span></div></div>
+            <div class="field"><label>3. Marcado de árboles</label><div class="v"><span>Sí</span><span>▾</span></div></div>
+            <div class="field"><label>4. Criticidad de tala</label><div class="v"><span>Bajo</span><span>▾</span></div></div>
+            <div class="field nr"><label>5. Criticidad de contacto</label><div class="v"><span>No revisado</span><span>▾</span></div></div>
+            <div class="field nr"><label>6. Notificación al propietario</label><div class="v"><span>No revisado</span><span>▾</span></div></div>
+            <div class="t2" style="text-align:center">Guardado hace 1 min · sin conexión</div>
+          </div>
+          <div class="bottom"><div class="btn out">Anterior</div><div class="btn fill">Siguiente →</div></div>
+        </div></div>
+        <p class="phone-label">2 · Formulario por pasos</p>
+      </div>
+
+      <!-- 3 · Fotos -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen app">
+          <div class="statusbar"><span>9:41</span><span>✕ ◔</span></div>
+          <div class="appbar"><span class="back">←</span><h4>Fotos - Estructura 0025</h4></div>
+          <div class="body">
+            <div class="c">
+              <div class="row-e"><span class="t1">Obligatorias</span><span class="t1" style="color:var(--azul)">18 / 28</span></div>
+              <div class="prog" style="margin-top:6px"><i style="width:64%;background:var(--azul)"></i></div>
+            </div>
+            <div class="gps">⌖ Foto guardada. Precisión GPS ±6 m</div>
+            <div class="sec">Torre y entorno <span>13 / 15</span></div>
+            <div class="grid">
+              <div class="ph"><div class="img"><svg width="22" height="38" viewBox="0 0 22 38"><path d="M11 1 3 37M11 1l8 36M5 26h12M7 16h8M2 9h18" stroke="#3b4652" stroke-width="1.6" fill="none"/></svg><span class="st" style="background:var(--exito)">✓</span></div><div class="cap">Panorámica</div></div>
+              <div class="ph"><div class="img" style="background:linear-gradient(#cfd8dc,#b0bec5)"><svg width="30" height="20" viewBox="0 0 30 20" style="bottom:15px"><rect x="1" y="1" width="28" height="18" rx="2" fill="#eceff1" stroke="#546e7a"/><path d="M6 7h18M6 12h12" stroke="#546e7a" stroke-width="1.6"/></svg><span class="st" style="background:var(--exito)">✓</span></div><div class="cap">Placa</div></div>
+              <div class="ph"><div class="img"><svg width="22" height="38" viewBox="0 0 22 38"><path d="M11 1 3 37M11 1l8 36M5 26h12M7 16h8" stroke="#3b4652" stroke-width="1.6" fill="none"/></svg><span class="st" style="background:var(--pend)">↑</span></div><div class="cap">Torre inferior</div></div>
+              <div class="ph"><div class="img" style="background:linear-gradient(#a9c6de,#d7e5ef)"><svg width="30" height="32" viewBox="0 0 30 32"><path d="M15 1v31M3 8h24M7 8l8 9 8-9" stroke="#3b4652" stroke-width="1.6" fill="none"/></svg><span class="st" style="background:var(--pend)">↑</span></div><div class="cap">Torre superior</div></div>
+              <div class="ph"><div class="img empty">◎</div><div class="cap">Base torre</div></div>
+              <div class="ph"><div class="img empty">◎</div><div class="cap">Ménsulas</div></div>
+            </div>
+            <div class="sec">Aisladores <span>3 / 6</span></div>
+            <div class="grid">
+              <div class="ph"><div class="img" style="background:linear-gradient(#b9d0e3,#dde8f0)"><svg width="14" height="34" viewBox="0 0 14 34" style="bottom:8px"><path d="M7 0v34" stroke="#555" stroke-width="1.4"/><g fill="#8d6e63"><ellipse cx="7" cy="8" rx="6" ry="2"/><ellipse cx="7" cy="14" rx="6" ry="2"/><ellipse cx="7" cy="20" rx="6" ry="2"/><ellipse cx="7" cy="26" rx="6" ry="2"/></g></svg><span class="st" style="background:var(--exito)">✓</span></div><div class="cap">Fase R atrás</div></div>
+              <div class="ph"><div class="img" style="background:linear-gradient(#b9d0e3,#dde8f0)"><svg width="14" height="34" viewBox="0 0 14 34" style="bottom:8px"><path d="M7 0v34" stroke="#555" stroke-width="1.4"/><g fill="#8d6e63"><ellipse cx="7" cy="8" rx="6" ry="2"/><ellipse cx="7" cy="14" rx="6" ry="2"/><ellipse cx="7" cy="20" rx="6" ry="2"/><ellipse cx="7" cy="26" rx="6" ry="2"/></g></svg><span class="st" style="background:var(--pend)">↑</span></div><div class="cap">Fase S atrás</div></div>
+              <div class="ph"><div class="img empty">◎</div><div class="cap">Fase T atrás</div></div>
+            </div>
+            <div class="sec">Conductores y ferretería <span>2 / 7</span></div>
+            <div class="grid">
+              <div class="ph"><div class="img" style="background:linear-gradient(#a9c6de,#d7e5ef)"><svg width="60" height="30" viewBox="0 0 60 30" style="bottom:10px"><path d="M0 6q30 18 60 0M0 14q30 18 60 0" stroke="#37474f" stroke-width="1.3" fill="none"/></svg><span class="st" style="background:var(--exito)">✓</span></div><div class="cap">Conductor</div></div>
+              <div class="ph"><div class="img empty">◎</div><div class="cap">Cable guarda</div></div>
+              <div class="ph"><div class="img empty">◎</div><div class="cap">Ferretería R</div></div>
+            </div>
+          </div>
+          <div style="padding:10px;background:#fff;border-top:1px solid var(--borde);flex:none"><div class="btn sendbar">☁︎↑ Enviar 6 pendientes</div><div class="t2" style="text-align:center;margin-top:5px">Fotos en el teléfono: 41 MB</div></div>
+        </div></div>
+        <p class="phone-label">3 · 28 fotos con GPS</p>
+      </div>
+
+      <!-- 4 · Sincronizar línea -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen app">
+          <div class="statusbar"><span>9:41</span><span>▂▄▆ ◔</span></div>
+          <div class="appbar"><span class="back">←</span><h4>Sincronizar · L-1002</h4><span class="ic">⇩</span><span class="ic">⟳</span></div>
+          <div class="body">
+            <div class="c">
+              <div class="t2">Estructuras confirmadas por el servidor</div>
+              <div class="row-e" style="margin:3px 0 6px"><span style="font-size:20px;font-weight:700">41<span style="font-size:13px;color:var(--tenue);font-weight:500"> / 58</span></span><span class="tag ok">71 %</span></div>
+              <div class="prog"><i style="width:71%"></i></div>
+              <div style="display:grid;gap:6px;margin-top:9px"><div class="btn fill">⟳ Sincronizar línea</div><div class="btn out">↻ Reintentar fallidos</div></div>
+            </div>
+            <div class="chips sm"><span class="chip on">Todos</span><span class="chip">Pendientes</span><span class="chip">Con error</span><span class="chip">Sincronizados</span></div>
+            <div class="c">
+              <div class="row-e"><span class="t1">Estructura 0023</span><span class="tag ok">Sincronizado</span></div>
+              <dl class="kv"><dt>Formulario</dt><dd>Confirmado por el servidor</dd><dt>Fotografías</dt><dd>28 confirmadas</dd></dl>
+            </div>
+            <div class="c">
+              <div class="row-e"><span class="t1">Estructura 0025</span><span class="tag pe">Pendiente de enviar</span></div>
+              <dl class="kv"><dt>Formulario</dt><dd>Guardado en el teléfono, por enviar</dd><dt>Fotografías</dt><dd>12 confirmadas · 6 por enviar</dd></dl>
+              <div class="btn out" style="height:28px;margin-top:7px;font-size:11px">↑ Enviar solo esta estructura</div>
+            </div>
+            <div class="c">
+              <div class="row-e"><span class="t1">Estructura 0026</span><span class="tag er">Error al enviar</span></div>
+              <div class="warn">El formulario no se pudo enviar. Sigue guardado.</div>
+            </div>
+          </div>
+        </div></div>
+        <p class="phone-label">4 · Sincronización por línea</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

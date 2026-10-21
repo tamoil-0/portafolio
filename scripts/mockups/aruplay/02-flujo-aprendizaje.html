@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Flujo de aprendizaje de AruPlay en cinco pasos, desde elegir alias y avatar hasta detectar objetos con la cámara, con el detalle de los tres minijuegos (Pupiletras, Memoria y Matachola) y el vocabulario aymara incluido en el código</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --or: #FF7A00; --am: #FFC107; --dk: #2D1B00; --det: #E65100; --accent: #d35f00; --accent-soft: #fff1e3; }
+    .stage { flex-direction: column; align-items: stretch; gap: 24px; }
+    .step { padding: 22px 20px; gap: 9px; }
+    .step h3 { font-size: 19px; } .step p { font-size: 14.5px; line-height: 1.45; }
+    .emo { font-size: 26px; }
+    .step.hl { border-color: #f3a35c; background: #fff6ec; }
+    .games { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; flex: 1; min-height: 0; }
+    .g { display: grid; grid-template-rows: auto 1fr; gap: 14px; padding: 22px; }
+    .g h4 { font-size: 19px; display: flex; align-items: center; gap: 10px; }
+    .g h4 span { font-size: 12px; font-weight: 600; color: var(--muted); background: var(--surface-2); padding: 3px 9px; border-radius: 999px; margin-left: auto; }
+    .g p { font-size: 14px; color: var(--muted); line-height: 1.45; margin-top: 6px; }
+    .vis { border-radius: 14px; background: #fff8f0; border: 1px solid #f3e4d2; display: grid; place-items: center; padding: 14px; }
+    .soup { display: grid; grid-template-columns: repeat(7, 34px); gap: 4px; }
+    .soup b { width: 34px; height: 34px; border-radius: 8px; background: #fff; display: grid; place-items: center; font-size: 15px; font-weight: 700; color: #7a6650; border: 1px solid #f1e3d2; }
+    .soup b.h { background: #4CAF50; color: #fff; border-color: #4CAF50; } .soup b.s { background: #FFC107; color: #2D1B00; border-color: #FFC107; }
+    .mem { display: grid; grid-template-columns: repeat(4, 88px); gap: 10px; }
+    .mem b { height: 84px; border-radius: 12px; display: grid; place-items: center; font-size: 15px; font-weight: 800; text-align: center; line-height: 1.15; }
+    .mem .back { background: linear-gradient(135deg, #9C27B0, #ba68c8); color: rgba(255,255,255,.7); font-size: 24px; }
+    .mem .up { background: #fff; border: 2px solid #9C27B0; color: #6a1b9a; }
+    .mem .ok { background: #e8f5e9; border: 2px solid #4CAF50; color: #2e7d32; }
+    .duel { width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; text-align: center; }
+    .duel .pl { background: #fff; border-radius: 14px; padding: 16px 10px; border: 1px solid #f1e3d2; }
+    .duel .pl b { display: block; font-size: 16px; } .duel .pl em { display: block; font-style: normal; font-size: 26px; font-weight: 800; margin: 4px 0; } .duel .pl i { font-style: normal; color: #e53935; letter-spacing: 3px; font-size: 18px; }
+    .duel .q { grid-column: 1 / -1; background: #fff; border-radius: 14px; padding: 16px 10px; font-weight: 700; font-size: 16px; border: 1px solid #f1e3d2; }
+    .duel .opts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; } .duel .opts span { background: #fff; border: 2px solid #f1e3d2; border-radius: 10px; padding: 10px 0; font-weight: 800; font-size: 13px; } .duel .opts .ok { background: #e8f5e9; border-color: #4CAF50; color: #2e7d32; }
+    .vocab { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .vocab .lbl { font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+    .w { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 13.5px; }
+    .w b { color: var(--accent); margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Cómo funciona · Aprendizaje</p>
+        <h1 class="title">De la palabra del día al mundo real</h1>
+        <p class="subtitle">El vocabulario se practica en minijuegos y luego se encuentra con la cámara.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+
+    <main class="stage">
+      <div class="flow">
+        <div class="step"><span class="emo">🦙</span><h3>Alias y avatar</h3><p>Al entrar eliges un alias y un avatar; el perfil vive en el teléfono.</p></div>
+        <div class="step"><span class="emo">✨</span><h3>Palabra del día</h3><p>Una palabra con su fonética y audio: <b>UMA</b> /u-ma/, agua.</p></div>
+        <div class="step"><span class="emo">🗺️</span><h3>Mapa de Puno</h3><p>4 niveles; cada uno con 4 paradas de minijuegos en el mapa.</p></div>
+        <div class="step"><span class="emo">🏆</span><h3>Nivel completado</h3><p>Al terminar 3 minijuegos el nivel se cierra: +500 puntos y racha.</p></div>
+        <div class="step hl"><span class="emo">📸</span><h3>Detecta</h3><p>La cámara envía un fotograma cada ~400 ms y vuelve el nombre en aymara con audio.</p></div>
+      </div>
+
+      <div class="games">
+        <div class="card g">
+          <div><h4>🔤 Pupiletras <span>120 s</span></h4><p>Encuentra las palabras aymaras ocultas. Fácil: 7×7 con 4 palabras; difícil: 9×9 con 6.</p></div>
+          <div class="vis"><div class="soup">
+            <b>K</b><b>T</b><b>R</b><b>A</b><b>L</b><b>M</b><b>P</b>
+            <b class="h">I</b><b class="h">N</b><b class="h">T</b><b class="h">I</b><b>Q</b><b>S</b><b>E</b>
+            <b>D</b><b>Ñ</b><b>W</b><b>O</b><b>B</b><b>C</b><b>H</b>
+            <b>F</b><b class="s">U</b><b class="s">T</b><b class="s">A</b><b>Y</b><b>G</b><b>J</b>
+            <b class="s">W</b><b class="s">A</b><b class="s">W</b><b class="s">A</b><b>N</b><b>X</b><b>V</b>
+            <b>L</b><b>U</b><b>Z</b><b>E</b><b>R</b><b>I</b><b>O</b>
+            <b>U</b><b>M</b><b>A</b><b>C</b><b>T</b><b>N</b><b>B</b>
+          </div></div>
+        </div>
+        <div class="card g">
+          <div><h4>🧠 Memoria <span>6 parejas</span></h4><p>Voltea cartas y une cada palabra aymara con su significado en español.</p></div>
+          <div class="vis"><div class="mem">
+            <b class="ok">INTI<br/>☀️</b><b class="ok">Sol</b><b class="up">KILLA<br/>🌙</b><b class="back">?</b>
+            <b class="back">?</b><b class="up">Casa</b><b class="back">?</b><b class="back">?</b>
+          </div></div>
+        </div>
+        <div class="card g">
+          <div><h4>⚡ Matachola <span>11 preguntas</span></h4><p>Duelo contra la máquina: 5 s por pregunta y 3 vidas por lado.</p></div>
+          <div class="vis"><div class="duel">
+            <div class="pl"><b style="color:#2196F3">👤 Tú</b><em>300</em><i>♥♥♥</i></div><b style="color:#E53935;font-size:20px">VS</b><div class="pl"><b style="color:#E53935">🤖 Máquina</b><em>200</em><i>♥♥<span style="color:#ccc">♡</span></i></div>
+            <div class="q">🌱 ¿Qué significa "JATHA"?</div>
+            <div class="opts"><span>Flor</span><span>Árbol</span><span class="ok">Semilla</span><span>Fruta</span></div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="vocab">
+        <span class="lbl">Vocabulario en el código</span>
+        <span class="w"><b>UMA</b>agua</span><span class="w"><b>INTI</b>sol</span><span class="w"><b>KILLA</b>luna</span><span class="w"><b>WAWA</b>niño</span><span class="w"><b>UTA</b>casa</span><span class="w"><b>JATHA</b>semilla</span><span class="w"><b>QAMAÑA</b>vivir</span><span class="w"><b>YAPU</b>campo</span><span class="w"><b>JACH'A</b>grande</span><span class="w"><b>SUMA</b>bueno</span>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

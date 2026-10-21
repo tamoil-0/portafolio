@@ -9,6 +9,7 @@ const { images, title } = Astro.props;
     <ul class="thumbs">
       {images.map((img, i) => (
         <li class:list={['thumb', img.kind === 'mobile' && 'is-mobile']}>
+          {img.generated && <span class="thumb-tag">Ilustración</span>}
           <button type="button" data-index={i} aria-label={`Ampliar captura ${i + 1} de ${images.length}: ${img.alt}`}>
             <img
               src={url(img.src.replace(/\.webp$/, '-720.webp'))}
@@ -23,7 +24,7 @@ const { images, title } = Astro.props;
       ))}
     </ul>
     <dialog class="lightbox" aria-label={`Galería de ${title}`}>
-      <img alt="" data-lb-img />
+      <img alt="" data-lb-img src={url(images[0].src)} loading="lazy" decoding="async" />
       <p class="lb-caption" data-lb-caption></p>
       <button class="lb-btn lb-close" type="button" data-lb-close aria-label="Cerrar"><Icon name="close" /></button>
       {images.length > 1 && (
@@ -32,14 +33,20 @@ const { images, title } = Astro.props;
           <button class="lb-btn lb-next" type="button" data-lb-next aria-label="Siguiente"><Icon name="arrowRight" /></button>
         </>
       )}
-      <script type="application/json" data-lb-data set:html={JSON.stringify(images.map((i) => ({ src: url(i.src), alt: i.alt })))} />
+      <script type="application/json" data-lb-data set:html={JSON.stringify(images.map((i) => ({ src: url(i.src), alt: i.generated ? `${i.alt} (recreación ilustrativa)` : i.alt })))} />
     </dialog>
   </div>
 )}
 
 <style>
   .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--s-4); list-style: none; }
+  .thumb { position: relative; }
   .thumb.is-mobile { max-width: 220px; }
+  .thumb-tag {
+    position: absolute; top: 8px; left: 8px; z-index: 1; pointer-events: none;
+    font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 999px;
+    background: color-mix(in srgb, var(--surface) 88%, transparent); border: 1px solid var(--line); color: var(--muted);
+  }
   .thumb button {
     display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-sm);
     overflow: hidden; background: var(--surface-2); cursor: zoom-in;

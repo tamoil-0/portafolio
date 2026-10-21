@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>App móvil de OmniFace: verificación facial con la cámara del celular, panel de asistencias del apoderado con notificación push, ficha del estudiante asociado e ingreso con código de app</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #3a3a8c; --accent-soft: #e9e9f8; }
+    .stage { gap: 34px; }
+    .phone { --s: .76; }
+    .om { --navy: #1e2c4a; --plum: #3b2f5e; --sky: #a0c4ff; --bar: #183057; --card: #3a3a8c; }
+    .om .statusbar.light { color: #fff; }
+
+    /* 1 · Verificación facial */
+    .scan { background: radial-gradient(circle at 50% 50%, #3a3a8c 0%, #1b1f3b 95%); color: #fff; }
+    .scan .logo { position: absolute; top: 46px; left: 16px; display: flex; align-items: center; gap: 7px; font-weight: 700; font-size: 14px; letter-spacing: .02em; }
+    .logo-mark { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, #7fb3ff, #a0c4ff); display: grid; place-items: center; }
+    .cam { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); width: 214px; height: 286px; border-radius: 22px; overflow: hidden; border: 3px solid #18ffff; box-shadow: 0 0 22px rgba(24,255,255,.35), 0 10px 24px rgba(0,0,0,.35); background: linear-gradient(180deg, #4b4f63 0%, #2f3242 100%); }
+    .cam svg { position: absolute; inset: 0; }
+    .toast { position: absolute; left: 18px; right: 18px; bottom: 22px; background: rgba(0,0,0,.7); border-radius: 10px; padding: 10px 12px; text-align: center; color: #69f0ae; font-weight: 600; font-size: 13.5px; box-shadow: 0 6px 14px rgba(0,0,0,.25); }
+
+    /* Barra Flutter (Hamburguesa) */
+    .appbar { background: var(--bar); color: #fff; height: 50px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 14px; }
+    .appbar b { font-size: 15px; font-weight: 600; flex: 1; }
+    .burger { width: 18px; display: grid; gap: 3px; } .burger i { height: 2.4px; background: #fff; border-radius: 2px; display: block; }
+    .appbar .logo-mark { width: 24px; height: 24px; border-radius: 7px; }
+    .body { flex: 1; background: #f7f8fb; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+    .hello { background: rgba(30,44,74,.09); border-radius: 10px; padding: 9px 12px; font-size: 17px; font-weight: 700; color: var(--navy); }
+    .h { font-size: 13.5px; font-weight: 700; color: var(--plum); margin-top: 2px; }
+    .last { background: linear-gradient(135deg, var(--navy), var(--plum)); border-radius: 13px; padding: 12px; color: #fff; display: flex; gap: 12px; align-items: center; box-shadow: 0 5px 10px rgba(30,44,74,.25); }
+    .avatar { width: 46px; height: 46px; border-radius: 50%; border: 2px solid rgba(255,255,255,.3); background: #4a3a72; display: grid; place-items: center; flex: none; overflow: hidden; }
+    .last ul { list-style: none; display: grid; gap: 4px; font-size: 12px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+    .filter { background: #fff; border-radius: 10px; padding: 6px 8px 6px 12px; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(30,44,74,.08); font-size: 12px; font-weight: 500; color: var(--navy); }
+    .filter > span:first-child { flex: 1; } .cal { flex: none; width: 28px; height: 28px; border-radius: 50%; background: rgba(160,196,255,.25); display: grid; place-items: center; }
+    .chart { background: linear-gradient(135deg, #fff, #e3efff); border-radius: 12px; padding: 10px 10px 6px 4px; box-shadow: 0 4px 10px rgba(30,44,74,.08); }
+    .sum { display: flex; align-items: center; gap: 16px; padding: 8px 14px; } .sum ul { list-style: none; display: grid; gap: 4px; font-size: 11.5px; color: #3b2f5e; } .sum b { color: #1e2c4a; margin-left: 4px; }
+    .legend { display: flex; justify-content: space-around; font-size: 10.5px; color: var(--plum); margin-top: 2px; }
+
+    /* Notificación push */
+    .push { position: absolute; top: 44px; left: 8px; right: 8px; background: #fff; border-radius: 14px; padding: 10px 11px; box-shadow: 0 10px 24px rgba(0,0,0,.22); display: flex; gap: 9px; z-index: 4; }
+    .push .ic { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #3a3a8c, #7fb3ff); flex: none; display: grid; place-items: center; }
+    .push small { display: block; font-size: 10px; color: #6b7280; } .push b { font-size: 12px; display: block; color: #111; } .push p { font-size: 11.5px; color: #333; }
+
+    /* Persona asociada */
+    .pcard { background: linear-gradient(135deg, #fff, rgba(160,196,255,.25)); border-radius: 14px; padding: 20px 12px 16px; box-shadow: 0 6px 14px rgba(30,44,74,.12); display: flex; flex-direction: column; gap: 10px; }
+    .pcard .big { width: 112px; height: 112px; border: 3px solid var(--sky); align-self: center; background: #3b2f5e; box-shadow: 0 4px 8px rgba(30,44,74,.3); }
+    .pcard h5 { font-size: 13px; color: var(--plum); font-weight: 700; margin: 4px 0 2px; }
+    .tile { background: #fff; border-radius: 10px; padding: 11px 12px; display: flex; align-items: center; gap: 8px; box-shadow: 0 1px 4px rgba(30,44,74,.08); }
+    .tile div { flex: 1; } .tile small { display: block; font-size: 10.5px; color: var(--plum); font-weight: 600; } .tile span { font-size: 12.5px; color: var(--navy); font-weight: 500; }
+
+    /* Ingreso con código */
+    .code { background: linear-gradient(160deg, #5d6bb5 0%, #2b2f6b 55%, #171a3a 100%); }
+    .code .glass { margin: auto 18px; background: rgba(58,58,140,.72); border-radius: 20px; padding: 22px 18px; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 14px 30px rgba(0,0,0,.35); color: #fff; }
+    .code .logo-mark { width: 64px; height: 64px; border-radius: 18px; }
+    .code h4 { font-size: 21px; font-weight: 700; }
+    .field { width: 100%; background: rgba(255,255,255,.92); border-radius: 12px; padding: 8px 12px; display: flex; gap: 9px; align-items: center; color: #3a3a8c; }
+    .field small { display: block; font-size: 10px; } .field b { font-size: 14px; letter-spacing: .12em; }
+    .btn-w { background: #fff; color: #3a3a8c; border-radius: 14px; padding: 10px 30px; font-weight: 600; font-size: 14px; display: flex; gap: 8px; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,.25); }
+    .code .hint { font-size: 11.5px; color: rgba(255,255,255,.75); text-align: center; line-height: 1.4; }
+    .menu-hint { margin-top: auto; background: #183057; color: #dbe6ff; border-radius: 10px; padding: 9px 10px; font-size: 10.5px; text-align: center; }
+    .phone-label small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 2px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Móvil · Flutter + Firebase</p>
+        <h1 class="title">La asistencia, en el celular del apoderado</h1>
+        <p class="subtitle">Verificación facial, aviso push al registrar la entrada y ficha del estudiante.</p>
+      </div>
+      <span class="note">Recreación ilustrativa basada en el código</span>
+    </header>
+    <main class="stage">
+
+      <!-- 1 · Verificación facial -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen om scan">
+          <div class="statusbar light"><span>7:52</span><span>▴ ▮</span></div>
+          <div class="logo"><span class="logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1b1f3b" stroke-width="2.2"><circle cx="12" cy="10" r="5"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span>OmniFace</div>
+          <div class="cam">
+            <svg viewBox="0 0 214 286" width="214" height="286">
+              <defs><linearGradient id="skin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c99a7a"/><stop offset="1" stop-color="#ad7f61"/></linearGradient></defs>
+              <rect width="214" height="286" fill="#3a3e52"/>
+              <rect x="0" y="0" width="214" height="120" fill="#454a60"/>
+              <path d="M22 286c6-58 40-86 85-86s79 28 85 86z" fill="#28324d"/>
+              <rect x="92" y="176" width="30" height="32" rx="10" fill="#a87a5d"/>
+              <ellipse cx="107" cy="128" rx="46" ry="58" fill="url(#skin)"/>
+              <path d="M60 118c-2-40 22-58 48-58s50 16 47 58c-6-20-22-30-47-30s-40 10-48 30z" fill="#1d1a1c"/>
+              <ellipse cx="89" cy="128" rx="5" ry="3.4" fill="#2a1f1c"/><ellipse cx="125" cy="128" rx="5" ry="3.4" fill="#2a1f1c"/>
+              <path d="M98 160c6 4 12 4 18 0" stroke="#6e4535" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+              <!-- marcadores de reconocimiento (FuturisticFacePainter) -->
+              <circle cx="107" cy="140" r="86" fill="none" stroke="#00bcd4" stroke-opacity=".55" stroke-width="2"/>
+              <g fill="#18ffff" fill-opacity=".9">
+                <circle cx="64" cy="86" r="6"/><circle cx="150" cy="86" r="6"/><circle cx="107" cy="129" r="6"/><circle cx="86" cy="186" r="6"/><circle cx="128" cy="186" r="6"/>
+              </g>
+            </svg>
+          </div>
+          <div class="toast">✅ ¡Rostro reconocido!</div>
+        </div></div>
+        <p class="phone-label">Verificación facial<small>Captura cada 2 s y la compara en el servidor</small></p>
+      </div>
+
+      <!-- 2 · Panel de asistencias del apoderado -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen om">
+          <div class="statusbar light" style="background:#183057"><span>7:53</span><span>▴ ▮</span></div>
+          <div class="push">
+            <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><circle cx="12" cy="10" r="5"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span>
+            <div><small>OmniFace · ahora</small><b>Asistencia Registrada</b><p>Luis Quispe, registró su asistencia</p></div>
+          </div>
+          <div class="appbar"><span class="burger"><i></i><i></i><i></i></span><b>Panel de Asistencias</b><span class="logo-mark"></span></div>
+          <div class="body">
+            <div class="hello">¡Hola, Rosa Quispe!</div>
+            <div class="h">Último Registro</div>
+            <div class="last">
+              <span class="avatar"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="8" r="4.2"/><path d="M3.5 21c1.2-4.6 4.4-7 8.5-7s7.3 2.4 8.5 7z"/></svg></span>
+              <ul><li>📅 14/07/2025</li><li>🕒 Hora: 07:52:10</li><li><span class="dot" style="background:#81c784"></span><b>Estado: A tiempo</b></li></ul>
+            </div>
+            <div class="filter"><span>Todos</span>▾<span class="cal"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1e2c4a" stroke-width="2.2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span></div>
+            <div class="h">Asistencias por Día</div>
+            <div class="chart">
+              <svg width="252" height="108" viewBox="0 0 252 108">
+                <g stroke="#3b2f5e" stroke-opacity=".12"><line x1="26" y1="14" x2="250" y2="14"/><line x1="26" y1="50" x2="250" y2="50"/></g>
+                <g font-size="9" fill="#3b2f5e" font-family="Inter"><text x="12" y="17">1</text><text x="12" y="89">0</text></g>
+                <line x1="26" y1="86" x2="250" y2="86" stroke="#3b2f5e" stroke-opacity=".25"/>
+                <g>
+                  <rect x="40" y="14" width="9" height="72" rx="3" fill="#66bb6a"/>
+                  <rect x="84" y="14" width="9" height="72" rx="3" fill="#66bb6a"/>
+                  <rect x="128" y="86" width="9" height="0" fill="#66bb6a"/><rect x="139" y="14" width="9" height="72" rx="3" fill="#ffa726"/>
+                  <rect x="172" y="14" width="9" height="72" rx="3" fill="#66bb6a"/>
+                  <rect x="216" y="14" width="9" height="72" rx="3" fill="#66bb6a"/>
+                </g>
+                <g font-size="9" fill="#3b2f5e" font-family="Inter" text-anchor="middle"><text x="47" y="101">08/07</text><text x="91" y="101">09/07</text><text x="138" y="101">10/07</text><text x="180" y="101">11/07</text><text x="224" y="101">14/07</text></g>
+              </svg>
+              <div class="legend"><span><i class="dot" style="background:#66bb6a"></i>A tiempo</span><span><i class="dot" style="background:#ffa726"></i>Tarde</span><span><i class="dot" style="background:#ef5350"></i>Faltó</span></div>
+            </div>
+            <div class="h">Resumen de Asistencias</div>
+            <div class="chart sum">
+              <svg width="78" height="78" viewBox="0 0 42 42"><circle cx="21" cy="21" r="15.9" fill="none" stroke="#66bb6a" stroke-width="7" stroke-dasharray="80 20" transform="rotate(-90 21 21)"/><circle cx="21" cy="21" r="15.9" fill="none" stroke="#ffa726" stroke-width="7" stroke-dasharray="20 80" stroke-dashoffset="-80" transform="rotate(-90 21 21)"/></svg>
+              <ul><li><i class="dot" style="background:#66bb6a"></i>A tiempo <b>4</b></li><li><i class="dot" style="background:#ffa726"></i>Tarde <b>1</b></li><li><i class="dot" style="background:#ef5350"></i>Faltó <b>0</b></li></ul>
+            </div>
+          </div>
+        </div></div>
+        <p class="phone-label">Apoderado · Panel de asistencias<small>Push de Firebase al registrarse la entrada</small></p>
+      </div>
+
+      <!-- 3 · Persona asociada -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen om">
+          <div class="statusbar light" style="background:#183057"><span>7:55</span><span>▴ ▮</span></div>
+          <div class="appbar"><span class="burger"><i></i><i></i><i></i></span><b>Persona Asociada</b><span class="logo-mark"></span></div>
+          <div class="body">
+            <div class="hello">¡Hola, Rosa Quispe!</div>
+            <div class="pcard">
+              <span class="avatar big"><svg width="52" height="52" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="8" r="4.2"/><path d="M3.5 21c1.2-4.6 4.4-7 8.5-7s7.3 2.4 8.5 7z"/></svg></span>
+              <h5>Información de la Persona Asociada</h5>
+              <div class="tile"><div><small>Nombre Completo</small><span>Luis Quispe Mamani</span></div>ⓘ</div>
+              <div class="tile"><div><small>Código App</small><span>LQM204</span></div>ⓘ</div>
+              <div class="tile"><div><small>Departamento</small><span>3.° B Secundaria</span></div>ⓘ</div>
+            </div>
+            <div class="menu-hint">☰  Inicio · Mi Perfil · Asistencias · Opciones</div>
+          </div>
+        </div></div>
+        <p class="phone-label">Apoderado · Estudiante asociado<small>Ficha con foto, código y aula</small></p>
+      </div>
+
+      <!-- 4 · Ingreso con código -->
+      <div class="phone-wrap">
+        <div class="phone"><div class="screen om code">
+          <div class="statusbar light"><span>7:40</span><span>▴ ▮</span></div>
+          <div class="glass">
+            <span class="logo-mark"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1b1f3b" stroke-width="2"><circle cx="12" cy="10" r="5"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span>
+            <h4>Iniciar con Código</h4>
+            <div class="field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a3a8c" stroke-width="2.4"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg><div><small>Código de App</small><b>LQM204</b></div></div>
+            <span class="btn-w"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3a3a8c" stroke-width="2.6"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>Iniciar</span>
+            <p class="hint">Ingreso rápido con el código de app del estudiante asociado.</p>
+          </div>
+        </div></div>
+        <p class="phone-label">Acceso con código del estudiante<small>Alternativa a la verificación facial</small></p>
+      </div>
+
+    </main>
+  </div>
+</body>
+</html>

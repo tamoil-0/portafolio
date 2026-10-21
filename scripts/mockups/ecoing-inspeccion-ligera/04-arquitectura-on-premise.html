@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Arquitectura on-premise de ECOING: la app Flutter con SQLite envía por HTTPS y JWT a una API PHP que corre en Docker sobre un servidor Linux, con MariaDB para los datos y un NAS en la red privada para fotografías, reportes y respaldos; el panel web se usa desde la oficina y no hay nube pública</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    .stage { flex-direction: column; align-items: stretch; gap: 22px; }
+    .diagram { display: grid; grid-template-columns: 270px 104px 1fr 104px 250px; align-items: center; flex: 1; min-height: 0; }
+    .diagram .node { font-size: 18px; padding: 18px 20px; } .diagram .node small { font-size: 14px; }
+    .zone-t { font-size: 12.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .node { min-width: 0; }
+    .node .ic { font-size: 22px; margin-bottom: 2px; }
+    .node ul { list-style: none; font-size: 14px; font-weight: 400; color: var(--muted); display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+    .node ul li::before { content: '· '; color: var(--accent); font-weight: 700; }
+    .col { display: flex; flex-direction: column; gap: 14px; }
+    .link { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; font-size: 13px; padding: 0 8px; color: var(--muted); line-height: 1.3; }
+    .link .ar { color: var(--accent); font-size: 32px; font-weight: 700; line-height: 1; }
+    .private { position: relative; border: 2px dashed #c9c2ba; border-radius: 24px; padding: 34px 26px 26px; background: rgba(255,255,255,.55); display: flex; flex-direction: column; gap: 10px; }
+    .vc { text-align: center; font-size: 13.5px; color: var(--muted); } .vc b { color: var(--accent); font-size: 22px; margin-right: 6px; vertical-align: middle; }
+    .folders { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; } .folders span { font-size: 13px; font-weight: 600; background: var(--surface-2); border-radius: 8px; padding: 5px 10px; }
+    .private > .zl { position: absolute; top: -13px; left: 24px; background: var(--bg); padding: 0 10px; font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+    .server { background: #1b1a19; color: #f4f2ef; border-radius: 18px; padding: 18px 20px 20px; }
+    .server .sh { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .server .sh b { font-size: 19px; } .server .sh span { font-size: 12.5px; color: #bdb6ae; }
+    .docker { border: 1.5px solid #3f3b37; border-radius: 14px; padding: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; position: relative; }
+    .docker .dl { position: absolute; top: -10px; left: 14px; background: #1b1a19; padding: 0 8px; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: #8fb8e8; font-weight: 600; }
+    .cn { background: #2a2826; border: 1px solid #3f3b37; border-radius: 12px; padding: 16px 16px; }
+    .cn b { font-size: 17px; display: block; } .cn small { font-size: 14px; color: #bdb6ae; display: block; margin-top: 3px; line-height: 1.4; }
+    .srow { display: grid; grid-template-columns: 1.6fr 1fr; gap: 12px; align-items: stretch; }
+    .db { background: #24313a; border-color: #34495a; }
+    .down { display: grid; grid-template-columns: 1.6fr 1fr; gap: 12px; align-items: center; }
+    .nas { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; background: var(--surface); border: 1.5px solid var(--accent); border-radius: 16px; padding: 16px 20px; }
+    .nas .disk { width: 54px; height: 64px; border-radius: 10px; background: #2a2826; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 0 9px; }
+    .nas .disk i { height: 7px; border-radius: 4px; background: #4a4541; position: relative; } .nas .disk i::after { content: ''; position: absolute; right: 3px; top: 2px; width: 3px; height: 3px; border-radius: 50%; background: #52d5a9; }
+    .nas b { font-size: 18px; } .nas p { font-size: 14px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+    .vlink { font-size: 12.5px; color: var(--muted); text-align: center; line-height: 1.35; }
+    .vlink b { color: var(--accent); display: block; font-size: 20px; }
+    .strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .strip .card { padding: 16px 20px; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+    .strip .n { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-weight: 700; display: grid; place-items: center; }
+    .strip b { font-size: 15px; } .strip p { font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+    .cloud { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--bad); background: #fde8e6; border-radius: 999px; padding: 6px 12px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Infraestructura · On-premise</p>
+        <h1 class="title">Servidor propio en vez de nube</h1>
+        <p class="subtitle">API en Docker sobre Linux, MariaDB y fotografías en un NAS dentro de la red privada.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+
+    <main class="stage">
+      <div class="diagram">
+        <!-- Campo -->
+        <div>
+          <p class="zone-t">Campo</p>
+          <div class="col">
+            <div class="node dark"><span class="ic">📱</span>App Flutter<small>Android · offline-first</small>
+              <ul style="color:#bdb6ae"><li>Formularios y 28 fotos</li><li>GPS del teléfono</li></ul></div>
+            <div class="node"><span class="ic">🗃️</span>SQLite local<small>sqflite · migraciones versionadas</small>
+              <ul><li>Borradores y cola de envío</li><li>Fotos con SHA-256</li></ul></div>
+          </div>
+        </div>
+        <div class="link"><span class="ar">⇄</span>HTTPS<br/>+ JWT<br/><span style="margin-top:6px">fotos en<br/>lotes de 6</span></div>
+
+        <!-- Red privada -->
+        <div class="private">
+          <span class="zl">Red privada de la empresa</span>
+          <div class="server">
+            <div class="sh"><b>Servidor Linux</b><span>on-premise</span></div>
+            <div class="srow">
+              <div class="docker"><span class="dl">Docker</span>
+                <div class="cn"><b>API PHP 8.2</b><small>JWT · validación de imágenes · PhpSpreadsheet · FPDF</small></div>
+                <div class="cn"><b>Panel web</b><small>HTML/CSS/JS sobre la misma API</small></div>
+              </div>
+              <div class="cn db"><b>MariaDB</b><small>Proyectos, padrón de estructuras, formularios, secciones RST e índice de imágenes</small></div>
+            </div>
+          </div>
+          <div class="vc"><b>↕</b>la API escribe y lee las fotos en un volumen del NAS</div>
+          <div class="nas">
+            <div class="disk"><i></i><i></i><i></i><i></i></div>
+            <div><b>NAS · almacenamiento en red privada</b><p>Los archivos pesados viven fuera del servidor de aplicación y dentro de la empresa.</p>
+              <div class="folders"><span>📁 Fotografías JPEG</span><span>📁 Reportes Excel / PDF</span><span>📁 Respaldos de la base</span></div></div>
+          </div>
+        </div>
+
+        <div class="link"><span class="ar">⇄</span>navegador<br/>+ JWT</div>
+        <!-- Oficina -->
+        <div>
+          <p class="zone-t">Oficina</p>
+          <div class="col">
+            <div class="node"><span class="ic">🖥️</span>Supervisión<small>administrador · supervisor</small>
+              <ul><li>Crea proyectos</li><li>Revisa avance por línea</li><li>Descarga Excel y ZIP</li></ul></div>
+            <span class="cloud" style="align-self:flex-start">✕ Sin nube pública</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="strip">
+        <div class="card"><span class="n">1</span><div><b>Formularios</b><p>JSON desde la app → API → MariaDB. El servidor responde y solo entonces la app marca «synced».</p></div></div>
+        <div class="card"><span class="n">2</span><div><b>Fotografías</b><p>Multipart → la API verifica el contenido, redimensiona y guarda el JPEG en el NAS.</p></div></div>
+        <div class="card"><span class="n">3</span><div><b>Reportes</b><p>La API cruza MariaDB y las fotos del NAS para generar el Excel y los PDF por línea.</p></div></div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+/* Kit común para las ilustraciones "cómo funciona" de proyectos privados.
+   Cada lámina es un HTML de 1600x1000 que se renderiza con scripts/render-mockups.mjs. */
+@font-face { font-family: 'Inter'; src: url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2'); font-weight: 100 900; }
+@font-face { font-family: 'Serif'; src: url('../../node_modules/@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2') format('woff2'); }
+
+:root {
+  --bg: #f4f2ef; --surface: #ffffff; --surface-2: #ebe8e4; --text: #141414; --muted: #5f5a55; --line: #dedad5;
+  --accent: #b03a0c; --accent-soft: #fbeee7;
+  --ok: #1f7a4d; --warn: #b7791f; --bad: #b42318; --info: #1d4ed8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1600px; height: 1000px; overflow: hidden; }
+body {
+  font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: var(--bg);
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 40px 40px; background-position: -1px -1px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Lámina ---------- */
+.sheet { position: relative; width: 1600px; height: 1000px; padding: 64px 72px; display: flex; flex-direction: column; gap: 36px; }
+.sheet-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; }
+.eyebrow { font-size: 15px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 12px; }
+.eyebrow::before { content: ''; width: 28px; height: 2px; background: var(--accent); }
+.title { font-family: 'Serif', Georgia, serif; font-weight: 400; font-size: 54px; line-height: 1.05; letter-spacing: -.5px; margin-top: 10px; }
+.subtitle { font-size: 19px; color: var(--muted); margin-top: 10px; max-width: 900px; line-height: 1.45; }
+.note { font-size: 13px; color: var(--muted); border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+.stage { flex: 1; display: flex; align-items: center; justify-content: center; gap: 40px; min-height: 0; }
+
+/* ---------- Marco de teléfono (390x844 lógico, escala con --s) ---------- */
+.phone {
+  --s: .78; width: calc(390px * var(--s)); height: calc(844px * var(--s)); flex: none;
+  border-radius: calc(54px * var(--s)); background: #111; padding: calc(12px * var(--s));
+  box-shadow: 0 30px 60px rgba(0,0,0,.18), 0 4px 12px rgba(0,0,0,.08);
+  position: relative;
+}
+.phone::before { content: ''; position: absolute; top: calc(22px * var(--s)); left: 50%; transform: translateX(-50%); width: calc(110px * var(--s)); height: calc(30px * var(--s)); border-radius: 999px; background: #111; z-index: 3; }
+.screen { width: 100%; height: 100%; border-radius: calc(44px * var(--s)); overflow: hidden; background: #fff; position: relative; display: flex; flex-direction: column; font-size: 13px; }
+.statusbar { height: 40px; flex: none; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 22px 6px; font-size: 12px; font-weight: 600; }
+.phone-label { text-align: center; font-size: 15px; font-weight: 600; margin-top: 16px; }
+.phone-wrap { display: flex; flex-direction: column; align-items: center; }
+
+/* ---------- Marco de navegador ---------- */
+.browser { flex: none; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 30px 60px rgba(0,0,0,.14), 0 4px 12px rgba(0,0,0,.06); border: 1px solid var(--line); display: flex; flex-direction: column; }
+.browser-bar { height: 40px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 14px; background: #f1efec; border-bottom: 1px solid var(--line); }
+.browser-bar i { width: 11px; height: 11px; border-radius: 50%; background: #d9d4ce; display: block; }
+.browser-bar span { margin-left: 12px; flex: 1; height: 24px; border-radius: 6px; background: #fff; border: 1px solid var(--line); font-size: 12px; color: var(--muted); display: flex; align-items: center; padding: 0 10px; }
+.browser-body { flex: 1; position: relative; overflow: hidden; }
+
+/* ---------- Flujo de pasos ---------- */
+.flow { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 28px; width: 100%; align-items: stretch; }
+.step { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 28px 26px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+.step-n { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-weight: 700; display: grid; place-items: center; font-size: 17px; }
+.step h3 { font-size: 21px; line-height: 1.2; }
+.step p { font-size: 15.5px; line-height: 1.5; color: var(--muted); }
+.step:not(:last-child)::after { content: '→'; position: absolute; right: -24px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 22px; font-weight: 700; }
+
+/* ---------- Diagrama de arquitectura ---------- */
+.arch { width: 100%; display: grid; gap: 22px; }
+.lane { display: grid; grid-template-columns: 200px 1fr; gap: 20px; align-items: center; }
+.lane-name { font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); text-align: right; }
+.lane-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.node { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; font-size: 16px; font-weight: 600; display: flex; flex-direction: column; gap: 4px; min-width: 170px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+.node small { font-size: 13px; font-weight: 400; color: var(--muted); }
+.node.accent { border-color: var(--accent); background: var(--accent-soft); }
+.node.dark { background: #1b1a19; color: #f4f2ef; border-color: #1b1a19; }
+.node.dark small { color: #bdb6ae; }
+.arrow { color: var(--accent); font-weight: 700; font-size: 22px; }
+
+/* ---------- Utilidades ---------- */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--surface-2); color: var(--muted); }
+.pill.ok { background: #e3f3ea; color: var(--ok); } .pill.warn { background: #fbf0dc; color: var(--warn); } .pill.bad { background: #fde8e6; color: var(--bad); }
+.bar { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; } .bar > i { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+.muted { color: var(--muted); }
+.row { display: flex; gap: 16px; align-items: center; }
+.col { display: flex; flex-direction: column; gap: 12px; }

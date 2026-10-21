@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Arquitectura del sistema de capacitaciones: SPA en Vue, API REST en Laravel con MySQL y app de escritorio en Python que califica hojas OMR y sincroniza resultados</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    .arch { gap: 16px; }
+    .lane { grid-template-columns: 180px 1fr; }
+    .node { min-width: 0; }
+    .lane-row { flex-wrap: nowrap; }
+    .grow { flex: 1; }
+    .down { display: grid; grid-template-columns: 180px 1fr; gap: 20px; }
+    .down div { display: flex; gap: 20px; padding-left: 60px; color: var(--accent); font-size: 13px; font-weight: 600; align-items: center; }
+    .down span { display: inline-flex; align-items: center; gap: 6px; }
+    .down b { font-size: 18px; }
+    .split { display: grid; width: 100%; grid-template-columns: 1.15fr 1fr; gap: 22px; }
+    .box { border: 1.5px dashed #cfc9c2; border-radius: 18px; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; background: rgba(255,255,255,.5); }
+    .box h5 { font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .box .row { gap: 12px; align-items: stretch; }
+    .box .node { flex: 1; }
+    .mods { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Arquitectura · Web + escritorio</p>
+        <h1 class="title">Una API, dos clientes</h1>
+        <p class="subtitle">La web gestiona eventos y asistencias; el módulo OMR califica y publica en la misma base.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="arch">
+        <div class="lane">
+          <div class="lane-name">Usuarios</div>
+          <div class="lane-row">
+            <div class="node grow">Administrador<small>Usuarios, eventos, inscritos y exportes</small></div>
+            <div class="node grow">Organizador<small>Crea eventos e importa participantes</small></div>
+            <div class="node grow">Ayudante<small>Registra entrada y salida por DNI</small></div>
+          </div>
+        </div>
+        <div class="lane"><div class="lane-name">Clientes</div><div class="split">
+          <div class="box">
+            <h5>Cliente web</h5>
+            <div class="row">
+              <div class="node accent">Vue 3 + Vuetify 3<small>SPA con Vite · rutas protegidas por rol</small></div>
+              <div class="node">Pinia + Axios<small>Sesión con token Bearer</small></div>
+            </div>
+            <div class="mods"><span class="pill">Tipos de evento</span><span class="pill">Eventos</span><span class="pill">Asistentes</span><span class="pill">Exámenes</span><span class="pill">Personas</span><span class="pill">Usuarios</span></div>
+          </div>
+          <div class="box">
+            <h5>Escritorio (Windows · .exe)</h5>
+            <div class="row">
+              <div class="node accent">Python 3.10 + CustomTkinter<small>Interfaz del calificador</small></div>
+              <div class="node">OpenCV + NumPy<small>Lectura OMR</small></div>
+            </div>
+            <div class="mods"><span class="pill">pdf2image · Poppler</span><span class="pill">ReportLab (PDF)</span><span class="pill">PyInstaller</span><span class="pill">api_client</span></div>
+          </div>
+        </div></div>
+        <div class="down"><span></span><div><span><b>↓</b> REST + Sanctum</span><span style="margin-left:auto;margin-right:300px"><b>↓</b> eventos e inscritos · guarda evaluaciones</span></div></div>
+        <div class="lane">
+          <div class="lane-name">API</div>
+          <div class="lane-row">
+            <div class="node dark" style="flex:1.3">Laravel 10 · PHP 8.2<small>API REST con Sanctum y middleware de rol · L5-Swagger</small></div>
+            <div class="node" style="flex:1.5">Controladores<small>Evento · Persona · Inscripción · Registro · Evaluación · Usuario</small></div>
+            <div class="node grow">Reglas de asistencia<small>Sin duplicados en 30 s · orden entrada → salida</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Excel</div>
+          <div class="lane-row">
+            <div class="node grow">Importación masiva<small>Maatwebsite Excel → personas e inscripciones</small></div>
+            <span class="arrow">⇄</span>
+            <div class="node grow">Exportes con formato<small>Asistencias · evaluaciones (correctas, puntaje, estado)</small></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="lane-name">Datos</div>
+          <div class="lane-row">
+            <div class="node accent grow">MySQL / MariaDB<small>Eventos, personas, inscripciones, registros, evaluaciones, respuestas OMR</small></div>
+            <div class="node grow">resultados_omr/<small>PDF de evidencia y hoja completa por evento</small></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

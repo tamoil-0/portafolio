@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Pipeline de Mine Loading Analytics: video e IMU, detección de paladas, agrupación en ciclos por camión, KPIs y coach del operador, con la línea de tiempo real de los 6 ciclos detectados</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    .stage { flex-direction: column; align-items: stretch; gap: 24px; }
+    .flow { gap: 26px; }
+    .step { padding: 20px 20px; gap: 8px; }
+    .step h3 { font-size: 18.5px; }
+    .step p { font-size: 14px; line-height: 1.45; }
+    .step .tech { margin-top: auto; display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px; }
+    .in { background: #1b1a19; color: #f4f2ef; border-color: #1b1a19; }
+    .in p { color: #c9c2ba; }
+    .in .step-n { background: #33302d; color: #f6ad7b; }
+    .in .pill { background: #33302d; color: #e6dfd8; }
+    .tl { padding: 20px 26px 16px; }
+    .tl-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+    .tl-h h4 { font-size: 17px; }
+    .tl-h span { font-size: 13px; color: var(--muted); }
+    .leg { display: flex; gap: 18px; font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .leg i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">Cómo funciona · Pipeline</p>
+        <h1 class="title">Del video de la pala a la alerta</h1>
+        <p class="subtitle">Señal de video y de IMU convertidas en paladas, ciclos por camión, KPIs y recomendaciones.</p>
+      </div>
+      <span class="note">Diagrama · línea de tiempo con datos reales del repositorio</span>
+    </header>
+    <main class="stage">
+      <div class="flow">
+        <div class="step in">
+          <div class="step-n">0</div>
+          <h3>Entradas</h3>
+          <p>Dos cámaras en la pala (1280×720, 15 fps) y un IMU a 15 Hz con acelerómetro, giroscopio y cuaternión.</p>
+          <div class="tech"><span class="pill">mp4</span><span class="pill">.npy</span></div>
+        </div>
+        <div class="step">
+          <div class="step-n">1</div>
+          <h3>Paladas</h3>
+          <p>La actividad entre frames en la zona del balde marca cada palada; los picos de |giro| del IMU la confirman.</p>
+          <div class="tech"><span class="pill">OpenCV</span><span class="pill">fusión CV + IMU</span></div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <h3>Ciclos por camión</h3>
+          <p>Un hueco largo entre dos paladas es un cambio de camión: así se agrupan los ciclos y se estiman toneladas.</p>
+          <div class="tech"><span class="pill">≈ 35.7 t / palada</span></div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <h3>KPIs y escenarios</h3>
+          <p>t/h, utilización y cadencia; proyección a turno, día y semana; simulación de layouts y colas M/D/1.</p>
+          <div class="tech"><span class="pill">pandas</span><span class="pill">simulador</span></div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <h3>Coach del operador</h3>
+          <p>Alertas de palada ligera, tiempo muerto, sin camión y ciclo corto, más un coaching score de 0 a 100.</p>
+          <div class="tech"><span class="pill">YOLOv8s</span><span class="pill">Streamlit</span></div>
+        </div>
+      </div>
+      <div class="card tl">
+        <div class="tl-h"><h4>Ciclos detectados en el video de 10 min 27 s</h4><span>37 paladas · 6 ciclos (5 completos) · referencia 7 paladas y 128 s por camión</span></div>
+        <svg id="tl" width="1408" height="190" viewBox="0 0 1408 190"></svg>
+        <div class="leg"><span><i style="background:#d1fae5;border:1px solid #10b981"></i>Llenado del camión</span><span><i style="background:#10b981"></i>Palada</span><span><i style="background:#f3e3d7"></i>Cambio de camión</span><span><i style="background:#fff;border:1px dashed #b7791f"></i>Ciclo parcial (fin del video)</span></div>
+      </div>
+    </main>
+  </div>
+<script>
+  // video_cycles_report.json (metrics_output/) — tiempos en segundos
+  const C = [
+    [7.4, 122.87, [9.4,27.8,48.33,63.73,84.47,100.87,120.87]],
+    [129.13, 201.07, [131.13,147.4,156.67,170.4,179.4,190.07,199.07]],
+    [207.4, 315.67, [209.4,218.53,231.07,248.4,264.8,285.13,313.67]],
+    [325.27, 455.07, [327.27,351.2,367.87,388.53,411.4,428.6,453.07]],
+    [468.13, 569.6, [470.13,479.6,490.27,508.53,527.47,546.6,567.6]],
+    [589.33, 618.33, [591.33,616.33]],
+  ];
+  const DUR = 626.8, X0 = 40, X1 = 1390, NS = 'http://www.w3.org/2000/svg';
+  const sx = t => X0 + (X1 - X0) * t / DUR;
+  const svg = document.getElementById('tl');
+  const el = (tag, a, txt) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; };
+  // eje
+  for (let m = 0; m <= 10; m++) { const x = sx(m * 60); el('line', { x1: x, y1: 40, x2: x, y2: 140, stroke: '#ebe8e4' }); el('text', { x, y: 162, 'font-size': 12, 'text-anchor': 'middle', fill: '#8a847e' }, `${m}:00`); }
+  el('line', { x1: X0, y1: 140, x2: X1, y2: 140, stroke: '#cfc9c2' });
+  // cambios de camión
+  for (let i = 1; i < C.length; i++) el('rect', { x: sx(C[i-1][1]), y: 70, width: sx(C[i][0]) - sx(C[i-1][1]), height: 50, fill: '#f3e3d7', rx: 4 });
+  C.forEach(([a, b, bk], i) => {
+    const partial = i === 5, best = i === 1, worst = i === 3;
+    el('rect', { x: sx(a), y: 70, width: sx(b) - sx(a), height: 50, rx: 6, fill: partial ? '#fff' : '#d1fae5', stroke: partial ? '#b7791f' : '#10b981', 'stroke-dasharray': partial ? '4 3' : '' });
+    bk.forEach(t => el('rect', { x: sx(t) - 2, y: 78, width: 4, height: 34, rx: 2, fill: '#10b981' }));
+    const fill = (b - a).toFixed(0);
+    el('text', { x: (sx(a) + sx(b)) / 2, y: 58, 'font-size': 13, 'font-weight': 700, 'text-anchor': 'middle', fill: '#141414' }, `C${i+1} · ${bk.length} paladas · ${fill} s`);
+    if (best || worst) el('text', { x: (sx(a) + sx(b)) / 2, y: 30, 'font-size': 12.5, 'font-weight': 700, 'text-anchor': 'middle', fill: best ? '#1f7a4d' : '#b42318' }, best ? '▲ mejor ciclo' : '▼ ciclo más lento');
+  });
+  el('text', { x: X1, y: 184, 'font-size': 12, 'text-anchor': 'end', fill: '#8a847e' }, 'min:s del video');
+</script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Cómo funciona el reconocimiento de OmniFace: captura por WebSocket, embedding con InsightFace, búsqueda en FAISS con umbral de similitud, registro de la asistencia en MySQL y notificación push al apoderado</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    :root { --accent: #3a3a8c; --accent-soft: #e9e9f8; }
+    .stage { flex-direction: column; align-items: stretch; gap: 26px; }
+    .flow { gap: 26px; }
+    .step { padding: 0; overflow: visible; gap: 0; }
+    .step:not(:last-child)::after { right: -22px; }
+    .vis { height: 168px; border-bottom: 1px solid var(--line); border-radius: 18px 18px 0 0; background: #f7f7fb; display: grid; place-items: center; position: relative; overflow: hidden; }
+    .txt { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 9px; }
+    .txt .row { gap: 10px; }
+    .step-n { width: 32px; height: 32px; font-size: 15px; }
+    .step h3 { font-size: 19px; }
+    .step p { font-size: 14.5px; }
+    .tech { font-size: 12px; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 3px 10px; align-self: flex-start; }
+    .mono { font-family: ui-monospace, Consolas, monospace; }
+    .bottom { display: grid; grid-template-columns: 1.25fr 1fr; gap: 26px; }
+    .card h4 { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+    .timeline { display: flex; height: 40px; border-radius: 10px; overflow: hidden; font-size: 14px; font-weight: 600; }
+    .timeline div { display: flex; align-items: center; justify-content: center; color: #fff; }
+    .ticks { display: flex; font-size: 12.5px; color: var(--muted); margin-top: 8px; position: relative; height: 18px; }
+    .ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+    .enrol { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
+    .enrol .node { min-width: 0; padding: 10px 12px; font-size: 14px; flex: 1; }
+    .enrol .node small { font-size: 12px; }
+    .small-note { font-size: 13px; color: var(--muted); margin-top: 12px; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">IA · Visión por computador</p>
+        <h1 class="title">Del rostro en cámara al aviso en el celular</h1>
+        <p class="subtitle">Cada rostro se vuelve un vector, se compara con los registrados y dispara registro y aviso.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="flow">
+        <!-- 1 Captura -->
+        <div class="step">
+          <div class="vis">
+            <svg width="220" height="140" viewBox="0 0 220 140">
+              <rect x="10" y="18" width="130" height="96" rx="10" fill="#2b3044"/>
+              <circle cx="75" cy="58" r="20" fill="#c99a7a"/><path d="M40 114c4-22 18-32 35-32s31 10 35 32z" fill="#1f3a5f"/>
+              <path d="M51 58c0-16 10-22 24-22s24 6 24 22c-4-8-12-12-24-12s-20 4-24 12z" fill="#1d1a1c"/>
+              <g stroke="#3a3a8c" stroke-width="2.4" fill="none" stroke-dasharray="5 5"><path d="M146 66h56"/></g>
+              <path d="M198 60l8 6-8 6" fill="none" stroke="#3a3a8c" stroke-width="2.4"/>
+              <text x="150" y="56" font-size="11" fill="#5f5a55" font-family="Inter">WebSocket</text>
+              <text x="150" y="88" font-size="11" fill="#5f5a55" font-family="Inter" class="mono">/ws?modo=</text>
+              <text x="150" y="102" font-size="11" fill="#5f5a55" font-family="Inter" class="mono">asistencia</text>
+            </svg>
+          </div>
+          <div class="txt">
+            <div class="row"><span class="step-n">1</span><h3>Captura</h3></div>
+            <p>La cámara del panel envía cuadros por WebSocket; el celular sube una foto cada 2 s.</p>
+            <span class="tech">OpenCV · WebSocket</span>
+          </div>
+        </div>
+        <!-- 2 Embedding -->
+        <div class="step">
+          <div class="vis">
+            <svg width="230" height="140" viewBox="0 0 230 140">
+              <rect x="12" y="24" width="72" height="92" rx="10" fill="#fff" stroke="#dedad5"/>
+              <circle cx="48" cy="62" r="20" fill="#c99a7a"/><path d="M28 60c0-16 9-21 20-21s20 5 20 21c-4-7-10-10-20-10s-16 3-20 10z" fill="#1d1a1c"/>
+              <path d="M22 116c3-18 13-26 26-26s23 8 26 26z" fill="#1f3a5f"/>
+              <g fill="none" stroke="#00c853" stroke-width="2.4"><path d="M24 44v-10h10M62 34h10v10M72 82v10H62M34 92H24V82"/></g>
+              <path d="M92 70h22" stroke="#3a3a8c" stroke-width="2.4"/><path d="M110 64l8 6-8 6" fill="none" stroke="#3a3a8c" stroke-width="2.4"/>
+              <g>
+                <rect x="126" y="22" width="92" height="96" rx="8" fill="#fff" stroke="#dedad5"/>
+                <g fill="#3a3a8c">
+                  <rect x="136" y="34" width="6" height="18" rx="2" opacity=".9"/><rect x="146" y="40" width="6" height="12" rx="2" opacity=".6"/><rect x="156" y="30" width="6" height="22" rx="2"/><rect x="166" y="44" width="6" height="8" rx="2" opacity=".5"/><rect x="176" y="36" width="6" height="16" rx="2" opacity=".8"/><rect x="186" y="42" width="6" height="10" rx="2" opacity=".55"/><rect x="196" y="32" width="6" height="20" rx="2" opacity=".9"/>
+                  <rect x="136" y="70" width="6" height="12" rx="2" opacity=".6"/><rect x="146" y="62" width="6" height="20" rx="2"/><rect x="156" y="74" width="6" height="8" rx="2" opacity=".5"/><rect x="166" y="66" width="6" height="16" rx="2" opacity=".8"/><rect x="176" y="72" width="6" height="10" rx="2" opacity=".55"/><rect x="186" y="64" width="6" height="18" rx="2" opacity=".9"/><rect x="196" y="70" width="6" height="12" rx="2" opacity=".6"/>
+                </g>
+                <text x="172" y="104" font-size="11.5" fill="#5f5a55" font-family="Inter" text-anchor="middle">vector · 512 valores</text>
+              </g>
+            </svg>
+          </div>
+          <div class="txt">
+            <div class="row"><span class="step-n">2</span><h3>Embedding</h3></div>
+            <p>InsightFace detecta cada rostro y lo convierte en un vector normalizado (L2).</p>
+            <span class="tech">InsightFace antelopev2</span>
+          </div>
+        </div>
+        <!-- 3 Comparación -->
+        <div class="step">
+          <div class="vis">
+            <svg width="230" height="140" viewBox="0 0 230 140">
+              <g fill="#cfcbe8"><circle cx="40" cy="40" r="5"/><circle cx="62" cy="96" r="5"/><circle cx="96" cy="28" r="5"/><circle cx="184" cy="34" r="5"/><circle cx="196" cy="102" r="5"/><circle cx="34" cy="112" r="5"/><circle cx="160" cy="118" r="5"/></g>
+              <circle cx="128" cy="72" r="34" fill="none" stroke="#3a3a8c" stroke-dasharray="4 4" stroke-width="1.6"/>
+              <line x1="120" y1="76" x2="146" y2="60" stroke="#1f7a4d" stroke-width="2"/>
+              <circle cx="120" cy="76" r="8" fill="#3a3a8c"/>
+              <circle cx="146" cy="60" r="7" fill="#1f7a4d"/>
+              <text x="168" y="56" font-size="11.5" font-weight="600" fill="#1f7a4d" font-family="Inter">luis quispe</text>
+              <text x="90" y="82" font-size="11" fill="#3a3a8c" font-family="Inter" text-anchor="end">consulta</text>
+              <rect x="30" y="6" width="170" height="20" rx="10" fill="#e3f3ea"/>
+              <text x="115" y="20" font-size="11.5" font-weight="600" fill="#1f7a4d" font-family="Inter" text-anchor="middle">ej.: similitud 0.82 ≥ 0.55 ✓</text>
+            </svg>
+          </div>
+          <div class="txt">
+            <div class="row"><span class="step-n">3</span><h3>Comparación</h3></div>
+            <p>FAISS busca el vector más parecido. Bajo el umbral 0.55 se marca «Desconocido».</p>
+            <span class="tech">FAISS IndexFlatIP</span>
+          </div>
+        </div>
+        <!-- 4 Registro -->
+        <div class="step">
+          <div class="vis">
+            <svg width="230" height="140" viewBox="0 0 230 140">
+              <rect x="14" y="16" width="202" height="108" rx="10" fill="#fff" stroke="#dedad5"/>
+              <rect x="14" y="16" width="202" height="26" rx="10" fill="#1e2c4a"/><rect x="14" y="32" width="202" height="10" fill="#1e2c4a"/>
+              <text x="26" y="33" font-size="11" fill="#fff" font-family="Inter" font-weight="600">asistencias</text>
+              <g font-size="10.5" font-family="Inter" fill="#141414">
+                <text x="26" y="62">luis quispe</text><text x="112" y="62">07:52</text>
+                <rect x="150" y="51" width="56" height="16" rx="8" fill="#e3f3ea"/><text x="178" y="63" text-anchor="middle" fill="#1f7a4d" font-weight="600">Temprano</text>
+                <text x="26" y="88">ana mamani</text><text x="112" y="88">07:47</text>
+                <rect x="150" y="77" width="56" height="16" rx="8" fill="#e3f3ea"/><text x="178" y="89" text-anchor="middle" fill="#1f7a4d" font-weight="600">Temprano</text>
+                <text x="26" y="113">sofía apaza</text><text x="112" y="113">08:14</text>
+                <rect x="150" y="102" width="56" height="16" rx="8" fill="#fbf0dc"/><text x="178" y="114" text-anchor="middle" fill="#b7791f" font-weight="600">Tarde</text>
+              </g>
+              <g stroke="#dedad5"><line x1="22" y1="72" x2="208" y2="72"/><line x1="22" y1="98" x2="208" y2="98"/></g>
+            </svg>
+          </div>
+          <div class="txt">
+            <div class="row"><span class="step-n">4</span><h3>Registro</h3></div>
+            <p>Una vez al día por persona: guarda el recorte del rostro y el estado según el horario de su departamento.</p>
+            <span class="tech">MySQL · trigger</span>
+          </div>
+        </div>
+        <!-- 5 Notificación -->
+        <div class="step">
+          <div class="vis">
+            <svg width="200" height="146" viewBox="0 0 200 146">
+              <rect x="56" y="8" width="88" height="150" rx="16" fill="#111"/>
+              <rect x="61" y="13" width="78" height="140" rx="12" fill="#1e2c4a"/>
+              <rect x="14" y="44" width="172" height="52" rx="12" fill="#fff" stroke="#dedad5"/>
+              <rect x="24" y="54" width="22" height="22" rx="6" fill="#3a3a8c"/>
+              <text x="54" y="64" font-size="11.5" font-weight="700" fill="#141414" font-family="Inter">Asistencia Registrada</text>
+              <text x="54" y="80" font-size="10.5" fill="#5f5a55" font-family="Inter">Luis Quispe, registró su…</text>
+            </svg>
+          </div>
+          <div class="txt">
+            <div class="row"><span class="step-n">5</span><h3>Aviso push</h3></div>
+            <p>Un trigger encola el aviso; un proceso lo envía por FCM al celular del apoderado.</p>
+            <span class="tech">Firebase Cloud Messaging</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <div class="card">
+          <h4>Estado según la hora de llegada (por departamento)</h4>
+          <div class="timeline">
+            <div style="flex:28;background:#1f7a4d">Temprano</div>
+            <div style="flex:44;background:#b7791f">Tarde</div>
+            <div style="flex:28;background:#b42318">Falto</div>
+          </div>
+          <div class="ticks"><span style="left:28%">≤ hora temprano</span><span style="left:72%">≤ hora tarde</span></div>
+          <p class="small-note">Cada departamento define su hora temprano y su hora tarde; si no las tiene, se usan 08:10 y 14:30. En modo salida se registra cada detección.</p>
+        </div>
+        <div class="card">
+          <h4>Antes de operar: enrolamiento</h4>
+          <div class="enrol">
+            <div class="node">Fotos<small>Panel web</small></div><span class="arrow">→</span>
+            <div class="node">GPEN<small>Mejora opcional</small></div><span class="arrow">→</span>
+            <div class="node accent">Índice FAISS<small>Por organización</small></div>
+          </div>
+          <p class="small-note">«Generar Modelo» calcula los embeddings de todas las personas y guarda el índice que luego usa la cámara.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

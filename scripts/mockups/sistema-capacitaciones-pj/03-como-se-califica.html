@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Cómo se califica un examen: clave de respuestas, escaneo del PDF, detección de cuadrados de referencia, lectura de marcas y cálculo de la nota con reporte</title>
+  <link rel="stylesheet" href="../_kit.css" />
+  <style>
+    .stage { flex-direction: column; gap: 26px; align-items: stretch; }
+    .flow { gap: 26px; }
+    .step { padding: 22px 20px; gap: 10px; }
+    .step h3 { font-size: 19px; }
+    .step p { font-size: 14px; line-height: 1.45; }
+    .viz { height: 150px; border-radius: 12px; background: #f7f6f3; border: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; }
+    .code { font-family: ui-monospace, Consolas, monospace; font-size: 14px; line-height: 1.5; color: #333; }
+    .code b { color: var(--accent); }
+    .tech { margin-top: auto; display: flex; flex-wrap: wrap; gap: 6px; }
+    .rules { display: grid; grid-template-columns: 1.7fr 1fr 1fr; gap: 22px; } .rule .pill { white-space: nowrap; }
+    .rule { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; display: flex; gap: 16px; align-items: center; }
+    .rule h4 { font-size: 15px; margin-bottom: 4px; }
+    .rule p { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+    .formula { font-family: ui-monospace, Consolas, monospace; font-size: 13.5px; background: #1b1a19; color: #f4f2ef; border-radius: 10px; padding: 10px 14px; line-height: 1.6; white-space: nowrap; }
+    .formula em { color: #f6ad7b; font-style: normal; }
+    .bub { display: flex; gap: 5px; }
+    .bub i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #999; display: block; }
+    .bub i.f { background: #262626; border-color: #262626; }
+    .opt { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); }
+    .opt div { display: flex; align-items: center; gap: 10px; }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="sheet-head">
+      <div>
+        <p class="eyebrow">OMR · Cómo se califica</p>
+        <h1 class="title">Cinco pasos, sin modelos entrenados</h1>
+        <p class="subtitle">OpenCV clásico en la app de escritorio; el resultado vuelve a la API Laravel.</p>
+      </div>
+      <span class="note">Diagrama</span>
+    </header>
+    <main class="stage">
+      <div class="flow">
+        <div class="step">
+          <div class="step-n">1</div>
+          <h3>Clave y evento</h3>
+          <div class="viz"><div class="code"># respuestas.txt<br><b>1</b>:a:2<br><b>2</b>:b:2<br><b>3</b>:d:1.5<br>…<br><b>30</b>:a:2</div></div>
+          <p>Se elige un evento finalizado desde la API (con sus inscritos) y se carga la clave: pregunta, respuesta y puntaje.</p>
+          <div class="tech"><span class="pill">api_client</span><span class="pill">.txt</span></div>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <h3>Escaneo a imagen</h3>
+          <div class="viz">
+            <svg width="190" height="130" viewBox="0 0 190 130"><g fill="#fff" stroke="#bbb"><rect x="14" y="18" width="60" height="84" rx="3"/><rect x="22" y="12" width="60" height="84" rx="3"/><rect x="30" y="6" width="60" height="84" rx="3"/></g><text x="60" y="54" font-size="13" font-weight="700" text-anchor="middle" fill="#b42318">PDF</text><text x="60" y="118" font-size="10" text-anchor="middle" fill="#777">N hojas</text><path d="M100 50h22" stroke="#b03a0c" stroke-width="2.5"/><path d="M120 44l7 6-7 6" fill="none" stroke="#b03a0c" stroke-width="2.5"/><g fill="#fff" stroke="#888"><rect x="134" y="14" width="46" height="64" rx="2"/></g><g fill="#ddd"><rect x="140" y="22" width="34" height="3"/><rect x="140" y="30" width="26" height="3"/><rect x="140" y="38" width="30" height="3"/></g><text x="157" y="96" font-size="10" text-anchor="middle" fill="#777">1 imagen</text><text x="157" y="108" font-size="10" text-anchor="middle" fill="#777">por página</text></svg>
+          </div>
+          <p>Cada página del PDF escaneado se convierte en una imagen a 300 dpi; cada página es la hoja de un participante.</p>
+          <div class="tech"><span class="pill">pdf2image</span><span class="pill">Poppler</span></div>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <h3>Referencias y recorte</h3>
+          <div class="viz">
+            <svg width="120" height="140" viewBox="0 0 120 140"><rect x="10" y="6" width="100" height="128" fill="#fff" stroke="#ccc"/><g fill="#111"><rect x="16" y="14" width="9" height="9"/><rect x="95" y="14" width="9" height="9"/><rect x="16" y="64" width="9" height="9"/><rect x="95" y="64" width="9" height="9"/><rect x="16" y="114" width="9" height="9"/><rect x="95" y="114" width="9" height="9"/></g><g fill="none" stroke="#dc2626" stroke-width="1.6"><rect x="13" y="11" width="15" height="15"/><rect x="92" y="11" width="15" height="15"/><rect x="13" y="61" width="15" height="15"/><rect x="92" y="61" width="15" height="15"/><rect x="13" y="111" width="15" height="15"/><rect x="92" y="111" width="15" height="15"/></g><rect x="20" y="18" width="80" height="101" fill="none" stroke="#1f7a4d" stroke-width="1.6" stroke-dasharray="4 3"/></svg>
+          </div>
+          <p>Umbral de Otsu y contornos: se buscan 6 cuadrados negros (4 vértices, forma cuadrada, más de 80% de relleno) y se recorta el área entre ellos.</p>
+          <div class="tech"><span class="pill">OpenCV</span><span class="pill">findContours</span></div>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <h3>Lectura de marcas</h3>
+          <div class="viz">
+            <div class="opt">
+              <div><span class="bub"><i class="f"></i><i></i><i></i><i></i></span> 1 marca → respuesta</div>
+              <div><span class="bub"><i></i><i></i><i></i><i></i></span> 0 marcas → sin marcar</div>
+              <div><span class="bub"><i></i><i class="f"></i><i class="f"></i><i></i></span> 2+ marcas → inválida</div>
+            </div>
+          </div>
+          <p>En cada círculo se cuenta la proporción de píxeles oscuros: con 50% o más, está marcado. Así se leen las 30 respuestas y los 8 dígitos del DNI.</p>
+          <div class="tech"><span class="pill">máscara circular</span><span class="pill">≥ 50%</span></div>
+        </div>
+        <div class="step">
+          <div class="step-n">5</div>
+          <h3>Nota y reporte</h3>
+          <div class="viz">
+            <svg width="180" height="130" viewBox="0 0 180 130"><rect x="8" y="8" width="74" height="100" rx="3" fill="#fff" stroke="#bbb"/><rect x="8" y="8" width="74" height="16" rx="3" fill="#1565C0"/><rect x="16" y="32" width="58" height="16" rx="3" fill="#27AE60"/><text x="45" y="43.5" font-size="8.5" font-weight="700" fill="#fff" text-anchor="middle">APROBADO</text><g fill="#e6e6e6"><rect x="16" y="56" width="58" height="5"/><rect x="16" y="66" width="58" height="5"/><rect x="16" y="76" width="58" height="5"/><rect x="16" y="86" width="40" height="5"/></g><text x="45" y="122" font-size="9" fill="#777" text-anchor="middle">PDF por DNI</text><rect x="100" y="24" width="72" height="62" rx="4" fill="#fff" stroke="#bbb"/><rect x="100" y="24" width="72" height="12" rx="4" fill="#27ae60"/><g stroke="#e0e0e0"><path d="M100 48h72M100 60h72M100 72h72M124 36v50M148 36v50"/></g><text x="136" y="100" font-size="9" fill="#777" text-anchor="middle">Excel desde la web</text></svg>
+          </div>
+          <p>Se valida que el DNI esté inscrito, se suma el puntaje de cada acierto y se guarda la evaluación en la API con el PDF de evidencia.</p>
+          <div class="tech"><span class="pill">ReportLab</span><span class="pill">API Laravel</span></div>
+        </div>
+      </div>
+      <div class="rules">
+        <div class="rule"><div class="formula">puntaje = Σ <em>pts(p)</em> si marca(p) = clave(p)<br>nota&nbsp;&nbsp;&nbsp;= puntaje / Σ pts × 100</div><div><h4>Puntaje ponderado</h4><p>Cada pregunta tiene su propio peso (2 por defecto).</p></div></div>
+        <div class="rule"><span class="pill ok" style="font-size:14px;padding:8px 12px">≥ 20 pts</span><div><h4>Aprobado</h4><p>El umbral es de puntaje absoluto, no de porcentaje.</p></div></div>
+        <div class="rule"><span class="pill warn" style="font-size:14px;padding:8px 12px">DNI</span><div><h4>Solo inscritos</h4><p>Si el DNI leído no está inscrito, la hoja queda con una observación.</p></div></div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
